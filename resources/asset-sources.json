@@ -1,0 +1,82 @@
+{
+  "results/rl-preflight/bowl-kitchen-40refs/selected-40.json": {
+    "target": "assets/grasp_bank/selected-40.json",
+    "sha256": "5669630f9a3860621bef25cc09d8d9a215899541cb2814d335569598507dc3d9"
+  },
+  "results/rl-planning/bowl-kitchen-40refs/proposal.json": {
+    "target": "assets/reference_filter/proposal.json",
+    "sha256": "b2ce5a778d47e1be55599d509cde30dc5f8dcecb13276e90dae7ed0fd1525f5f"
+  },
+  "results/rl-preflight/bowl-kitchen-full/scene_meshes.pkl": {
+    "target": "assets/kitchen/scene_meshes.pkl",
+    "sha256": "ee3b78f43a3b6e58aa496a0eb31cd1c8d6f76a3b208f3e8af40c013c17b28c47"
+  },
+  "results/rl-preflight/bowl-kitchen-full/cooked-model.pkl": {
+    "target": "assets/kitchen/cooked-model.pkl",
+    "sha256": "4c94eda7762b514c8e7115fb63ba2d59294c16c2043ac50c63796a12344ba398"
+  },
+  "results/rl-preflight/bowl-kitchen-full/kitchen.usda": {
+    "target": "assets/kitchen/kitchen.usda",
+    "sha256": "640e59de11726c31fbc411aa7f44a25c754b0b65030b20907b5f77e8ca526080"
+  },
+  "results/rl-preflight/bowl-kitchen-full/scene.json": {
+    "target": "assets/kitchen/scene.json",
+    "sha256": "977e2a7d7123f2e212d070a5b541113201f8e302515f54f32fe154a0cdcbe730"
+  },
+  "rl/assets/manifest.json": {
+    "target": "rl/assets/manifest.json",
+    "sha256": "070e32aeb005b0bccd1fe6b7ea2f438c5c783ae8bc06235486b6fb5c6c6e0e52"
+  },
+  "rl/assets/garmi.usd": {
+    "target": "rl/assets/garmi.usd",
+    "sha256": "7b625c66113b3de3e73870a84e5e2d5da32efc69b3872ee868316e6264312056"
+  },
+  "rl/assets/configuration/garmi_base.usd": {
+    "target": "rl/assets/configuration/garmi_base.usd",
+    "sha256": "27ef08f6980eefca8ab06d2354f4f5bb3eb1d6cb9240d73496de6d98db16637a"
+  },
+  "rl/assets/configuration/garmi_physics.usd": {
+    "target": "rl/assets/configuration/garmi_physics.usd",
+    "sha256": "3b045de6ead57875dafb7c4bbd82bd4fa3af813ebff7bb5475b70d5f8773faae"
+  },
+  "rl/assets/configuration/garmi_robot.usd": {
+    "target": "rl/assets/configuration/garmi_robot.usd",
+    "sha256": "fc8e90a2c2e17ec32848b0d066b5099b8138f8963411645e7b97bde58893ea07"
+  },
+  "rl/assets/configuration/garmi_sensor.usd": {
+    "target": "rl/assets/configuration/garmi_sensor.usd",
+    "sha256": "3cdf0cc9c2d19fe60e8ae29e5ba0b28ebbc7d6f1a3c1047a4b9b27f5a8a8aa35"
+  },
+  "rl/assets/bowl.usda": {
+    "target": "rl/assets/bowl.usda",
+    "sha256": "a3678062c1ef2da4dc3a96799865baf5bfc0bb8ecb24dfdbfc03106950790c78"
+  },
+  "cram-vrb-lab/cognitive_robot_abstract_machine/coraplex/resources/objects/bowl.stl": {
+    "target": "assets/bowl.stl",
+    "sha256": "d35163478ffe1932076cc886e714ac329e7e59c858e4467d36e20e57adf3e3e3"
+  },
+  "cram-vrb-lab/assets/garmi-apartment/world.usda": {
+    "target": "assets/provenance/world.usda",
+    "sha256": "55891e640c93cf6794c5a0b90e7d2e1f4bf1d8e371cb27570fa7007e878de699"
+  },
+  "results/rl-planning/bowl-kitchen-reference-filter/position-mask.json": {
+    "target": "assets/reference_filter/position-mask.json",
+    "sha256": "840c15a36c72446cb802ec967782fa8d61aaeb711214c75ba9b5cf41ef88d880"
+  },
+  "rl/assets/garmi_training.urdf": {
+    "target": "rl/assets/garmi_training.urdf",
+    "sha256": "0734d5d987321a681331ad6b7c9290b7f04c74cf2c003987ec2eb084194173e5"
+  },
+  "cram-vrb-lab/cognitive_robot_abstract_machine/semantic_digital_twin/resources/collision_configs/garmi.srdf": {
+    "target": "assets/garmi.srdf",
+    "sha256": "7ff206d96785c1e41fd51543958383487a975ac985864f1bacc577f791031e1c"
+  },
+  "rl/assets/configuration/materials/textures/face.jpg": {
+    "target": "rl/assets/configuration/materials/textures/face.jpg",
+    "sha256": "1c48aa277c58e5827a8c034a286f0d95eca63e92f0a1c25eddd5a716506c7abf"
+  },
+  "rl/assets/configuration/materials/textures/fabric.jpg": {
+    "target": "rl/assets/configuration/materials/textures/fabric.jpg",
+    "sha256": "602e05f5eaf6d09f43779c3f55489a0c27736764581d03d74ff2bc9b76cd0898"
+  }
+}

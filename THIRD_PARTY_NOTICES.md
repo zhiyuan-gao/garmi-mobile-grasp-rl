@@ -1,0 +1,8 @@
+# Third-party sources
+
+- `rl/garmi_rl/expert_ppo.py` adapts `PPO._update` from **skrl 1.4.3**, copyright Toni-SM. Its MIT notice is preserved in [third_party/licenses/skrl-MIT.txt](third_party/licenses/skrl-MIT.txt). Original implementation: https://github.com/Toni-SM/skrl/tree/1.4.3.
+- **Isaac Lab v2.3.2**, commit `37ddf626871758333d6ed89cf64ad702aef127d0`, provides task managers, simulation wrappers and RL integration. Downloaded separately, BSD-3-Clause: https://github.com/isaac-sim/IsaacLab/tree/v2.3.2.
+- **CRAM/Giskard/semantic_digital_twin** are used from the pinned runtime image; their implementation is not vendored here. GARMI baseline: https://github.com/yxzhan/cram-vrb-lab/tree/41c103214a0c89899e4c5ee28428b2f31b116307. Giskard retains its upstream LGPL license.
+- Robot descriptions and apartment/object assets are external inputs, not covered by this repository's code license. The GARMI description includes an Apache-2.0 license; other assets retain their own upstream terms. The asset importer checks exact file hashes and does not grant redistribution rights.
+- **Isaac Sim** and the base container are third-party distributions subject to their own terms. No simulator binaries are committed.
+- The workflow draws on **GA-DDPG** (expert perturbations and learner-state supervision), **FastGrasp** (mobile grasp setup/network configuration), **GraspGen** (precomputed grasp references), and **GAP-RL** (pose reward inspiration). It is an engineering adaptation with PPO and state input, not a reproduction of these papers. GAP-RL reward reference: https://github.com/THU-VCLab/GAP-RL/blob/7fc984f363621efcccffe375be83dd1c89b6c360/gap_rl/envs/pick_single.py.
