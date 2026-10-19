@@ -8,7 +8,7 @@ Use this repository’s `vrb-demo` branch with the launch path `proxy/8781/`:
 
 <https://binder.intel4coro.de/v2/gh/zhiyuan-gao/garmi-mobile-grasp-rl/vrb-demo?urlpath=proxy%2F8781%2F>
 
-The Dockerfile extends the pinned CRAM digital twin image, installs Isaac Lab, verifies the packaged inference assets, and prepares the full apartment. The entrypoint starts the page service alongside the Jupyter command supplied by Binder. A GPU-backed session is required.
+The Dockerfile extends the pinned CRAM digital twin image, installs Isaac Lab, verifies the packaged inference assets, and prepares the full apartment. The entrypoint starts the page service alongside the Jupyter command supplied by Binder. A GPU-backed session is required. See [deployment status](VRB_DEPLOYMENT.md) for the current VRB GPU allocation status.
 
 ## Local Docker
 
