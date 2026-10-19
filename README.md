@@ -6,7 +6,7 @@
 
 在完整 GARMI 公寓场景中，机器人从厨房柜台左侧抓起碗，再送到餐桌放置。CRAM 负责导航，RL 同时控制底盘和右臂接近，固定程序闭爪、提起，再由 CRAM 接回搬运和放置。演示页面提供录像和远程工作区入口，工作区内可查看实时画面、任务进度和运行录像。
 
-[抓取片段（9.6 秒）](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [完整演示与工作区入口](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
+[抓取近景](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [多组不同初始位置的录像](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/episodes/) · [完整演示与工作区入口](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
 
 ## 任务
 
