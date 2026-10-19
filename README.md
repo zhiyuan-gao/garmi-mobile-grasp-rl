@@ -2,6 +2,12 @@
 
 在 Isaac Sim 的 GARMI 厨房环境中，结合 **Giskard 专家示范、模仿学习和 PPO**，训练机器人同时控制底盘与机械臂完成抓取。
 
+## 演示
+
+在完整 GARMI 公寓场景中，机器人从厨房柜台左侧抓起碗，再送到餐桌放置。CRAM 负责导航，RL 同时控制底盘和右臂接近，固定程序闭爪、提起，再由 CRAM 接回搬运和放置。演示页面提供录像和远程工作区入口，工作区内可查看实时画面、任务进度和运行录像。
+
+[抓取片段（9.6 秒）](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [完整演示与工作区入口](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
+
 ## 任务
 
 机器人从厨房柜台前的随机位置出发，根据物体位置和参考抓取姿态，一边调整底盘，一边移动右臂接近物体。接近完成后，固定程序负责闭爪、提起和保持。
@@ -38,6 +44,11 @@ flowchart LR
 
 [安装与运行](docs/usage.md)包含环境搭建、仿真资产导入、训练启动、评估和录像命令。[实验设置](docs/experiment.md)说明状态、动作、奖励、随机化范围和训练参数。
 
+| 用途 | 分支与入口 |
+| --- | --- |
+| 采集示范、训练与评估 | 当前 `main` 分支：[安装与运行](docs/usage.md) |
+| 运行 CRAM＋RL 完整演示 | [`vrb-demo` 分支](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/tree/vrb-demo)：[容器启动说明](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/README.md) |
+
 ## 主要代码
 
 | 文件 | 用途 |
@@ -49,3 +60,11 @@ flowchart LR
 | [rl/train_expert_bc.py](rl/train_expert_bc.py) | 行为克隆 |
 | [rl/garmi_rl/expert_ppo.py](rl/garmi_rl/expert_ppo.py) | 带模仿损失的 PPO |
 | [rl/evaluate_kitchen.py](rl/evaluate_kitchen.py) | 策略评估与录像 |
+
+## VRB 发布材料
+
+[介绍页内容预览](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-overview.html) · [下载发布包](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-intro-package.zip)
+
+发布包包含抓取和完整任务录像、说明文字、项目链接、可追加到 VRB 介绍页的 HTML，以及 Enter Lab 按钮接入说明。现有介绍页内容和演示画廊可继续保留。
+
+截至 2026-10-19，完整演示已在本地 GPU 容器验证通过；VRB 远程工作区已可打开，运行仿真仍待平台配置 GPU。介绍页材料已备好，尚待网站编辑发布。详见[部署验证与平台配置记录](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/VRB_DEPLOYMENT.md)。
