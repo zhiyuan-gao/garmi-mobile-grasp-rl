@@ -6,7 +6,7 @@ The container runs the CRAM + RL counter-to-table task in the complete GARMI apa
 
 Use this repository’s `vrb-demo` branch with the launch path `proxy/8781/`:
 
-<https://binder.dev.intel4coro.de/v2/gh/zhiyuan-gao/garmi-mobile-grasp-rl/vrb-demo?urlpath=proxy%2F8781%2F>
+<https://binder.intel4coro.de/v2/gh/zhiyuan-gao/garmi-mobile-grasp-rl/vrb-demo?urlpath=proxy%2F8781%2F>
 
 The Dockerfile extends the pinned CRAM digital twin image, installs Isaac Lab, verifies the packaged inference assets, and prepares the full apartment. The entrypoint starts the page service alongside the Jupyter command supplied by Binder. A GPU-backed session is required.
 
@@ -14,7 +14,7 @@ The Dockerfile extends the pinned CRAM digital twin image, installs Isaac Lab, v
 
 ```bash
 docker build -t garmi-vrb-demo -f binder/Dockerfile .
-docker run --rm --gpus all --ipc=host \
+docker run --rm --runtime=nvidia --gpus all --shm-size=1g \
   -p 127.0.0.1:8891:8888 --name garmi-vrb-demo garmi-vrb-demo \
   jupyter lab --ip=0.0.0.0 --port=8888 --no-browser \
   --IdentityProvider.token= --ServerApp.password=
