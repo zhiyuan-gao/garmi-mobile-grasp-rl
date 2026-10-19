@@ -47,7 +47,9 @@ flowchart LR
 | 用途 | 分支与入口 |
 | --- | --- |
 | 采集示范、训练与评估 | 当前 `main` 分支：[安装与运行](docs/usage.md) |
-| 运行 CRAM＋RL 完整演示 | [`vrb-demo` 分支](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/tree/vrb-demo)：[容器启动说明](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/README.md) |
+| 运行 CRAM＋RL 完整演示 | [`vrb-demo` 分支](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/tree/vrb-demo)：[部署快速开始（英文）](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/README.md) |
+
+演示分支已打包训练好的策略、40 个参考抓取和位置过滤表，构建容器时自动准备所需资产。快速开始包含从克隆到运行的完整命令、GPU 环境要求、VRB 接入和结果保存方法，可直接用于同事部署，无需复制原 FAME_RL 工作区。
 
 ## 主要代码
 
