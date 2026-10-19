@@ -18,11 +18,18 @@ def initialize(env):
     if hasattr(env, "grasp_state"):
         return
     n, d = env.num_envs, env.device
-    bank = json.loads(Path(env.cfg.multi_object["manifest"]).read_text())
-    reference = bank["objects"][0]["references"][0]
-    # Already expressed in the GARMI hand frame; episode reset assigns the goal.
-    env.grasp_pos_o = torch.tensor(reference["position"], dtype=torch.float32, device=d).repeat(n,1)
-    env.grasp_quat_o = torch.tensor(reference["quaternion"], dtype=torch.float32, device=d).repeat(n,1)
+    selected = json.loads((ROOT / "results/mobile-grasp/selected.json").read_text())
+    cache = np.load(ROOT / "results/mobile-grasp/bowl-grasps.npz",allow_pickle=False)
+    mesh = ROOT / "cram-vrb-lab/cognitive_robot_abstract_machine/coraplex/resources/objects/bowl.stl"
+    if str(cache["mesh_sha256"]) != hashlib.sha256(mesh.read_bytes()).hexdigest():
+        raise ValueError("Cached GraspGen prior does not match the bowl geometry")
+    if not np.any(np.all(np.isclose(cache["grasps"],selected["mesh_T_gripper"],atol=1e-6),axis=(1,2))):
+        raise ValueError("Selected grasp is not a member of the validated cache")
+    transform = np.array(selected["mesh_T_gripper"])
+    transform[:3, :3] = transform[:3, :3] @ Rotation.from_euler("z", -np.pi/2).as_matrix()
+    quat = Rotation.from_matrix(transform[:3, :3]).as_quat()[[3,0,1,2]]
+    env.grasp_pos_o = torch.tensor(transform[:3,3], dtype=torch.float32, device=d).repeat(n,1)
+    env.grasp_quat_o = torch.tensor(quat, dtype=torch.float32, device=d).repeat(n,1)
     env.hand_id = env.scene["robot"].find_bodies("right_fr3_link7")[0][0]
     env.observed_joint_ids = env.scene["robot"].find_joints(
         ["right_fr3_joint[1-7]", "right_fr3_finger_joint.*"])[0]

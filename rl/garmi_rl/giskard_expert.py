@@ -43,7 +43,7 @@ class TrainingRobot(AbstractRobot):
 
     @classmethod
     def get_ros_file_path(cls):
-        return str(Path(__file__).resolve().parents[1] / 'assets/garmi_training.urdf')
+        return '/workspace/rl/assets/garmi_training.urdf'
 
     @classmethod
     def _get_root_body_name(cls):
@@ -58,12 +58,12 @@ class TrainingRobot(AbstractRobot):
 class ApproachExpert:
     """Reusable Giskard QP, updated from measured states for each query."""
 
-    root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
+    root: Path = field(default_factory=lambda: Path('/workspace'))
     control_dt: float = .05
 
     def __post_init__(self):
         started = time.perf_counter()
-        source = self.root / 'assets/kitchen'
+        source = self.root / 'results/rl-preflight/bowl-kitchen-full'
         tree = ET.parse(self.root / 'rl/assets/garmi_training.urdf')
         # Geometry comes from the simulator export, not a second approximation.
         for link in tree.getroot().findall('link'):
@@ -131,7 +131,7 @@ class ApproachExpert:
             body_group_a=hand_bodies, body_group_b=self.external_bodies,
             buffer_zone_distance=.001, violated_distance=0.))
         self.hand = self.world.get_body_by_name('right_fr3_hand')
-        bank = json.loads((self.root / 'assets/grasp_bank/selected-40.json').read_text())
+        bank = json.loads((self.root / 'results/rl-preflight/bowl-kitchen-40refs/selected-40.json').read_text())
         self.references = {r['id']: r for r in bank['objects'][0]['references']}
         self.context = MotionStatechartContext(world=self.world,
             qp_controller_config=QPControllerConfig(target_frequency=1/self.control_dt, prediction_horizon=7, verbose=False))
@@ -172,7 +172,7 @@ class ApproachExpert:
         adjacent.add(frozenset(('right_fr3_leftfinger', 'right_fr3_rightfinger')))
         # Reuse GARMI's existing Giskard SRDF exclusions where both bodies are
         # represented separately. Never expand an exclusion to a merged torso.
-        srdf = self.root/'assets/garmi.srdf'
+        srdf = self.root/'cram-vrb-lab/cognitive_robot_abstract_machine/semantic_digital_twin/resources/collision_configs/garmi.srdf'
         for element in ET.parse(srdf).getroot().findall('disable_self_collision'):
             names = (element.get('link1'), element.get('link2'))
             if all(name in shapes for name in names):

@@ -77,9 +77,9 @@ class GiskardClient:
         self.log = Path(logfile).open('w')
         self.process = subprocess.Popen([
             '/home/jovyan/cram-vrb-lab/cognitive_robot_abstract_machine/.venv/bin/python',
-            str(Path(__file__).resolve().parents[1] / 'giskard_expert_service.py'), '--serve', '--workers', str(workers)],
+            '/workspace/rl/giskard_expert_service.py', '--serve', '--workers', str(workers)],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.log,
-            text=True, bufsize=1, env=dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]),
+            text=True, bufsize=1, env=dict(os.environ, PYTHONPATH='/workspace/rl',
                 OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1', MKL_NUM_THREADS='1'))
         assert self._receive()['ready']
         self.query_seconds, self.batch_seconds, self.compile_seconds = [], [], []

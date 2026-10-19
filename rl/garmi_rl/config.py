@@ -209,7 +209,7 @@ def configured_env(agent_cfg, num_envs, seed):
         description = dict(variant=variant, controller=cfg.fixed_finish, phases=PHASES,
             policy_action_dim=10, policy_observation_dim=64, step_dt=dt,
             weights=dict(approach=1., action_rate=-1.e-4), success_bonus=bonus,
-            success_bonus_source="Paid once only on physical success",
+            success_bonus_source="Retained from trial-02; paid once only on physical success",
             shaping_only_during_approach=True, gripper_policy_control=False,
             failure_is_terminal=True, terminal_failure_reward=0.,
             method="PPO with a deterministic finishing controller; not a GA-DDPG reproduction")

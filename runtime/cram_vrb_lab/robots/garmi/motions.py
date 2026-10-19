@@ -1,0 +1,418 @@
+"""GARMI-specific motion mappings for CRAM.
+
+Two repairs live here.
+
+**1. Working a container ignores ``full_body_controlled``.** That flag is read in
+exactly one place, ``coraplex.robot_plans.motions.gripper`` -- the TCP motions --
+where it decides whether a Cartesian goal is posed from ``map`` or from
+``base_link``. Giskard's ``Open`` / ``Close`` never consults it, and could not
+usefully: their "hold the handle" task is ``CartesianPose(root_link=handle,
+tip_link=tool_frame)``, and the chain from the handle to the tool frame runs
+``handle -> ... -> map -> odom -> base_link -> ... -> tool_frame``, so the drive's
+degrees of freedom sit in the error expression whatever the flag says and the QP
+uses them. The result is a demo that approaches a drawer with the arm alone and
+then pulls it open with the whole robot. :class:`_GarmiContainerMotion` pins the
+base for the pull when the flag is off, so one switch means one thing.
+
+.. note::
+   Turning the flag *on* to help a reach is not an option in this simulation: the
+   base is driven kinematically (``GarmiROS.integrate_base`` teleports ``base_link``
+   along the commanded twist and ``undrive_wheels`` takes the force out of the
+   wheels), so a base that the QP walks into the furniture does not stop -- it
+   pushes the cabinet and everything standing on it out of the way.
+
+**2. Giskard has no timeout of its own.** There is no
+``max_trajectory_length`` or equivalent in its config, and the client side waits
+on the action result with no deadline either
+(``ros2_interface.ActionClient.get_result`` awaits ``wait_until_not_none``), so a
+goal whose monitor never turns TRUE blocks the calling notebook cell for good.
+The only mechanism giskard offers is a monitor node --
+:class:`~giskardpy.motion_statechart.monitors.payload_monitors.CountSeconds` --
+put in ``Parallel`` with the real goal under ``minimum_success=1``, so whichever
+finishes first ends the motion.
+
+Each of the motions below has a goal that can legitimately never converge:
+
+- the gripper, because a hand closing on a rigid object stops short of the
+  commanded finger positions and never reaches them;
+- opening and closing a container, because the goal is satisfied only when the
+  container's own joint reaches its limit -- and that joint is moved by physics
+  in the sim, not by a controller, so it can stall anywhere;
+- driving the base, because the QP can settle on commanding nothing while the
+  goal still reads unreached -- measured stopping 0.35 m short and holding there.
+  See :class:`GarmiMoveMotion`, which also records why the *goal* was not at
+  fault.
+
+A Cartesian reach of the arm can stall the same way and does not have a deadline
+yet; it is the next candidate if a plan wedges somewhere other than these.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import List
+
+from giskardpy.motion_statechart.context import MotionStatechartContext
+from giskardpy.motion_statechart.data_types import DefaultWeights
+from giskardpy.motion_statechart.goals.templates import Parallel
+from giskardpy.motion_statechart.graph_node import (
+    Goal,
+    MotionStatechartNode,
+    NodeArtifacts,
+)
+from giskardpy.motion_statechart.monitors.payload_monitors import CountSeconds
+from giskardpy.motion_statechart.tasks.cartesian_tasks import CartesianPose
+from giskardpy.motion_statechart.tasks.joint_tasks import JointPositionList
+from coraplex.datastructures.enums import ExecutionType
+from coraplex.robot_plans import MoveGripperMotion
+from coraplex.robot_plans.motions.base import AlternativeMotion
+from coraplex.robot_plans.motions.container import ClosingMotion, OpeningMotion
+from coraplex.robot_plans.motions.navigation import MoveMotion
+from coraplex.view_manager import ViewManager
+from semantic_digital_twin.datastructures.definitions import GripperState
+from semantic_digital_twin.spatial_types.spatial_types import (
+    HomogeneousTransformationMatrix,
+    Pose,
+)
+
+from semantic_digital_twin.robots.garmi import Garmi
+
+CLOSE_TIMEOUT = 10.0
+"""Seconds to keep pushing the fingers shut before calling the hand closed.
+
+Allows the full 40 mm stroke at the 5 mm/s reference speed and ends obstructed
+closures. Position targets remain latched to maintain the physical grasp.
+"""
+
+GRIPPER_OPEN_TOLERANCE = 0.0002
+"""Per-finger OPEN completion tolerance in metres (0.2 mm).
+
+The generic joint task's 0.01 tolerance is ten millimetres for these prismatic
+joints, so it accepts the 38 mm parked position before reaching the 40 mm goal.
+"""
+
+GRIPPER_OPEN_GOAL_TOLERANCE = 0.00015
+"""QP completion tolerance [m], leaving 0.05 mm for settling after completion."""
+
+GRIPPER_REFERENCE_VELOCITY = 0.005
+"""Reference speed [m/s] for precise approach to either joint limit."""
+
+MOVE_TIMEOUT = 60.0
+"""Seconds to keep driving at a navigation goal before calling the motion done.
+
+**Coupled to how far the base is asked to go and how fast it may go.** The drive
+is limited to 0.2 m/s and 0.2 rad/s
+(:class:`~cram_vrb_lab.robots.garmi.giskard_config.WorldWithGarmiConfig`), so a
+1.5 m reposition across this flat costs about 8 s of wall clock at the RTF this
+sim holds. 15 s leaves room for that plus the turn, and still cuts in well before
+a person would give up on a base that has visibly stopped.
+
+Sized to only ever decide the *stalled* case, like :data:`CLOSE_TIMEOUT`. Every
+navigation measured here after :meth:`GarmiMoveMotion.planar_target` went in
+finishes in 3.6-4.5 s, so a goal reaching this deadline is a goal that is not
+converging rather than one that is merely slow.
+"""
+
+CONTAINER_TIMEOUT = 20.0
+"""Seconds to keep working a drawer or door before calling the motion done.
+
+**Coupled to how fast the furniture is allowed to move.** A drawer's full travel
+is 0.466 m and it is pulled at
+:data:`cram_vrb_lab.scenes.garmi_apartment.giskard_world.PRISMATIC_VELOCITY_LIMIT`,
+so the motion needs at least ``0.466 / that`` seconds: about 5 s at 0.1 m/s, but
+47 s at 0.01 m/s. Not imported from there on purpose -- a robot has no business
+knowing which flat it is standing in -- so **if you lower that limit, raise this
+too**, or the timeout fires with the drawer half open and it looks like the grasp
+slipped.
+
+20 s is roughly four times what the 0.1 m/s setting needs.
+"""
+
+
+@dataclass(eq=False, repr=False)
+class WhileHolding(Goal):
+    """Runs ``goal`` with ``held`` constraining what the goal leaves free.
+
+    A plain ``Parallel`` cannot express this. Its observation is a vote over its
+    children -- all of them, or ``minimum_success`` of them -- while a hold task
+    is satisfied from the first tick, so the motion would either end immediately
+    (``minimum_success=1``) or be held hostage by a millimetre of slack in
+    something nobody asked to move. Here the observation is the wrapped goal's,
+    full stop; the hold tasks only ever contribute constraints.
+
+    They apply for exactly as long as the goal does. A node's ``end_condition``
+    defaults to false, so a hold task never retires itself: it ends when this
+    wrapper ends, and this wrapper ends when the caller's sequencing says the goal
+    is finished.
+    """
+
+    goal: MotionStatechartNode = field(kw_only=True)
+    """The motion that was actually asked for."""
+
+    held: List[MotionStatechartNode] = field(default_factory=list, kw_only=True)
+    """Tasks constraining what the goal does not. See :func:`hold_base`."""
+
+    def expand(self, context: MotionStatechartContext) -> None:
+        # giskard renamed the way a Goal contributes children: it used to be
+        # ``add_nodes``, which no longer exists -- a call to it aborted the goal on the
+        # server with ``'WhileHolding' object has no attribute 'add_nodes'``.
+        self._add_children_to_motion_statechart([self.goal, *self.held])
+
+    def build_artifacts(self, context: MotionStatechartContext) -> NodeArtifacts:
+        # build_artifacts rather than build: build() is now the wrapper that calls it,
+        # and an override of build() that does not chain would skip it for every node.
+        return NodeArtifacts(observation=self.goal.observation_variable)
+
+
+def hold_base(robot, world) -> CartesianPose:
+    """A task that keeps the base where it is, in ``map``.
+
+    Built the same way giskard's own ``Open`` holds the handle: a goal pose whose
+    reference frame *is* the tip link, so it reads "stay at the pose you were at
+    when this started" -- bound once on start, then held.
+
+    Weighted like the tasks it runs against (``Open`` gives both of its
+    ``WEIGHT_ABOVE_COLLISION_AVOIDANCE``), so it neither overrides the container
+    goal nor gets quietly optimised away. If the two ever really conflict -- a
+    handle the arm cannot follow from a standing base -- the drawer stalls and
+    :data:`CONTAINER_TIMEOUT` ends the motion, rather than the base silently
+    winning.
+    """
+    return CartesianPose(
+        root_link=world.root,
+        tip_link=robot.root,
+        goal_pose=Pose(reference_frame=robot.root),
+        weight=DefaultWeights.WEIGHT_ABOVE_COLLISION_AVOIDANCE,
+        name="HoldBase",
+    )
+
+
+@dataclass
+class GarmiMoveGripper(MoveGripperMotion, AlternativeMotion[Garmi]):
+    """Closes the hand on "reached the position *or* pushed long enough", so
+    closing on an object terminates. Opening keeps the plain position goal:
+    nothing obstructs it, and a sloppy one would leave the hand too narrow for
+    the next grasp."""
+
+    execution_type = ExecutionType.SIMULATED, ExecutionType.REAL
+
+    def perform(self):
+        return
+
+    @property
+    def _motion_chart(self):
+        end_effector = ViewManager().get_end_effector_view(self.gripper, self.robot)
+        goal_state = end_effector.get_joint_state_by_type(self.motion)
+
+        if self.motion != GripperState.CLOSE:
+            return JointPositionList(
+                goal_state=goal_state,
+                name="OpenGripper",
+                threshold=GRIPPER_OPEN_GOAL_TOLERANCE,
+                max_velocity=GRIPPER_REFERENCE_VELOCITY,
+            )
+
+        return Parallel(
+            [
+                JointPositionList(goal_state=goal_state, name="CloseGripper",
+                                  threshold=GRIPPER_OPEN_GOAL_TOLERANCE,
+                                  max_velocity=GRIPPER_REFERENCE_VELOCITY),
+                CountSeconds(seconds=CLOSE_TIMEOUT, name="CloseGripperTimeout"),
+            ],
+            minimum_success=1,
+        )
+
+
+@dataclass
+class _GarmiContainerMotion(AlternativeMotion[Garmi]):
+    """Runs the stock container goal against a :data:`CONTAINER_TIMEOUT` clock.
+
+    The goal itself is untouched -- ``super()._motion_chart`` is giskard's own
+    ``Open`` / ``Close``, which drives the container's joint to its limit while
+    holding the tool on the handle. What changes is that it is no longer the only
+    way for the motion to end.
+
+    That matters more here than for the gripper, because the container's joint is
+    **not measured**: nothing in the sim publishes the apartment's articulation
+    back (see the topic list -- only robot joints, odometry and tf), so giskard
+    moves the drawer in its own model and has no way to notice that PhysX left it
+    somewhere else. If the handle slips, the goal simply never converges.
+
+    Also pins the base unless the robot is whole-body controlled -- point 1 of the
+    module docstring. Only the *pull* needs this; the approach is already
+    arm-only, because that one goes through ``MoveToolCenterPointMotion``, which
+    reads the flag itself.
+
+    Measured from the station ``drive_to`` parks at, with the base pinned: drawer
+    1 comes out to its full 0.466 m in 246 control cycles (241 with the base
+    free), and cabinet door 1 -- the harder case, its handle sweeping an arc of
+    its own 0.41 m radius rather than pulling straight -- still reaches its full
+    1.571 rad in 871 cycles (808 free). The arm can follow both from a standing
+    base; what the base was doing was moving 0.41 m and 1.02 m respectively while
+    the idle arm hung off it.
+
+    .. note::
+       If some container does stall at :data:`CONTAINER_TIMEOUT` with the arm
+       stretched out, give the base back for that step:
+       ``robot.mobile_base.full_body_controlled = True``.
+    """
+
+    execution_type = ExecutionType.SIMULATED, ExecutionType.REAL
+
+    def perform(self):
+        return
+
+    @property
+    def _motion_chart(self):
+        goal = super()._motion_chart
+        if not self.robot.mobile_base.full_body_controlled:
+            goal = WhileHolding(
+                goal=goal,
+                held=[hold_base(self.robot, self.world)],
+                name=f"{type(self).__name__}WithBaseHeld",
+            )
+        return Parallel(
+            [
+                goal,
+                CountSeconds(
+                    seconds=CONTAINER_TIMEOUT,
+                    name=f"{type(self).__name__}Timeout",
+                ),
+            ],
+            minimum_success=1,
+        )
+
+
+@dataclass
+class GarmiOpeningMotion(_GarmiContainerMotion, OpeningMotion):
+    """Opening a container, with a deadline. See :class:`_GarmiContainerMotion`."""
+
+
+@dataclass
+class GarmiClosingMotion(_GarmiContainerMotion, ClosingMotion):
+    """Closing a container, with a deadline. See :class:`_GarmiContainerMotion`."""
+
+
+@dataclass
+class GarmiMoveMotion(MoveMotion, AlternativeMotion[Garmi]):
+    """Driving the base: onto the plane it can actually reach, and with a deadline.
+
+    Two repairs, both about the same mismatch. Upstream drives the base with
+    ``CartesianPose(root_link=map, tip_link=robot.root)`` -- a **six** degree of
+    freedom goal -- while an ``OmniDrive`` has three: x, y and yaw. Every other
+    component of that goal is an error the base is structurally unable to work off.
+
+    **1. The goal is projected onto the plane the base lives on.**
+    ``reachability_location`` -- what ``TransportAction`` resolves its navigation
+    goal through -- hands out poses at ``z = 0``, while GARMI's ``base_link`` sits
+    at :data:`~cram_vrb_lab.robots.garmi.joints.BASE_LINK_HEIGHT` in ``map``
+    (``odom`` carries the height; see ``GarmiROS.publish_odom``). Measured, with the
+    torso raised so the costmap yields anything at all::
+
+        base_link z in map = 0.025900
+        pose[0..4]  z = 0.000000   ->  25.9 mm of z error, every one
+
+    ``CartesianPose.translation_threshold`` is 0.01 m. So the position half of that
+    goal is 2.6x over tolerance before the robot moves, and stays there however well
+    it drives: the motion can never end. That is not a tuning problem, it is asking
+    a planar mechanism for a pose off its plane, so the fix is to ask for the
+    nearest pose on it -- same x, y and yaw, the robot's own z, no roll or pitch.
+
+    Not fixed by loosening the threshold: 26 mm of *real* error would then be
+    declared arrived, and the plan would grasp from a base it only thinks it placed.
+
+    **2. What is left can still stall, so it also gets a deadline.**
+    ``orientation_threshold`` is 0.01 rad -- 0.57 deg -- and upstream's own note on
+    it warns that a physically tracked mechanism settles with a residual error a
+    tolerance that tight may never reach. Measured on a goal whose z was already
+    correct: a 180 deg turn ran the whole timeout with the base sitting at 0.0000 m
+    of translation error, while the same goal needing no turn converged in 4.4 s.
+    So the base arrives and is not believed, which no amount of projection fixes.
+
+    Why the base needs one at all, when the module docstring above lists the three
+    motions that were *known* to stall: a base drive can stall too, and it does.
+    Measured on this scene -- ``demos/garmi_demo.py``'s ``drive_to`` sending the
+    robot to the drawer standoff at ``(0.51, 6.12)``::
+
+        drove (0.00, 5.00) -> (0.32, 6.41), then stopped 0.349 m short
+        cmd_vel held at ~7e-07 m/s for 126 s, and counting
+
+    The QP had settled on commanding nothing while the end monitor still read
+    false, and giskard's control loop has no deadline of its own
+    (``giskardpy/middleware/ros2/control_loop.py``: ``while True: ...; if
+    is_end_motion(): return``), so the goal never returned and the calling process
+    was wedged behind it.
+
+    Re-issued from the very pose it gave up in, that same ``NavigateAction``
+    converged to within 5 mm in 3.3 s -- with collision avoidance on *and* off, so
+    avoidance was never what held it.
+
+    A deadline is the right answer to what remains rather than a workaround:
+    ``drive_to`` already retries up to ten times and checks the distance itself, and
+    ``run_plan`` already turns a ``GiskardException`` into ``False``. That retry loop
+    was simply never reached, because a motion that hangs never fails. Ending the
+    motion hands control back to a caller that knows what to do with it.
+
+    .. warning::
+       The deadline **masks** repair 1 rather than substituting for it. A timeout
+       counts as success under ``minimum_success=1``, so a base that never arrived
+       reports done and the plan grasps from wherever it stopped. Both repairs are
+       needed; neither is sufficient.
+    """
+
+    execution_type = ExecutionType.SIMULATED, ExecutionType.REAL
+
+    def perform(self):
+        return
+
+    def planar_target(self) -> Pose:
+        """:attr:`target`, moved onto the plane the drive can reach.
+
+        Keeps x, y and yaw -- the three the drive owns -- and replaces the three it
+        does not with the only values it can hold: the base's current z, and no roll
+        or pitch. The base's z is read from the robot rather than from
+        :data:`~cram_vrb_lab.robots.garmi.joints.BASE_LINK_HEIGHT` so that a scene
+        which stands the robot somewhere else is described by what is true, not by
+        what was true at spawn.
+        """
+        target = self.target.to_homogeneous_matrix()
+        position = target.to_position()
+        _, _, yaw = target.to_rotation_matrix().to_rpy()
+        base_z = self.world.compute_forward_kinematics(
+            self.world.root, self.robot.root
+        ).to_position()
+
+        return HomogeneousTransformationMatrix.from_xyz_rpy(
+            x=position.x,
+            y=position.y,
+            z=base_z.z,
+            yaw=yaw,
+            reference_frame=self.world.root,
+        ).to_pose()
+
+    @property
+    def _motion_chart(self):
+        # Rewritten before super() reads it: MoveMotion builds its CartesianPose
+        # straight from self.target, and this motion object exists for one goal.
+        self.target = self.planar_target()
+        return Parallel(
+            [
+                super()._motion_chart,
+                CountSeconds(seconds=MOVE_TIMEOUT, name="MoveBaseTimeout"),
+            ],
+            minimum_success=1,
+        )
+
+
+GARMI_MOTION_MAPPINGS = [
+    GarmiMoveGripper,
+    GarmiOpeningMotion,
+    GarmiClosingMotion,
+    GarmiMoveMotion,
+]
+"""Pass as ``Context(alternative_motion_mappings=...)``.
+
+``AlternativeMotion.check_for_alternative`` picks an entry by
+``issubclass(alternative, motion)`` plus a robot-class match, so each of these
+substitutes for exactly the stock motion it derives from.
+"""

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRAM Workspace · GARMI RL</title>
+  <link rel="icon" href="https://ai.uni-bremen.de/lib/tpl/aicortpl/images/favicon.ico">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      background: #1e1e2e;
+      color: #cdd6f4;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      flex-wrap: wrap;
+    }
+    header .logo {
+      height: 28px;
+      width: auto;
+      margin-right: 12px;
+      display: block;
+      object-fit: contain;
+    }
+    header .title {
+      font-weight: 600;
+      margin-right: 12px;
+      font-size: 14px;
+    }
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid #313244;
+      border-radius: 6px;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background .15s, border-color .15s;
+    }
+    .tab:hover { background: #313244; }
+    .tab.active {
+      background: #89b4fa;
+      border-color: #89b4fa;
+      color: #11111b;
+      font-weight: 600;
+    }
+    .tab .open-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.15);
+      text-decoration: none;
+      color: inherit;
+      font-size: 12px;
+      line-height: 1;
+    }
+    .tab .open-btn:hover { background: rgba(0,0,0,0.35); }
+    .tab.active .open-btn { background: rgba(0,0,0,0.15); }
+
+    /* pushed to the right edge; stays hidden until the revision is known */
+    .commit-link {
+      margin-left: auto;
+      display: none;
+      padding: 4px 10px;
+      border: 1px solid #313244;
+      border-radius: 6px;
+      color: #a6adc8;
+      text-decoration: none;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .commit-link.shown { display: inline-block; }
+    .commit-link:hover { background: #313244; color: #cdd6f4; }
+
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .frame-wrap {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+    .frame-wrap.active { display: block; }
+    /* two panes side by side: the left one's width is the stored ratio */
+    .frame-wrap.split.active {
+      display: grid;
+      grid-template-columns: var(--left, 50%) 6px 1fr;
+    }
+    /* height, not just stretch: a lone pane sits in a `display: block` wrap, where an
+       auto height would leave the iframe's own 100% resolving against nothing */
+    .pane { position: relative; overflow: hidden; height: 100%; }
+    /* covers the pane while its service is still being waited for */
+    .pane-status {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #1e1e2e;
+      color: #a6adc8;
+      font-size: 13px;
+    }
+    .pane-status.shown { display: flex; }
+    .pane-status::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border: 2px solid #45475a;
+      border-top-color: #89b4fa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .divider {
+      background: #313244;
+      cursor: col-resize;
+      transition: background .15s;
+    }
+    .divider:hover, .frame-wrap.dragging .divider { background: #89b4fa; }
+    /* while dragging, the pointer must not be swallowed by an iframe: without this the
+       drag stops the moment the cursor crosses into one */
+    .frame-wrap.dragging iframe { pointer-events: none; }
+    body.dragging { user-select: none; }
+    iframe {
+      display: block;   /* inline-replaced would sit on a baseline, leaving a gap below */
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+    /* the remote desktop serves its screen under a toolbar of its own: the frame is
+       grown by exactly that bar's height and pulled up by the same amount, so the pane
+       (which clips) shows the desktop alone. One variable, so the two cannot drift. */
+    iframe.hide-top-bar {
+      --top-bar: 36px;
+      height: calc(100% + var(--top-bar));
+      margin-top: calc(-1 * var(--top-bar));
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- <img class="logo" src="https://cramera.informatik.uni-bremen.de/img/aicor-logo.png" alt="CRAM Workspace"> -->
+     <span class="title">CRAM Workspace · GARMI RL</span>
+    <!-- tabs injected by script -->
+    <a class="commit-link" target="_blank" rel="noopener" title="the commit this workspace is running"></a>
+  </header>
+  <main></main>
+
+  <!-- Separate copy of cram-vrb-lab/demos/web_ui/index.html @41c1032. Original untouched. -->
+  <script>
+    const FALLBACK_BASE = window.location.protocol + "//" + window.location.hostname + ":8888/";
+    // Serve the shell through Jupyter too, so its iframe shares the origin
+    // required by JupyterLab's frame-ancestors policy.
+    if (window.location.port === "8781") {
+      window.location.replace(FALLBACK_BASE + "proxy/8781/");
+    }
+    const SELF = new URL("./", window.location.href).href;
+
+    function detectBase() {
+      const m = window.location.pathname.match(/^(\/user\/[^/]+\/)/);
+      if (m) return window.location.origin + m[1];
+      if (window.location.pathname.startsWith("/proxy/8781/")) return window.location.origin + "/";
+      return FALLBACK_BASE;
+    }
+
+    const BASE = detectBase();
+
+    // absolute url (http://, https://, //host/...) or protocol-relative -> use as-is
+    const isAbsolute = p => /^(https?:)?\/\//i.test(p);
+
+    function resolve(path) {
+      if (isAbsolute(path)) return path;
+      if (path.startsWith("/")) return window.location.origin + path;  // site-root relative
+      return BASE + path;                                              // relative to BASE
+    }
+
+    // Separate tools for this demo; opening a tab never starts the original Lab demo.
+    const targets = [
+      { panes: [{ name: "GARMI RL", path: SELF + "panel.html" }] },
+      { panes: [
+          { name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") },
+      ] },
+      { panes: [{ name: "VS Code", path: "vscode/" }] },
+      { panes: [{ name: "JupyterLab", path: "lab" }] },
+    ].map(t => ({
+       name: t.panes.map(p => p.name).join(" + "),
+       panes: t.panes.map(p => ({ name: p.name, url: resolve(p.path), hideTopBar: p.hideTopBar })),
+     }));
+
+    const STORAGE_TAB = "garmi-rl-workspace.tab";
+    const STORAGE_SPLIT = "garmi-rl-workspace.split";
+    const DEFAULT_SPLIT = 50;      // percent of the width the left pane takes
+    const MIN_SPLIT = 10;          // keep a grabbable strip of either pane on screen
+
+    // localStorage throws rather than returning null in a browser set to block site
+    // data, and the workspace has to come up anyway -- unstored just means defaults.
+    function stored(key) {
+      try { return window.localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function store(key, value) {
+      try { window.localStorage.setItem(key, value); } catch (e) { /* not fatal */ }
+    }
+
+    const clamp = percent => Math.min(100 - MIN_SPLIT, Math.max(MIN_SPLIT, percent));
+    const storedSplit = parseFloat(stored(STORAGE_SPLIT));
+    let split = Number.isFinite(storedSplit) ? clamp(storedSplit) : DEFAULT_SPLIT;
+
+    const header = document.querySelector("header");
+    const main = document.querySelector("main");
+    const tabs = [];
+    const frames = [];
+
+    targets.forEach((t, i) => {
+      // tab button
+      const tab = document.createElement("button");
+      tab.className = "tab";
+      tab.innerHTML = `<span>${t.name}</span>`;
+
+      // one ↗ per pane, so either half of a split tab can be opened on its own
+      t.panes.forEach(pane => {
+        const openBtn = document.createElement("a");
+        openBtn.className = "open-btn";
+        openBtn.href = pane.url;
+        openBtn.target = "_blank";
+        openBtn.rel = "noopener";
+        openBtn.title = `open ${pane.name} in new tab`;
+        openBtn.textContent = "↗";
+        openBtn.addEventListener("click", e => e.stopPropagation());
+        tab.appendChild(openBtn);
+      });
+
+      tab.addEventListener("click", () => activate(i));
+      header.appendChild(tab);
+      tabs.push(tab);
+
+      // panes (lazy: src set on first activation)
+      const wrap = document.createElement("div");
+      wrap.className = "frame-wrap" + (t.panes.length > 1 ? " split" : "");
+      const iframes = t.panes.map((pane, paneIndex) => {
+        if (paneIndex > 0) wrap.appendChild(makeDivider(wrap));
+        const holder = document.createElement("div");
+        holder.className = "pane";
+        const iframe = document.createElement("iframe");
+        iframe.dataset.src = pane.url;
+        iframe.title = pane.name;
+        if (pane.hideTopBar) iframe.className = "hide-top-bar";
+        const status = document.createElement("div");
+        status.className = "pane-status";
+        status.textContent = `starting ${pane.name}…`;
+        holder.appendChild(iframe);
+        holder.appendChild(status);
+        wrap.appendChild(holder);
+        iframe.status = status;
+        return iframe;
+      });
+      main.appendChild(wrap);
+      frames.push({ wrap, iframes });
+    });
+
+    // BINDER_REF_URL, written next to this page by binder/entrypoint.sh. Re-appended so
+    // it is the last header child whatever the markup order, which floats it right.
+    const commitLink = document.querySelector(".commit-link");
+    header.appendChild(commitLink);
+    fetch("version.json", { cache: "no-store" })
+      .then(response => (response.ok ? response.json() : null))
+      .then(version => {
+        if (!version || !version.url) return;
+        commitLink.href = version.url;
+        commitLink.textContent = version.url.split("/").pop().slice(0, 7);
+        commitLink.classList.add("shown");
+      })
+      .catch(() => { /* not on binder: nothing to link to, leave it hidden */ });
+
+    function makeDivider(wrap) {
+      const divider = document.createElement("div");
+      divider.className = "divider";
+      divider.title = "drag to resize, double-click to even out";
+      divider.addEventListener("pointerdown", event => startDrag(event, wrap));
+      divider.addEventListener("dblclick", () => {
+        applySplit(DEFAULT_SPLIT);
+        store(STORAGE_SPLIT, String(split));
+      });
+      return divider;
+    }
+
+    function applySplit(percent) {
+      split = clamp(percent);
+      frames.forEach(f => f.wrap.style.setProperty("--left", split + "%"));
+    }
+
+    function startDrag(event, wrap) {
+      event.preventDefault();
+      wrap.classList.add("dragging");
+      document.body.classList.add("dragging");
+      // captured so a release outside the window still ends the drag, rather than
+      // leaving the divider stuck to the cursor
+      const divider = event.currentTarget;
+      if (divider && divider.setPointerCapture) divider.setPointerCapture(event.pointerId);
+      const onMove = moveEvent => {
+        const bounds = wrap.getBoundingClientRect();
+        if (!bounds.width) return;
+        applySplit(((moveEvent.clientX - bounds.left) / bounds.width) * 100);
+      };
+      const onUp = () => {
+        wrap.classList.remove("dragging");
+        document.body.classList.remove("dragging");
+        if (divider && divider.releasePointerCapture && divider.hasPointerCapture(event.pointerId)) {
+          divider.releasePointerCapture(event.pointerId);
+        }
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        store(STORAGE_SPLIT, String(split));
+      };
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    }
+
+    // A service behind the proxy may not be listening yet when the workspace is opened:
+    // a pod that just came up is still starting the viewer, and the proxy answers 500
+    // until it is. An iframe cannot report that -- it fires `load` for an error page
+    // just the same -- so the url is polled until it answers before the frame is
+    // pointed at it, and the pane says what it is waiting for meanwhile.
+    const READY_POLL_MS = 1000;
+    const READY_TIMEOUT_MS = 120000;
+
+    function whenReachable(url) {
+      const deadline = Date.now() + READY_TIMEOUT_MS;
+      const attempt = () => fetch(url, { cache: "no-store" })
+        .then(response => {
+          if (response.ok) return true;
+          if (Date.now() > deadline) return false;   // stop waiting, show what it says
+          return new Promise(retry => setTimeout(retry, READY_POLL_MS)).then(attempt);
+        })
+        // the request itself failed rather than the service: a different origin the
+        // browser will not let this page read, offline, no route. Nothing to poll for,
+        // so hand it to the iframe, which is not bound by the same rule.
+        .catch(() => true);
+      return attempt();
+    }
+
+    function activate(i) {
+      tabs.forEach((tab, j) => tab.classList.toggle("active", j === i));
+      frames.forEach((f, j) => f.wrap.classList.toggle("active", j === i));
+      // lazy load: a pane's src is set the first time its tab is shown
+      frames[i].iframes.forEach(iframe => {
+        const url = iframe.dataset.src;
+        if (!url) return;
+        iframe.dataset.src = "";      // claimed: re-activating must not poll again
+        iframe.status.classList.add("shown");
+        whenReachable(url).then(() => {
+          iframe.src = url;
+          iframe.status.classList.remove("shown");
+        });
+      });
+      store(STORAGE_TAB, targets[i].name);
+    }
+
+    // Refresh only our isolated NeemHub viewer when a new run becomes available.
+    let viewerRun = null;
+    async function updateViewer() {
+      try {
+        const status = await fetch(SELF + 'api/status', {cache:'no-store'}).then(r=>r.json());
+        const key = status.run_id + ':' + (status.recording && !status.active ? 'recording' : 'live');
+        if (key !== viewerRun && status.run_id) {
+          viewerRun = key;
+          const pane = targets[1].panes[0];
+          pane.url = BASE + 'proxy/8721/?live=' + encodeURIComponent(BASE + 'proxy/8766') +
+            (status.recording && !status.active ? '&scene=__recording__' : '') + '&run=' + status.run_id;
+          const iframe = frames[1].iframes[0];
+          if (iframe.src) iframe.src = pane.url; else iframe.dataset.src = pane.url;
+          tabs[1].querySelector('a').href = pane.url;
+        }
+      } catch (_) {}
+      setTimeout(updateViewer, 2000);
+    }
+    updateViewer();
+    applySplit(split);
+    // by name rather than index: which tabs exist differs between localhost and the
+    // hub, so a stored index could restore a different tab than the one left open
+    const remembered = targets.findIndex(t => t.name === stored(STORAGE_TAB));
+    activate(remembered >= 0 ? remembered : 0);
+  </script>
+</body>
+</html>

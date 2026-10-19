@@ -32,8 +32,7 @@ def evaluate_checkpoint(checkpoint, update, *, out, args, agent_cfg, progress):
     destination.mkdir(parents=True, exist_ok=True)
     progress["status"] = "evaluating"
     atomic_json(out / "progress.json", progress)
-    assert "kitchen" in agent_cfg.get("garmi_task", {}), "This export supports the kitchen task"
-    evaluator = "evaluate_kitchen.py"
+    evaluator = "evaluate_kitchen.py" if "kitchen" in agent_cfg.get("garmi_task", {}) else "evaluate.py"
     cmd = ["timeout", "--kill-after=15", "1200", "/isaac-sim/python.sh", str(Path(__file__).resolve().parents[1] / evaluator),
            "--headless", "--num_envs", str(args.eval_envs), "--seed", str(args.eval_seed),
            "--checkpoint", str(checkpoint), "--config", str(out / "ppo.yaml"),
@@ -115,3 +114,4 @@ def evaluate_paired_checkpoint(checkpoint, update, *, out, args, agent_cfg, prog
     progress.setdefault("paired_evaluations", []).append(entry)
     progress["status"] = "training"
     print("PAIRED_EVALUATION", json.dumps(entry), flush=True)
+
