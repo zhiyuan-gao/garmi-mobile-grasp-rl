@@ -1,0 +1,7 @@
+[
+  {"id": "01-center", "bowl": [0.20, 7.40], "navigation_start": [0.0, 5.8, 1.5707963267948966], "rl_start": [0.25, 6.35, 1.5707963267948966], "reference": "bowl-r020", "camera_offset": [-0.55, 0.28, 0.85]},
+  {"id": "02-left-front", "bowl": [-0.10, 7.32], "navigation_start": [-0.20, 5.95, 1.5707963267948966], "rl_start": [-0.05, 6.35, 1.5707963267948966], "reference": "bowl-r020", "camera_offset": [-0.55, 0.28, 0.85]},
+  {"id": "03-right-deep", "bowl": [0.42, 7.50], "navigation_start": [0.40, 5.70, 1.5707963267948966], "rl_start": [0.55, 6.27, 1.5707963267948966], "reference": "bowl-r020", "camera_offset": [-0.55, 0.28, 0.85]},
+  {"id": "04-left-deep", "bowl": [0.05, 7.56], "navigation_start": [0.15, 6.00, 1.5707963267948966], "rl_start": [0.05, 6.47, 1.5707963267948966], "reference": "bowl-r020", "camera_offset": [-0.55, 0.28, 0.85]},
+  {"id": "05-left-deep-inset", "bowl": [0.05, 7.56], "navigation_start": [0.15, 6.00, 1.5707963267948966], "rl_start": [0.05, 6.40, 1.5707963267948966], "reference": "bowl-r020", "camera_offset": [-0.55, 0.28, 0.85], "retry_of": "04-left-deep", "reason": "Move the requested handover position 7 cm inward after the measured navigation arrival exceeded the trained region; keep the original rejected attempt."}
+]

@@ -6,7 +6,7 @@
 
 本分支提供完整 GARMI 场景中的 **柜台抓碗 → 餐桌放置** 演示：CRAM 导航，RL 控制底盘和右臂接近，固定程序闭爪提起，再由 CRAM 搬运和放置。网页显示实时画面、任务进度，并保存每次运行的录像。
 
-[演示页面](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/) · [部署快速开始（英文）](binder/README.md)
+[演示页面](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/) · [多组不同初始位置的录像](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/episodes/) · [部署快速开始（英文）](binder/README.md)
 
 演示所需的策略、40 个参考抓取和位置过滤表已打包；快速开始提供从克隆仓库到本地 Docker 或 VRB 部署、运行和保存结果的完整步骤。
 

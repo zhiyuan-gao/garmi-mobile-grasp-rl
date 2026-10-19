@@ -62,7 +62,10 @@ class GraspDemo(MobileGrasp):
 
     def pick(self):
         cancel_motion(self.context)
-        self.record('camera', eye=[1.15, 6.9, 2.0], target=[.2, 7.35, 1.05])
+        bowl = self.rl.snapshot()['snapshot']['object_map_position']
+        offset = getattr(self.options, 'grasp_camera_offset', [-.55, .28, .85])
+        self.record('camera', eye=[p + d for p, d in zip(bowl, offset)],
+                    target=[bowl[0], bowl[1], bowl[2] + .12])
         time.sleep(.5)
         result = self.rl.grasp(self.options.reference)
         self.sync.pull(self.world)
@@ -166,6 +169,8 @@ class GraspDemo(MobileGrasp):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--reference', help='One of the 40 trained ids; otherwise first allowed mask entry')
+    parser.add_argument('--grasp-camera-offset', type=float, nargs=3, default=[-.55, .28, .85],
+                        help='Recording camera offset from the measured bowl in map coordinates')
     parser.add_argument('--base', type=float, nargs=3, default=[.25, 6.35, math.pi / 2])
     parser.add_argument('--retreat', type=float, nargs=3, help='Optional CRAM base goal after physical grasp')
     parser.add_argument('--transport', action='store_true', help='Carry and place at the dining table')

@@ -69,6 +69,7 @@ class LabBackend:
         self._initial_pose(base_map, bowl_map)
 
     def camera(self, eye, target):
+        self.camera_map = (list(eye), list(target))
         if self.render:
             self.env.sim.set_camera_view(self.frame.position_to_task(eye),
                                          self.frame.position_to_task(target))

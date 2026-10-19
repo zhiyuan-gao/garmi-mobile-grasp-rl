@@ -24,6 +24,7 @@ def main():
     parser.add_argument('--full-scene', action='store_true')
     parser.add_argument('--drawer-scene', action='store_true', help='Movable left arm and upper kitchen drawer')
     parser.add_argument('--live-preview', action='store_true', help='Publish an atomic JPEG for the separate web demo')
+    parser.add_argument('--probe-grasp-views', action='store_true', help='Save alternate camera images at close/lift, without advancing physics')
     parser.add_argument('--max-seconds', type=float, default=600., help='Maximum wall time after startup')
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
@@ -60,6 +61,7 @@ def main():
     trace = (args.out / 'states.jsonl').open('w', buffering=1)
     deadline = time.monotonic() + args.max_seconds
     print('CRAM_RL_READY', flush=True)
+    probed_phases = set()
     try:
         while app.is_running() and not stopped and time.monotonic() < deadline:
             started = time.monotonic()
@@ -73,6 +75,23 @@ def main():
                 if writer is not None:
                     frame = backend.env.render()
                     writer.append_data(frame)
+                    phase = int(backend.env.fixed_finish.phase[0])
+                    if (args.probe_grasp_views and node.session.owner == 'rl'
+                            and phase in (1, 3) and phase not in probed_phases):
+                        probed_phases.add(phase)
+                        eye, target = backend.camera_map
+                        bowl = backend.snapshot()['object_map_position']
+                        views = {'back_left': [-.55, .28, .85], 'left_side': [-.75, 0., .50],
+                                 'overhead': [.05, .03, 1.25], 'back_right': [.55, .28, .70]}
+                        for label, offset in views.items():
+                            backend.camera([p + d for p, d in zip(bowl, offset)],
+                                           [bowl[0], bowl[1], bowl[2] + .12])
+                            for _ in range(3):
+                                backend.env.sim.render()
+                            imageio.imwrite(args.out / f'camera-phase-{phase}-{label}.png', backend.env.render())
+                        backend.camera(eye, target)
+                        for _ in range(3):
+                            backend.env.sim.render()
                     if backend.control_step == 20:
                         imageio.imwrite(args.out / 'initial-frame.png', frame)
                     if args.live_preview and backend.control_step % 10 == 0:

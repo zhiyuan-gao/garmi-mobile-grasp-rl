@@ -88,6 +88,28 @@ docker exec garmi-vrb-demo python3 -c 'import ctypes, glob; print(glob.glob("/de
 
 In a Binder terminal, run `nvidia-smi` and the `python3 -c ...` command directly. Missing devices or libraries need the host/VRB GPU configuration fixed. Passing these checks confirms basic device/driver access; the simulator log and a complete task run verify rendering and execution. The web service log is `/workspace/results/cram-rl-web/server.log`; task-specific logs are in the run directory.
 
+## Record several left-counter setups
+
+[left_counter_episodes.json](../integration/left_counter_episodes.json) defines four initial setups and one follow-up with different bowl locations, navigation starts and RL handover positions. All use checkpoint 7500 and reference `bowl-r020`. The grasp camera looks toward the bowl from the opposite side of the wrist and follows the episode's initial bowl position. In the recorded case 04, navigation stopped beyond the trained region and RL admission was rejected. Case 05 repeats that bowl position with the handover target moved 7 cm inward; the original attempt is retained.
+
+With the workspace container running and no task active, record the cases sequentially:
+
+```bash
+docker exec garmi-vrb-demo python3 /workspace/integration/record_episodes.py \
+  --cases /workspace/integration/left_counter_episodes.json \
+  --out /workspace/results/left-counter-episodes
+```
+
+Each episode directory contains its initial conditions, success/failure summary, simulator video, states and task report. Use a new output directory for another batch. The web run button starts the default single case; the command above runs all five recorded conditions.
+
+To make a review page with grasp clips and full-task previews, run the following where `ffmpeg` and `ffprobe` are installed, using the copied batch directory:
+
+```bash
+python3 integration/make_episode_report.py --runs /path/to/left-counter-episodes --out ./episode-review
+```
+
+Clip boundaries come from the recorded control owner and finishing phase. Failed cases remain in the review alongside successful ones.
+
 ## Training and publication
 
 For collecting demonstrations or training a policy, use the [`main` branch instructions](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/main/docs/usage.md). That workflow has separate training asset/bootstrap preparation. The demo's `actor.ts` is an inference export; the full optimizer/value-network checkpoint and expert datasets are not included. See [runtime provenance](../runtime/README.md).
