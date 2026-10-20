@@ -40,7 +40,9 @@ def snapshot_queries(env, observations, cases, selected, stages, prefix, step):
     """Capture measured state, previous target, timing, and teacher stage together."""
     robot = env.scene['robot']
     arm = robot.find_joints('right_fr3_joint[1-7]')[0]
-    roots = robot.data.root_state_w.clone()
+    # root_state_w mixes link pose with COM velocity. Giskard's OmniDrive
+    # needs the velocity of the same base_link origin as its x/y/yaw pose.
+    roots = robot.data.root_link_state_w.clone()
     roots[:, :3] -= env.scene.env_origins
     objects = env.scene['object'].data.root_state_w.clone()
     objects[:, :3] -= env.scene.env_origins

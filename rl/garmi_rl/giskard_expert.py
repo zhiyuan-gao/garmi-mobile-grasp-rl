@@ -7,6 +7,8 @@ is performed here; commands are executed and judged by the RL environment.
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
+import os
+import hashlib
 import copy
 import pickle
 import time
@@ -60,10 +62,17 @@ class ApproachExpert:
 
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
     control_dt: float = .05
+    config_path: str | None = None
 
     def __post_init__(self):
         started = time.perf_counter()
         source = self.root / 'assets/kitchen'
+        config_path = self.config_path or os.environ.get('GARMI_EXPERT_CONFIG')
+        specification = json.loads(Path(config_path).read_text()) if config_path else {}
+        for name, expected in specification.get('files_sha256', {}).items():
+            if hashlib.sha256((self.root / name).read_bytes()).hexdigest() != expected:
+                raise ValueError(f'Expert input changed: {name}')
+        object_name = specification.get('object_name', 'bowl')
         tree = ET.parse(self.root / 'rl/assets/garmi_training.urdf')
         # Geometry comes from the simulator export, not a second approximation.
         for link in tree.getroot().findall('link'):
@@ -87,9 +96,13 @@ class ApproachExpert:
                 dof.has_hardware_interface = False
             self.drive.has_hardware_interface = True
             self.arm = [self.world.get_connection_by_name(f'right_fr3_joint{i}') for i in range(1, 8)]
-            for joint in self.arm:
+            for joint, lower, upper in zip(self.arm, ARM_TARGET_LOWER, ARM_TARGET_UPPER):
                 joint.has_hardware_interface = True
-                joint.raw_dof._overwrite_dof_limits(DerivativeMap(velocity=-1.), DerivativeMap(velocity=1.))
+                # The action adapter clips to these bounds, which are tighter
+                # than the URDF. A path outside them cannot be executed as planned.
+                joint.raw_dof._overwrite_dof_limits(
+                    DerivativeMap(position=float(lower), velocity=-1.),
+                    DerivativeMap(position=float(upper), velocity=1.))
             for dof, acceleration in zip((self.drive.x_velocity, self.drive.y_velocity, self.drive.yaw), (.3, .3, .8)):
                 dof._overwrite_dof_limits(DerivativeMap(acceleration=-acceleration), DerivativeMap(acceleration=acceleration))
             self.fingers = [self.world.get_connection_by_name(f'right_fr3_finger_joint{i}') for i in (1, 2)]
@@ -97,7 +110,7 @@ class ApproachExpert:
                 joint.has_hardware_interface = False
                 self.world.state[joint.raw_dof.id].position = .04
                 joint.raw_dof._overwrite_dof_limits(DerivativeMap(velocity=0.), DerivativeMap(velocity=0.))
-            pieces = pickle.load((source / 'cooked-model.pkl').open('rb'))
+            pieces = pickle.load((self.root / specification.get('cooked_model', 'assets/kitchen/cooked-model.pkl')).open('rb'))
             bowl_shapes = []
             robot_shapes = {}
             for record, mesh in pieces:
@@ -111,7 +124,10 @@ class ApproachExpert:
                 body.collision = ShapeCollection(shapes, reference_frame=body)
             self.robot = TrainingRobot(root=self.world.get_body_by_name('base_link'))
             self.world.add_semantic_annotation_recursively(self.robot)
-            self.bowl = Body(name=PrefixedName('target_bowl'), collision=ShapeCollection(bowl_shapes))
+            if not bowl_shapes:
+                raise ValueError('Expert object has no collision shapes')
+            self.object_name = object_name
+            self.bowl = Body(name=PrefixedName(f'target_{object_name}'), collision=ShapeCollection(bowl_shapes))
             self.bowl_connection = Connection6DoF.create_with_dofs(world=self.world, parent=origin, child=self.bowl)
             self.world.add_connection(self.bowl_connection)
             self.external_bodies = [self.bowl]
@@ -130,9 +146,18 @@ class ApproachExpert:
         self.world.collision_manager.add_temporary_rule(AvoidCollisionBetweenGroups(
             body_group_a=hand_bodies, body_group_b=self.external_bodies,
             buffer_zone_distance=.001, violated_distance=0.))
+        wrist_clearance = float(specification.get('wrist_object_clearance_m', .001))
+        if not .001 <= wrist_clearance <= .05:
+            raise ValueError('Wrist clearance must be between 1 mm and 5 cm')
+        if wrist_clearance != .001:
+            self.world.collision_manager.add_temporary_rule(AvoidCollisionBetweenGroups(
+                body_group_a=[self.world.get_body_by_name('right_fr3_link7')],
+                body_group_b=[self.bowl], buffer_zone_distance=wrist_clearance,
+                violated_distance=0.))
         self.hand = self.world.get_body_by_name('right_fr3_hand')
-        bank = json.loads((self.root / 'assets/grasp_bank/selected-40.json').read_text())
-        self.references = {r['id']: r for r in bank['objects'][0]['references']}
+        bank = json.loads((self.root / specification.get('bank', 'assets/grasp_bank/selected-40.json')).read_text())
+        target = next(o for o in bank['objects'] if o['name'] == object_name)
+        self.references = {r['id']: r for r in target['references']}
         self.context = MotionStatechartContext(world=self.world,
             qp_controller_config=QPControllerConfig(target_frequency=1/self.control_dt, prediction_horizon=7, verbose=False))
         self.executor = Executor(self.context)
@@ -195,6 +220,10 @@ class ApproachExpert:
 
     def sync(self, request):
         snapshot = request['snapshot']
+        if snapshot['object'] != self.object_name:
+            raise ValueError(f"Expert is configured for {self.object_name}, received {snapshot['object']}")
+        if request['reference'] not in self.references:
+            raise ValueError(f"Unknown {self.object_name} reference: {request['reference']}")
         root = np.asarray(snapshot['robot_state'])
         rotation = Rotation.from_quat(root[[4, 5, 6, 3]])
         self.world.state.velocities[:] = 0

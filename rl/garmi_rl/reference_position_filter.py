@@ -40,9 +40,10 @@ class ReferencePositionFilter:
             yaw = torch.broadcast_to(yaw, (len(xy),))
         except RuntimeError as exc:
             raise ValueError('Yaw must be scalar or length N') from exc
-        error = (yaw - self.data['bowl_map_yaw_degrees'] + 180.) % 360. - 180.
+        fixed_yaw = self.data.get('object_map_yaw_degrees', self.data.get('bowl_map_yaw_degrees'))
+        error = (yaw - fixed_yaw + 180.) % 360. - 180.
         if not torch.isfinite(yaw).all() or (error.abs() > 1.e-4).any():
-            raise ValueError('This reference mask only supports bowl map yaw = 0 degrees')
+            raise ValueError('This reference mask only supports its fixed object map yaw')
         found = torch.full((len(xy),), -1, dtype=torch.long, device=self.device)
         tolerance = self.data['numeric_position_tolerance_m']
         for region in self.data['regions']:
@@ -54,7 +55,7 @@ class ReferencePositionFilter:
             index = region['cell_offset'] + local[:, 0] * shape[1] + local[:, 1]
             found = torch.where(inside, index, found)
         if (found < 0).any():
-            raise ValueError('Bowl position outside the validated placement regions')
+            raise ValueError('Object position outside the validated placement regions')
         return found
 
     def allowed(self, map_xy, map_yaw_degrees, reference_pool=None):

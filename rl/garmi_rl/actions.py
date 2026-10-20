@@ -39,7 +39,10 @@ class PlanarVelocityAction(ActionTerm):
         self.command.zero_()
         self.command[:, :2] = quat_apply(self._asset.data.root_quat_w, local)[:, :2]
         self.command[:, 5] = self.velocity[:, 2]
-        self._asset.write_root_velocity_to_sim(self.command)
+        if self.cfg.velocity_at_link:
+            self._asset.write_root_link_velocity_to_sim(self.command)
+        else:
+            self._asset.write_root_velocity_to_sim(self.command)
 
     def reset(self, env_ids=None):
         self._raw_actions[env_ids] = 0
@@ -50,5 +53,8 @@ class PlanarVelocityAction(ActionTerm):
 @configclass
 class PlanarVelocityActionCfg(ActionTermCfg):
     class_type: type = PlanarVelocityAction
+    # Commands refer to base_link, as do planner poses. Isaac's generic root
+    # velocity writer instead addresses the displaced center of mass.
+    velocity_at_link: bool = True
     scale: tuple = (.15, .15, .4)
     acceleration: tuple = (.3, .3, .8)

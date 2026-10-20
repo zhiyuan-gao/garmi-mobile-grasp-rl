@@ -17,6 +17,7 @@ p.add_argument('--audit-cases', help='Execute every supplied case once, retainin
 p.add_argument('--focus-references', nargs='+', help='Collect quotas only for these references from the configured bank')
 p.add_argument('--balance-collection', action='store_true', help='Assign underfilled allowed references to sampled positions')
 p.add_argument('--resume', action='store_true', help='Keep saved successes and continue quotas with an explicitly new seed')
+p.add_argument('--diagnostics', action='store_true', help='Save collision target pairs and before/after expert states for failures')
 AppLauncher.add_app_launcher_args(p)
 args = p.parse_args()
 app = AppLauncher(args).app
@@ -51,7 +52,8 @@ if joint_delta:
 env = ManagerBasedRLEnv(cfg)
 env.forbidden_sensors = cfg.forbidden_sensors
 original_reset = env._reset_idx
-references = profile['garmi_task']['multi_object']['reference_ids']['bowl']
+object_name, = profile['garmi_task']['multi_object']['objects']
+references = profile['garmi_task']['multi_object']['reference_ids'][object_name]
 if args.focus_references:
     assert set(args.focus_references) <= set(references)
     references = args.focus_references
@@ -62,6 +64,7 @@ quotas = {'train': args.success_per_reference, 'validation': args.validation_per
 accepted = {split: collections.Counter() for split in quotas}
 demonstrations = {split: [] for split in quotas}
 results, audits, batch_timings = [], [], []
+failure_queries = []
 started = time.perf_counter()
 client = GiskardClient(out/'giskard-service.log', args.workers)
 maximum_action_error = 0.
@@ -151,6 +154,8 @@ def save(status, **extra):
             command_version=COMMAND_VERSION, demonstrations=rows, trajectories=len(rows),
             physical_success_verified=True))
     atomic(out/'command-audit.json', audits)
+    if args.diagnostics:
+        atomic(out/'failure-queries.json', failure_queries)
     if args.dart:
         atomic(out/'perturbations.json', dart_events)
 
@@ -194,8 +199,8 @@ try:
             env.grasp_bank.restore(cases)
         for i, case in enumerate(cases):
             case['id'] = f'{out.name}-s{args.seed}-b{batch:03d}-c{i:04d}'
-            case['bowl_map_xy'] = [.3-case['object_state'][1], 6.35+case['object_state'][0]]
-            x, y = case['bowl_map_xy']
+            case['object_map_xy'] = [.3-case['object_state'][1], 6.35+case['object_state'][0]]
+            x, y = case['object_map_xy']
             case['region'] = 'right' if x > 1 else 'left'
             case['depth'] = 'front' if y < 7.363333 else 'rear' if y > 7.496667 else 'middle'
             assert tuple(case['robot_state']+case['object_state']) not in heldout_keys
@@ -319,6 +324,19 @@ try:
                     augmentation='ga_ddpg_dart' if args.dart else None,
                     perturbations=int(perturbation_counts[i]),
                     collision_bodies={body:float(f) for body,f in zip(BODIES,d['forbidden_force'][i]) if f>.1})
+                if args.diagnostics and reason != 'success':
+                    row['contact_targets'] = []
+                    for body, key in zip(BODIES, env.forbidden_sensors):
+                        sensor = env.scene[key]
+                        forces = sensor.data.force_matrix_w_history[i].norm(dim=-1).amax(dim=(0, 1))
+                        row['contact_targets'] += [
+                            dict(body=body, target=target, force=float(force))
+                            for target, force in zip(sensor.cfg.filter_prim_paths_expr, forces) if force > .1]
+                    previous = next((q for q in requests if q['case'] == i), None)
+                    if previous is not None:
+                        failure_queries.append(dict(previous, id=case['id']+'-before-end'))
+                    current = snapshot_queries(env, xs[step+1], cases, [int(i)], stage, 'failure', step+1)[0]
+                    failure_queries.append(dict(current, id=case['id']+'-after-end'))
                 row['selected_for_dataset'] = bool(reason == 'success' and accepted[splits[i]][case['reference']] < quotas[splits[i]] and (not args.dart or perturbation_counts[i]>0))
                 if reason == 'success':
                     assert row['height'] >= .08 and row['contact'] and not row['supported'] and row['slip'] < .02 and row['hold_seconds'] >= 2.

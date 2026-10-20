@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 from garmi_rl.giskard_expert import ApproachExpert
+from garmi_rl.expert_actions import ARM_TARGET_LOWER, ARM_TARGET_UPPER
 
 
 @pytest.fixture(scope='module')
@@ -17,6 +18,12 @@ def expert():
 @pytest.fixture
 def query():
     return json.loads(Path(__file__).with_name('expert-query.json').read_text())
+
+
+def test_planning_joint_limits_match_execution_interface(expert):
+    for joint, lower, upper in zip(expert.arm,ARM_TARGET_LOWER,ARM_TARGET_UPPER):
+        assert joint.raw_dof.limits.lower.position >= lower
+        assert joint.raw_dof.limits.upper.position <= upper
 
 
 def test_measured_hand_to_goal_matches_physics_observation(expert, query):
@@ -95,3 +102,11 @@ def test_perturbation_does_not_relabel_grasp_or_leak_to_next_query(expert, query
     repeated=expert.sync(query)
     assert not repeated['perturbation_command']
     assert np.allclose(repeated['command_goal_position'],original['command_goal_position'])
+
+
+def test_wrong_object_rejected_before_world_mutation(expert, query):
+    before = expert.world.state.positions.copy()
+    query['snapshot']['object'] = 'cup'
+    with pytest.raises(ValueError, match='configured for bowl'):
+        expert.sync(query)
+    assert np.array_equal(before, expert.world.state.positions)

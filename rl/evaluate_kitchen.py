@@ -160,7 +160,7 @@ with (out/'trace.jsonl').open('w') as trace:
                 selected = active & (env.fixed_finish.phase == 0) & torch.as_tensor(
                     query_rng.random(count)<args.dagger_probability,device=env.device)
                 selected_ids=selected.nonzero().flatten()
-                roots=robot.data.root_state_w[selected_ids].clone();roots[:,:3]-=env.scene.env_origins[selected_ids]
+                roots=robot.data.root_link_state_w[selected_ids].clone();roots[:,:3]-=env.scene.env_origins[selected_ids]
                 objects=env.scene['object'].data.root_state_w[selected_ids].clone();objects[:,:3]-=env.scene.env_origins[selected_ids]
                 captured=dict(robot_state=roots.tolist(),object_state=objects.tolist(),
                     arm_position=robot.data.joint_pos[selected_ids][:,arm_ids].tolist(),
@@ -214,10 +214,10 @@ with (out/'trace.jsonl').open('w') as trace:
             for i in ended.nonzero().flatten().tolist():
                 reason=next((key for key in ('collision','dropped','out_of_bounds','success','attempt_failed') if d[key][i]),'timeout')
                 obj=padded[i]['object_state'];mapxy=[.3-obj[1],6.35+obj[0]]
-                row=dict(case=batch+i,object='bowl',reference=padded[i]['reference'],reason=reason,
+                row=dict(case=batch+i,object=padded[i]['object'],reference=padded[i]['reference'],reason=reason,
                     seconds=(step+1)*env.step_dt,steps=step+1,region='right' if mapxy[0]>1 else 'left',
                     depth='front' if mapxy[1]<7.363333 else 'rear' if mapxy[1]>7.496667 else 'middle',
-                    bowl_map_xy=mapxy, final_phase=int(d['phase'][i]), phases_seen=phases[i].nonzero().flatten().tolist(),
+                    object_map_xy=mapxy, final_phase=int(d['phase'][i]), phases_seen=phases[i].nonzero().flatten().tolist(),
                     handover_trigger=int(d['handover_trigger'][i]),handover_distance=float(d['handover_distance'][i]),
                     handover_angle=float(d['handover_angle'][i]),height=float(d['height'][i]),
                     max_height=float(maxheight[i]),contact=bool(d['contact'][i]),slip=float(d['slip'][i]),

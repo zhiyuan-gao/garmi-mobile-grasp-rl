@@ -4,11 +4,32 @@ from pathlib import Path
 import tempfile
 import unittest
 import numpy as np
-from garmi_rl.giskard_io import advance_stages, COMMAND_VERSION
+from garmi_rl.giskard_io import advance_stages, COMMAND_VERSION, snapshot_queries
 from garmi_rl.expert_learning import load_demonstrations
 
 
 class TestExpertContract(unittest.TestCase):
+    def test_snapshot_pairs_link_pose_with_link_velocity(self):
+        from types import SimpleNamespace as S
+        import torch
+        link=torch.zeros(1,13);link[0,0]=10.;link[0,3]=1.;link[0,7]=.1
+        mixed=link.clone();mixed[0,7]=.9
+        robot=S(data=S(root_link_state_w=link,root_state_w=mixed,
+                       joint_pos=torch.zeros(1,7),joint_vel=torch.zeros(1,7)),
+                find_joints=lambda _: (list(range(7)),None))
+        class Scene(dict):
+            env_origins=torch.tensor([[10.,0.,0.]])
+        scene=Scene(robot=robot,object=S(data=S(root_state_w=link)))
+        env=S(scene=scene,action_manager=S(action=torch.zeros(1,10),
+              get_term=lambda _:S(velocity=torch.zeros(1,3))),
+              cfg=S(joint_delta_actions=False,fixed_finish={'approach_seconds':30.}),
+              fixed_finish=S(phase_steps=torch.zeros(1),aligned_steps=torch.zeros(1)),
+              episode_length_buf=torch.zeros(1),step_dt=.05)
+        result=snapshot_queries(env,np.zeros((1,64)),[{'object':'cup','reference':'cup-r004'}],
+                                [0],[False],'frame',0)[0]['snapshot']['robot_state']
+        self.assertEqual(result[0],0.)
+        self.assertAlmostEqual(result[7],.1)
+
     def test_stage_stays_advanced_after_leaving_pregrasp(self):
         obs=np.zeros((2,64));obs[:,33]=1;obs[:,32]=.08
         stages=advance_stages([False,False],obs)

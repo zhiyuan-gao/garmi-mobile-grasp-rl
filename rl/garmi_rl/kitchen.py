@@ -17,13 +17,14 @@ ROOT = Path(__file__).resolve().parents[2]
 def configure(cfg, settings):
     import isaaclab.sim as sim
     cfg.kitchen = copy.deepcopy(settings)
-    if cfg.multi_object["objects"] != ["bowl"] or cfg.multi_object.get("split") != "all":
-        raise ValueError("Kitchen task requires the fixed bowl bank, split=all")
+    object_name = settings.get("object_name", "bowl")
+    if cfg.multi_object["objects"] != [object_name] or cfg.multi_object.get("split") != "all":
+        raise ValueError("Kitchen task requires one matching fixed object bank, split=all")
     for key in ("base_ranges", "object_xy", "object_yaw_degrees", "reset_corners"):
         if key in cfg.multi_object:
             raise ValueError(f"Kitchen sampling is configured by kitchen, not multi_object.{key}")
-    if settings["bowl_map_yaw_degrees"] != 0 or settings["base_map_yaw_degrees"] != 90:
-        raise ValueError("Validated kitchen setup requires bowl yaw 0 and initial base yaw 90")
+    if settings.get("object_map_yaw_degrees", settings.get("bowl_map_yaw_degrees")) != 0 or settings["base_map_yaw_degrees"] != 90:
+        raise ValueError("Validated kitchen setup requires object yaw 0 and initial base yaw 90")
     for key, expected in settings["files_sha256"].items():
         if hashlib.sha256(Path(settings[key]).read_bytes()).hexdigest() != expected:
             raise ValueError(f"Frozen kitchen input changed: {key}")
@@ -32,7 +33,7 @@ def configure(cfg, settings):
     cfg.scene.table.init_state.pos = (0., 0., 0.)
     cfg.viewer.eye = (-1.8, .5, 2.4)
     cfg.viewer.lookat = (.85, -.4, 1.)
-    return dict(**copy.deepcopy(settings), reset_order="bowl position, then uniform allowed reference",
+    return dict(**copy.deepcopy(settings), reset_order="object position, then uniform allowed reference",
                 references_fixed_per_episode=True, self_collision=True,
                 furniture_collision=True, object_attachment=False)
 
@@ -41,6 +42,8 @@ def ensure_filter(bank):
     if not hasattr(bank, "position_filter"):
         bank.position_filter = ReferencePositionFilter(bank.env.cfg.kitchen["mask"],
             bank.settings["manifest"], ROOT, bank.env.device)
+        if bank.position_filter.data["object_name"] != bank.settings["objects"][0]:
+            raise ValueError("Position mask belongs to another object")
         bank.sampled_map_xy = torch.zeros(bank.env.num_envs, 2, device=bank.env.device)
     return bank.position_filter
 
@@ -56,7 +59,7 @@ def reset_filtered(bank, ids):
     root[:, 0], root[:, 1] = base[:, 1]-6.35, .3-base[:, 0]
     root[:, 3:7] = torch.tensor([1., 0., 0., 0.], device=env.device)
     root[:, 7:] = 0.
-    regions = settings["bowl_regions"]
+    regions = settings.get("object_regions", settings.get("bowl_regions"))
     right = random[:, 2] >= regions[0]["probability"]
     bounds = torch.tensor([r["bounds_map_xy"] for r in regions], device=env.device)[right.long()]
     map_xy = bounds[:, 0] + random[:, 3:5] * (bounds[:, 1]-bounds[:, 0])
@@ -67,7 +70,7 @@ def reset_filtered(bank, ids):
     env.grasp_quat_o[ids] = bank.tables[0][chosen, 3:]
     obj = env.scene["object"].data.default_root_state[ids].clone()
     obj[:, 0], obj[:, 1] = map_xy[:, 1]-6.35, .3-map_xy[:, 0]
-    obj[:, 2] = position_filter.data["bowl_origin_z_m"]
+    obj[:, 2] = position_filter.data.get("object_origin_z_m", position_filter.data.get("bowl_origin_z_m"))
     obj[:, 3:7] = torch.tensor([2.**-.5, 0., 0., -2.**-.5], device=env.device)
     obj[:, 7:] = 0.
     root[:, :3] += env.scene.env_origins[ids]
@@ -90,8 +93,9 @@ def validate_cases(bank, cases):
                             for c in cases], device=bank.env.device)
     if not allowed[torch.arange(len(cases), device=bank.env.device), indices].all():
         raise ValueError("Saved case uses a masked reference")
-    if (obj[:, 2]-position_filter.data["bowl_origin_z_m"]).abs().max() > 1.e-4:
-        raise ValueError("Saved bowl height differs from the validated mask")
+    height = position_filter.data.get("object_origin_z_m", position_filter.data.get("bowl_origin_z_m"))
+    if (obj[:, 2]-height).abs().max() > 1.e-4:
+        raise ValueError("Saved object height differs from the validated mask")
     xy_base = torch.stack((.3-base[:, 1], 6.35+base[:, 0]), dim=1)
     lo, hi = torch.tensor(settings["base_bounds_map_xy"], device=bank.env.device)
     if ((xy_base < lo-1.e-4) | (xy_base > hi+1.e-4)).any():
@@ -102,7 +106,7 @@ def validate_cases(bank, cases):
 
 
 def initial_collection_cases(bank):
-    """Export freshly reset bowl XY from the sampled pose, before world rounding.
+    """Export freshly reset object XY from the sampled pose, before world rounding.
 
     Float32 world coordinates include large parallel-environment offsets. Removing
     those offsets can move a boundary point outside the mask's 1 um tolerance.
@@ -118,6 +122,6 @@ def initial_collection_cases(bank):
         maximum_error = max(maximum_error, error)
         # This is a serialization fix, not a way to repair a moved object.
         if error > 5.e-5:
-            raise ValueError('Initial sampled bowl pose differs from physics by more than 50 um')
+            raise ValueError('Initial sampled object pose differs from physics by more than 50 um')
         case['object_state'][:2] = expected
     return cases, maximum_error
