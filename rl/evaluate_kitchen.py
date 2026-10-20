@@ -20,6 +20,7 @@ p.add_argument('--dagger-max-step', type=int, default=18)
 p.add_argument('--dagger-stop-after-queries',action='store_true',help='Interface audit only: end collection after query window, not a success-rate evaluation')
 p.add_argument('--dagger-stochastic',action='store_true',help='Collect states using the PPO policy distribution instead of its deterministic mean')
 p.add_argument('--giskard-stages',action='store_true',help='Record persistent teacher approach stage; never changes learner actions')
+p.add_argument('--require-strict-success', action='store_true', help='Report success only with verified 5 mm / .05 rad handover AND close-start, plus physical success')
 AppLauncher.add_app_launcher_args(p)
 args = p.parse_args()
 if args.dagger_queries and not args.cases:
@@ -39,6 +40,7 @@ from isaaclab_rl.skrl import SkrlVecEnvWrapper
 from skrl.utils.runner.torch import Runner
 from garmi_rl.config import BODIES, configured_env
 from garmi_rl.giskard_io import advance_stages
+from garmi_rl.expert_collection import strict_success
 
 out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
 profile = yaml.safe_load(Path(args.config).read_text())
@@ -98,7 +100,8 @@ def summarize(status):
         evaluation_cases_sha256=case_hash, source_case_index=args.case_index,
         num_envs=count, episodes=len(cases), completed=len(results), results=results,
         initial_cases=actual_cases, initial_states=[c['robot_state'] for c in actual_cases],
-        task=task, success_rate=sum(r['reason']=='success' for r in results)/len(cases),
+        task=task, require_strict_success=args.require_strict_success,
+        success_rate=sum(r['reason']=='success' for r in results)/len(cases),
         counts=dict(collections.Counter(r['reason'] for r in results)),
         wall_seconds=time.perf_counter()-start,
         mean_step_ms=float(np.mean(step_times)*1000) if step_times else None,
@@ -212,20 +215,27 @@ with (out/'trace.jsonl').open('w') as trace:
             travel[active]=torch.maximum(travel[active],(d['base_position'][:,:2]-initialbase[:,:2]).norm(dim=-1)[active])
             ended=(done|truncated).flatten() & active
             for i in ended.nonzero().flatten().tolist():
-                reason=next((key for key in ('collision','dropped','out_of_bounds','success','attempt_failed') if d[key][i]),'timeout')
+                reason=next((key for key in ('collision','dropped','out_of_bounds','success','approach_timeout','attempt_failed') if key in d and d[key][i]),'timeout')
                 obj=padded[i]['object_state'];mapxy=[.3-obj[1],6.35+obj[0]]
-                row=dict(case=batch+i,object='bowl',reference=padded[i]['reference'],reason=reason,
+                row=dict(case=batch+i,object=padded[i]['object'],reference=padded[i]['reference'],reason=reason,
                     seconds=(step+1)*env.step_dt,steps=step+1,region='right' if mapxy[0]>1 else 'left',
                     depth='front' if mapxy[1]<7.363333 else 'rear' if mapxy[1]>7.496667 else 'middle',
                     bowl_map_xy=mapxy, final_phase=int(d['phase'][i]), phases_seen=phases[i].nonzero().flatten().tolist(),
                     handover_trigger=int(d['handover_trigger'][i]),handover_distance=float(d['handover_distance'][i]),
                     handover_angle=float(d['handover_angle'][i]),height=float(d['height'][i]),
+                    close_start_distance=float(env.fixed_finish.close_start_distance[i]),
+                    close_start_angle=float(env.fixed_finish.close_start_angle[i]),
+                    collision_bodies={body:float(f) for body,f in zip(BODIES,d['forbidden_force'][i]) if f>.1},
                     max_height=float(maxheight[i]),contact=bool(d['contact'][i]),slip=float(d['slip'][i]),
                     supported=bool(d['supported'][i]),hold_seconds=float(env.grasp_state['hold'][i]),
                     distance=float(d['distance'][i]),max_base_displacement=float(travel[i]))
                 if reason=='success':
                     assert row['height']>=.08 and row['contact'] and not row['supported']
                     assert row['slip']<.02 and row['hold_seconds']>=2.
+                row['environment_reason'] = reason
+                row['strict_success_verified'] = strict_success(row)
+                if args.require_strict_success and reason == 'success' and not row['strict_success_verified']:
+                    row['reason'] = 'strict_success_rejected'
                 if reason=='collision':
                     targets=[]
                     for body,key in zip(BODIES,env.forbidden_sensors):

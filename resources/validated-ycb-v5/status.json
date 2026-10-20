@@ -1,0 +1,52 @@
+{
+  "status": "expert_preflight_complete_40_reference_coverage_gate_failed",
+  "objects": {
+    "mug": {
+      "reference_count": 40,
+      "handle_reference_count": 10,
+      "configuration": "resources/validated-ycb-v4/mug/task.yaml",
+      "configuration_sha256": "27e285cf22bc671d226124276fe40f33c677714f13ee730c1db0fa86f2661bf2",
+      "reset_check_sha256": "4597834eca344d4bfa65f82d39856edea389966497160722d642d004432aa8fd",
+      "saved_expert_trajectories_by_stage": {
+        "pilot": 17,
+        "expert-check-400": 184
+      },
+      "full_approach_results": "runs/ycb-expert-collection-v1/mug/expert-check-400/summary.json",
+      "successful_full_approach_references": 26
+    },
+    "pitcher": {
+      "reference_count": 40,
+      "handle_reference_count": 35,
+      "configuration": "resources/validated-ycb-v5/pitcher/task.yaml",
+      "configuration_sha256": "af8e1bf5e3d0a5a4beaade9a0cf1391d51c4494f0f9297a6fb69fddd74b1f71d",
+      "reset_check_sha256": "0e530a5080beaac4e6225e82c985926a6a64880440805ef72e761b6e8ab897e1",
+      "saved_expert_trajectories_by_stage": {
+        "pilot": 9,
+        "expert-check-400": 103
+      },
+      "full_approach_results": "runs/ycb-expert-collection-v1/pitcher/expert-check-400/summary.json",
+      "successful_full_approach_references": 18
+    }
+  },
+  "expert_trajectories_generated": 313,
+  "optimizer_updates": 0,
+  "collection_plan": "runs/ycb-expert-collection-v1/plan.json",
+  "updated_at": "2026-10-18T20:23:48.154843+00:00",
+  "formal_quota_collection_started": false,
+  "full_approach_review": "runs/ycb-expert-collection-v1/approach-review.json",
+  "expert_trajectories_count_scope": "runs/ycb-expert-collection-v1",
+  "precision_experiment": {
+    "report": "runs/ycb-expert-precision-v1/comparison.json",
+    "cases": 160,
+    "default_configuration_changed": false,
+    "mug_successes_baseline_strict": [
+      19,
+      22
+    ],
+    "pitcher_successes_baseline_strict": [
+      14,
+      18
+    ],
+    "optimizer_updates": 0
+  }
+}

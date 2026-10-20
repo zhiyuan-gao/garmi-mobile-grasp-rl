@@ -15,6 +15,7 @@ import random
 import shutil
 import signal
 import subprocess
+import sys
 import time
 import traceback
 
@@ -24,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OLD = ROOT / 'bootstrap'
 OLD_CASES = OLD / 'regression-cases.json'
 CRAM = '/home/jovyan/cram-vrb-lab/cognitive_robot_abstract_machine/.venv/bin/python'
+CONTAINER = ['bash', str(ROOT / 'scripts/container_exec.sh')]
 
 
 def read(path):
@@ -142,27 +144,32 @@ def main():
         code = """import os, signal
 from pathlib import Path
 needle = %r
+project = %r
 own = os.getpid()
 processes = {}
 for p in Path('/proc').iterdir():
     if not p.name.isdigit() or int(p.name) == own: continue
     try:
         argv = (p/'cmdline').read_bytes().split(b'\\0')
+        # Apptainer shares host PIDs: another project can also use /workspace.
+        # Only seed cleanup with processes carrying this checkout's marker.
+        environment = (p/'environ').read_bytes().split(b'\\0')
         stat = (p/'stat').read_text().split()
-        processes[int(p.name)] = (int(stat[3]), argv)
+        processes[int(p.name)] = (int(stat[3]), argv, environment)
     except (OSError, ValueError, IndexError): pass
-targets = {pid for pid, (_, argv) in processes.items()
-           if any(a.decode(errors='replace').startswith(needle) for a in argv)}
+targets = {pid for pid, (_, argv, environment) in processes.items()
+           if ('GARMI_RL_PROJECT_ROOT=' + project).encode() in environment
+           and any(a.decode(errors='replace').startswith(needle) for a in argv)}
 while True:
-    expanded = targets | {pid for pid, (parent, _) in processes.items() if parent in targets}
+    expanded = targets | {pid for pid, (parent, _, _) in processes.items() if parent in targets}
     if expanded == targets: break
     targets = expanded
 for pid in targets:
     try: os.kill(pid, signal.SIGKILL)
     except ProcessLookupError: pass
 print('Scoped cleanup', sorted(targets))
-""" % inside(out)
-        subprocess.run(['docker', 'exec', os.environ.get('GARMI_RL_CONTAINER', 'garmi-mobile-grasp-rl'), '/usr/bin/python3', '-c', code],
+""" % (inside(out), str(ROOT))
+        subprocess.run(CONTAINER + ['/usr/bin/python3', '-c', code],
                        timeout=30, check=False, stdout=subprocess.DEVNULL)
 
     def run(name, script, argv, marker, cpu=False, host_script=False, timeout=14400):
@@ -175,10 +182,9 @@ print('Scoped cleanup', sorted(targets))
                 archive = out / f'recovery-{state["resume_count"]:02d}' / name
                 shutil.move(str(partial), str(archive))
         if host_script:
-            command = ['python3', '-u', str(ROOT / 'rl' / script)]
+            command = [sys.executable, '-u', str(ROOT / 'rl' / script)]
         elif cpu:
-            command = ['docker', 'exec', '-e', 'PYTHONPATH=/workspace/rl', '-e', 'OPENBLAS_NUM_THREADS=1',
-                       '-e', 'OMP_NUM_THREADS=1', os.environ.get('GARMI_RL_CONTAINER', 'garmi-mobile-grasp-rl'), CRAM, '/workspace/rl/' + script]
+            command = CONTAINER + [CRAM, '/workspace/rl/' + script]
         else:
             command = [str(ROOT / 'scripts/rl.sh'), '/workspace/rl/' + script]
         command += list(map(str, argv))

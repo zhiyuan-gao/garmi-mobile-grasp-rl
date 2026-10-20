@@ -14,6 +14,7 @@ app = AppLauncher(args).app
 
 import json
 import time
+import traceback
 import torch
 import yaml
 from isaaclab.envs import ManagerBasedRLEnv
@@ -78,6 +79,11 @@ try:
         genuinely_outside_position_rejected=rejected, wall_seconds=time.perf_counter()-started)
     (out/'summary.json').write_text(json.dumps(summary, indent=2))
     print('COLLECTION_RESET_CHECK_DONE', json.dumps(summary), flush=True)
+except BaseException:
+    # Kit's fast shutdown otherwise exits before Python prints the exception.
+    traceback.print_exc()
+    app.set_setting('/app/fastShutdown', False)
+    raise
 finally:
     env.close()
     app.close()

@@ -170,12 +170,19 @@ def configured_env(agent_cfg, num_envs, seed):
     cfg.scene.num_envs = num_envs
     cfg.seed = seed
     task = agent_cfg.get("garmi_task", {"variant": "baseline"})
+    from .contact_policy import POLICIES
+    cfg.contact_policy = task.get('contact_policy', 'fingers_only')
+    if cfg.contact_policy not in POLICIES:
+        raise ValueError(f'Unknown contact policy: {cfg.contact_policy}')
     cfg.episode_length_s = float(task.get("episode_length_s", cfg.episode_length_s))
     if "observation_time_scale_s" in task:
         cfg.observation_time_scale_s = float(task["observation_time_scale_s"])
         if cfg.observation_time_scale_s <= 0:
             raise ValueError("Observation time scale must be positive")
     variant = task["variant"]
+    cfg.require_strict_success = bool(task.get('require_strict_success', False))
+    if cfg.require_strict_success and variant != 'fixed_finish_v3':
+        raise ValueError('Strict success requires measured fixed-finish handover and close start')
     description = dict(variant=variant)
     if variant == "grasp_v2":
         from .grasp_rewards import describe, WEIGHTS
@@ -192,6 +199,10 @@ def configured_env(agent_cfg, num_envs, seed):
         cfg.fixed_finish = {**DEFAULTS, **task.get("controller", {})}
         if set(cfg.fixed_finish) != set(DEFAULTS):
             raise ValueError("Unknown fixed-finish controller setting")
+        opening = cfg.fixed_finish['gripper_open_width_m']
+        if not 0 < opening <= .08:
+            raise ValueError('gripper_open_width_m must be in (0, .08]')
+        cfg.scene.robot.init_state.joint_pos['right_fr3_finger_joint.*'] = opening/2
         cfg.actions.base = FinishBaseActionCfg(asset_name="robot")
         previous_arm = cfg.actions.arm
         cfg.actions.arm = FinishArmActionCfg(asset_name="robot", joint_names=previous_arm.joint_names,
@@ -256,5 +267,6 @@ def configured_env(agent_cfg, num_envs, seed):
         from .kitchen import configure
         description["kitchen"] = configure(cfg, task["kitchen"])
     description["episode_length_s"] = cfg.episode_length_s
+    description['require_strict_success'] = cfg.require_strict_success
     description["observation_time_scale_s"] = getattr(cfg, "observation_time_scale_s", cfg.episode_length_s)
     return cfg, description

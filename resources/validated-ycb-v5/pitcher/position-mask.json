@@ -1,0 +1,334 @@
+{
+  "schema_version": 1,
+  "status": "validated",
+  "object_name": "pitcher",
+  "bank_path": "resources/validated-ycb-v5/pitcher/bank.json",
+  "reference_ids": [
+    "pitcher-v4a-c00411",
+    "pitcher-v4c-c01025",
+    "pitcher-v4f-n116",
+    "pitcher-v4a-c03397",
+    "pitcher-v4g-n035",
+    "pitcher-v4a-c06403",
+    "pitcher-v3b-ref040",
+    "pitcher-v4c-c01136",
+    "pitcher-v4c-c00136",
+    "pitcher-v4c-c00217",
+    "pitcher-v4c-c00622",
+    "pitcher-v4a-c06611",
+    "pitcher-v4g-n149",
+    "pitcher-v4a-c00004",
+    "pitcher-v4g-n118",
+    "pitcher-v4a-c02164",
+    "pitcher-v4a-c04606",
+    "pitcher-v4a-c00097",
+    "pitcher-v4c-c01667",
+    "pitcher-v4e-n067",
+    "pitcher-v4e-n089",
+    "pitcher-v4c-c01660",
+    "pitcher-v4a-c01606",
+    "pitcher-v4g-n085",
+    "pitcher-v4e-n024",
+    "pitcher-v4g-n117",
+    "pitcher-v4c-c00810",
+    "pitcher-v4g-n129",
+    "pitcher-v4g-n138",
+    "pitcher-v4g-n066",
+    "pitcher-v4a-c03607",
+    "pitcher-v4f-n076",
+    "pitcher-v4g-n110",
+    "pitcher-v4g-n144",
+    "pitcher-v4f-n037",
+    "pitcher-v4e-n018",
+    "pitcher-v4g-n111",
+    "pitcher-v4g-n049",
+    "pitcher-v4g-n136",
+    "pitcher-v4g-n025"
+  ],
+  "bowl_map_yaw_degrees": 0.0,
+  "bowl_origin_z_m": 0.9488219999999999,
+  "cell_size_m": 0.01,
+  "numeric_position_tolerance_m": 1e-06,
+  "sources_sha256": {
+    "assets/kitchen/scene_meshes.pkl": "ee3b78f43a3b6e58aa496a0eb31cd1c8d6f76a3b208f3e8af40c013c17b28c47",
+    "assets/kitchen/cooked-model.pkl": "4c94eda7762b514c8e7115fb63ba2d59294c16c2043ac50c63796a12344ba398",
+    "assets/kitchen/kitchen.usda": "640e59de11726c31fbc411aa7f44a25c754b0b65030b20907b5f77e8ca526080",
+    "rl/assets/manifest.json": "070e32aeb005b0bccd1fe6b7ea2f438c5c783ae8bc06235486b6fb5c6c6e0e52",
+    "rl/assets/garmi_training.urdf": "0734d5d987321a681331ad6b7c9290b7f04c74cf2c003987ec2eb084194173e5",
+    "resources/validated-ycb-v5/pitcher/bank.json": "301edcaa3af98feaef84f23ee2a57b417e9a041071a20a133e42563bd0cc65f7",
+    "resources/validated-ycb-v5/pitcher/review.json": "fd3edd8e2778e40418320452a79ae9d346bb6d49c007ba03c4c165899cba2580",
+    "assets/ycb/019_pitcher_base/contact-v5-friction/cooked.pkl": "75876545ea1a35f4861f3db75f3209920a092f996d8a4ed7b40071c9f47b6917",
+    "resources/validated-ycb-v5/pitcher/endpoint-conditions.json": "0d295e81cd525f6f786aa517730855aa1eab062852b5c2fa76a655013052304f"
+  },
+  "regions": [
+    {
+      "name": "left-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 0
+    },
+    {
+      "name": "left-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 1
+    },
+    {
+      "name": "right-02",
+      "bounds_map_xy": [
+        [
+          1.2750000000000001,
+          7.255
+        ],
+        [
+          1.285,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 2
+    },
+    {
+      "name": "right-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 3
+    }
+  ],
+  "cells": [
+    {
+      "region": "left-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        0,
+        2,
+        5,
+        8,
+        12,
+        13,
+        16,
+        22,
+        24,
+        30,
+        31,
+        39
+      ],
+      "accepted_condition_ids": [
+        "pitcher-v4a-c00411-left-front",
+        "pitcher-v4f-n116-left-seed-02-front-base0",
+        "pitcher-v4a-c06403-left-front",
+        "pitcher-v4c-c00136-left-front",
+        "pitcher-v4g-n149-left-seed-02-front-base0",
+        "pitcher-v4a-c00004-left-front",
+        "pitcher-v4a-c04606-left-front",
+        "pitcher-v4a-c01606-left-front",
+        "pitcher-v4e-n024-left-seed-02-front",
+        "pitcher-v4a-c03607-left-front",
+        "pitcher-v4f-n076-left-seed-02-front-base0",
+        "pitcher-v4g-n025-left-seed-02-front-base0"
+      ]
+    },
+    {
+      "region": "left-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        6,
+        9,
+        10,
+        15,
+        18
+      ],
+      "accepted_condition_ids": [
+        "pitcher-v3b-ref040-left-rear",
+        "pitcher-v4c-c00217-left-rear",
+        "pitcher-v4c-c00622-left-rear",
+        "pitcher-v4a-c02164-left-rear",
+        "pitcher-v4c-c01667-left-rear"
+      ]
+    },
+    {
+      "region": "right-02",
+      "bounds_map_xy": [
+        [
+          1.2750000000000001,
+          7.255
+        ],
+        [
+          1.285,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        1
+      ],
+      "accepted_condition_ids": [
+        "pitcher-v4c-c01025-right-front"
+      ]
+    },
+    {
+      "region": "right-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        3,
+        4,
+        7,
+        11,
+        14,
+        17,
+        19,
+        20,
+        21,
+        23,
+        25,
+        26,
+        27,
+        28,
+        29,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "accepted_condition_ids": [
+        "pitcher-v4a-c03397-right-front",
+        "pitcher-v4g-n035-right-seed-06-front-base1",
+        "pitcher-v4c-c01136-right-front",
+        "pitcher-v4a-c06611-right-front",
+        "pitcher-v4g-n118-right-seed-12-seed-03-front-base0",
+        "pitcher-v4a-c00097-right-front",
+        "pitcher-v4e-n067-right-seed-03-front",
+        "pitcher-v4e-n089-right-seed-04-front",
+        "pitcher-v4c-c01660-right-front",
+        "pitcher-v4g-n085-right-seed-07-seed-03-front-base1",
+        "pitcher-v4g-n117-right-seed-11-seed-01-front-base0",
+        "pitcher-v4c-c00810-right-front",
+        "pitcher-v4g-n129-right-seed-11-seed-01-front-base1",
+        "pitcher-v4g-n138-right-seed-07-seed-03-front-base1",
+        "pitcher-v4g-n066-right-seed-11-seed-01-front-base0",
+        "pitcher-v4g-n110-right-seed-11-seed-01-front-base0",
+        "pitcher-v4g-n144-right-seed-07-seed-03-front-base1",
+        "pitcher-v4f-n037-right-seed-03-front-base0",
+        "pitcher-v4e-n018-right-seed-03-front",
+        "pitcher-v4g-n111-right-seed-12-seed-03-front-base0",
+        "pitcher-v4g-n049-right-seed-11-seed-01-front-base0",
+        "pitcher-v4g-n136-right-seed-12-seed-03-front-base0"
+      ]
+    }
+  ],
+  "extra_margin_m": 0.002,
+  "method": "Reindexed retained references; non-overlapping 0.01 m local windows inside original geometry-checked cells, with all 8 object perturbation points passed.",
+  "scope": "Geometry-safe local object windows with finite physical evidence. Continuous physical success and full approach trajectories are not certified.",
+  "empty_cells": [],
+  "allowed_cells_per_reference": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "placement_adjustment": "Only accepted local windows; no sampling across the original whole-counter rectangles."
+}

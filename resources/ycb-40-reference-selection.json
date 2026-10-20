@@ -1,0 +1,63 @@
+{
+  "status": "diagnostics_complete_collision_fidelity_review_needed_expert_pending_confirmation",
+  "expert_trajectories_generated": 0,
+  "optimizer_updates": 0,
+  "scope": "All 80 references assessed for kitchen geometry. References with allowed positions tested by direct IK initialization and the original RL close/lift/hold controller. Giskard approach trajectories not executed.",
+  "limitations": [
+    "At least one successful diagnostic does not mean success across the kitchen or a reachable collision-free approach path.",
+    "Only finite IK seeds and four representative placements were tested; failures are retained."
+  ],
+  "objects": {
+    "pitcher": {
+      "total_references": 40,
+      "references_with_allowed_positions": 39,
+      "diagnostic_cases": 152,
+      "references_with_diagnostic_success": 12,
+      "case_results": {
+        "forbidden_collision": 43,
+        "endpoint_collision": 39,
+        "lift_or_hold_failed": 42,
+        "success": 23,
+        "no_two_finger_contact": 3,
+        "ik_unreachable": 2
+      },
+      "handle_references": null,
+      "handle_references_with_diagnostic_success": null,
+      "reference_sha256": "b402a34742236aaf2e33bb79dee370ef9cf6511446055bd6d23d7bd9a8fa7d14",
+      "physics_report": "runs/ycb-rl-validation/019_pitcher_base/physics/summary.json",
+      "mask_report": "runs/ycb-rl-validation/019_pitcher_base/position-mask.json",
+      "gallery": "runs/ycb-rl-validation/019_pitcher_base/gallery-40.png"
+    },
+    "mug": {
+      "total_references": 40,
+      "references_with_allowed_positions": 40,
+      "diagnostic_cases": 160,
+      "references_with_diagnostic_success": 28,
+      "case_results": {
+        "success": 57,
+        "endpoint_collision": 29,
+        "lift_or_hold_failed": 42,
+        "forbidden_collision": 30,
+        "ik_unreachable": 2
+      },
+      "handle_references": [
+        "mug-ref001",
+        "mug-ref002",
+        "mug-ref003",
+        "mug-ref004",
+        "mug-ref005",
+        "mug-ref006",
+        "mug-ref007",
+        "mug-ref008",
+        "mug-ref009",
+        "mug-ref010"
+      ],
+      "handle_references_with_diagnostic_success": 9,
+      "reference_sha256": "d120b83b09efe6177eded82f23eb461adbbef574c47dc364557d20477424e9a4",
+      "physics_report": "runs/ycb-rl-validation/025_mug/physics/summary.json",
+      "mask_report": "runs/ycb-rl-validation/025_mug/position-mask.json",
+      "gallery": "runs/ycb-rl-validation/025_mug/gallery-40.png"
+    }
+  },
+  "collision_geometry_review": "runs/ycb-rl-validation/collision-audit/review.json"
+}

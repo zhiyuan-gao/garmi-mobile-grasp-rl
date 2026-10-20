@@ -60,9 +60,39 @@ class ApproachExpert:
 
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[2])
     control_dt: float = .05
+    manifest: str | None = None
+    object_name: str = 'bowl'
+    translation_threshold: float = .008
+    orientation_threshold: float = .08
+    contact_policy: str = 'fingers_only'
+    self_collision_buffer_m: float = .03
+    self_collision_model: str = 'legacy_srdf'
+    distal_collision_buffer_m: float = .05
 
     def __post_init__(self):
         started = time.perf_counter()
+        if self.contact_policy not in ('fingers_only', 'fingers_and_wrist'):
+            raise ValueError('Unknown expert contact policy')
+        if not .001 <= self.self_collision_buffer_m <= .03:
+            raise ValueError('Self-collision planning buffer must be between 1 and 30 mm')
+        if self.self_collision_model not in ('legacy_srdf','usd_adjacent'):
+            raise ValueError('Unknown planner self-collision model')
+        if not .001 <= self.distal_collision_buffer_m <= .05:
+            raise ValueError('Distal-arm planning buffer must be between 1 and 50 mm')
+        if not (0 < self.translation_threshold <= .008 and 0 < self.orientation_threshold <= .08):
+            raise ValueError('Expert precision overrides must be positive and at least as strict as defaults')
+        import hashlib
+        bank_path = Path(self.manifest) if self.manifest else self.root/'assets/grasp_bank/selected-40.json'
+        bank = json.loads(bank_path.read_text())
+        target_object = next(o for o in bank['objects'] if o['name'] == self.object_name)
+        self.references = {r['id']: r for r in target_object['references']}
+        object_pieces = None
+        if self.object_name != 'bowl' or self.manifest is not None:
+            for key in ('mesh', 'usd', 'cooked'):
+                path = Path(target_object[key])
+                if hashlib.sha256(path.read_bytes()).hexdigest() != target_object[key+'_sha256']:
+                    raise ValueError(f'Expert object asset changed: {key}')
+            object_pieces = pickle.load(Path(target_object['cooked']).open('rb'))
         source = self.root / 'assets/kitchen'
         tree = ET.parse(self.root / 'rl/assets/garmi_training.urdf')
         # Geometry comes from the simulator export, not a second approximation.
@@ -103,9 +133,14 @@ class ApproachExpert:
             for record, mesh in pieces:
                 shape = Mesh.from_trimesh(mesh)
                 if record['parent'] == 'Object':
-                    bowl_shapes.append(shape)
+                    if object_pieces is None:
+                        bowl_shapes.append(shape)
                 else:
                     robot_shapes.setdefault(record['body'], []).append(shape)
+            if object_pieces is not None:
+                bowl_shapes = [Mesh.from_trimesh(mesh) for record, mesh in object_pieces]
+                if not bowl_shapes:
+                    raise ValueError('Empty cooked object collision geometry')
             for name, shapes in robot_shapes.items():
                 body = self.world.get_body_by_name(name)
                 body.collision = ShapeCollection(shapes, reference_frame=body)
@@ -130,16 +165,19 @@ class ApproachExpert:
         self.world.collision_manager.add_temporary_rule(AvoidCollisionBetweenGroups(
             body_group_a=hand_bodies, body_group_b=self.external_bodies,
             buffer_zone_distance=.001, violated_distance=0.))
+        if self.distal_collision_buffer_m < .05:
+            self.world.collision_manager.add_temporary_rule(AvoidCollisionBetweenGroups(
+                body_group_a=[self.world.get_body_by_name('right_fr3_link6')],
+                body_group_b=self.external_bodies,
+                buffer_zone_distance=self.distal_collision_buffer_m, violated_distance=0.))
         self.hand = self.world.get_body_by_name('right_fr3_hand')
-        bank = json.loads((self.root / 'assets/grasp_bank/selected-40.json').read_text())
-        self.references = {r['id']: r for r in bank['objects'][0]['references']}
         self.context = MotionStatechartContext(world=self.world,
             qp_controller_config=QPControllerConfig(target_frequency=1/self.control_dt, prediction_horizon=7, verbose=False))
         self.executor = Executor(self.context)
         self.chart = MotionStatechart()
         self.goal = CartesianPose(root_link=origin, tip_link=self.hand,
             goal_pose=Pose.from_xyz_rpy(reference_frame=self.target),
-            translation_threshold=.008, orientation_threshold=.08)
+            translation_threshold=self.translation_threshold, orientation_threshold=self.orientation_threshold)
         self.chart.add_nodes([self.goal, SelfCollisionAvoidance(robot=self.robot), ExternalCollisionAvoidance(robot=self.robot)])
         self.compiled = False
         self.initialization_seconds = time.perf_counter()-started
@@ -147,44 +185,29 @@ class ApproachExpert:
     def _install_collision_rules(self, urdf, shapes):
         """Match training's fixed-body/adjacent exclusions and finger contact."""
         manager = self.world.collision_manager
-        manager.add_default_rule(AvoidSelfCollisions(robot=self.robot, buffer_zone_distance=.03, violated_distance=0.))
+        manager.add_default_rule(AvoidSelfCollisions(robot=self.robot, buffer_zone_distance=self.self_collision_buffer_m, violated_distance=0.))
         manager.add_default_rule(AvoidExternalCollisions(robot=self.robot, buffer_zone_distance=.05, violated_distance=0.))
         # A generic 5 cm stand-off blocks the validated bowl grasps. Keep exact
         # collision checking for the hand/fingers, using the training contact
         # offset (1 mm) as the approach buffer; only finger/bowl contact is free.
-        groups = {'base_link': 'base_link'}
-        pending = list(urdf.findall('joint'))
-        adjacent = set()
-        while pending:
-            ready = []
-            for joint in pending:
-                parent, child = joint.find('parent').get('link'), joint.find('child').get('link')
-                if parent not in groups:
-                    continue
-                movable = joint.get('type') != 'fixed'
-                groups[child] = child if movable else groups[parent]
-                if movable:
-                    adjacent.add(frozenset((groups[parent], groups[child])))
-                ready.append(joint)
-            if not ready:
-                raise ValueError('Disconnected training URDF')
-            pending = [j for j in pending if j not in ready]
-        adjacent.add(frozenset(('right_fr3_leftfinger', 'right_fr3_rightfinger')))
-        # Reuse GARMI's existing Giskard SRDF exclusions where both bodies are
-        # represented separately. Never expand an exclusion to a merged torso.
-        srdf = self.root/'assets/garmi.srdf'
-        for element in ET.parse(srdf).getroot().findall('disable_self_collision'):
-            names = (element.get('link1'), element.get('link2'))
-            if all(name in shapes for name in names):
-                adjacent.add(frozenset(names))
+        # PhysX filters directly connected rigid bodies. The broader GARMI
+        # SRDF also excludes e.g. link5/link7 and the two fingers, but those
+        # contacts are active in this cooked training articulation. Importing
+        # those exclusions caused the planner to command forbidden contacts.
+        from .collision_pairs import planner_body_pairs
+        adjacent = planner_body_pairs(urdf, shapes, self.self_collision_model,
+                                      ET.parse(self.root/'assets/garmi.srdf').getroot())
         for pair in adjacent:
             names = list(pair)
             if len(names) == 2 and all(name in shapes for name in names):
                 manager.add_ignore_collision_rule(AllowCollisionBetweenGroups(
                     body_group_a=[self.world.get_body_by_name(names[0])],
                     body_group_b=[self.world.get_body_by_name(names[1])]))
+        permitted = ['right_fr3_leftfinger', 'right_fr3_rightfinger']
+        if self.contact_policy == 'fingers_and_wrist':
+            permitted.append('right_fr3_link7')
         manager.add_ignore_collision_rule(AllowCollisionBetweenGroups(
-            body_group_a=[self.world.get_body_by_name(name) for name in ('right_fr3_leftfinger', 'right_fr3_rightfinger')],
+            body_group_a=[self.world.get_body_by_name(name) for name in permitted],
             body_group_b=[self.bowl]))
 
     def set_pose(self, connection, pose):
@@ -195,6 +218,8 @@ class ApproachExpert:
 
     def sync(self, request):
         snapshot = request['snapshot']
+        if snapshot.get('object', 'bowl') != self.object_name:
+            raise ValueError('Expert snapshot object differs from the loaded collision geometry')
         root = np.asarray(snapshot['robot_state'])
         rotation = Rotation.from_quat(root[[4, 5, 6, 3]])
         self.world.state.velocities[:] = 0

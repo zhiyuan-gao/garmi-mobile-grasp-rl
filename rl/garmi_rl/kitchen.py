@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def configure(cfg, settings):
     import isaaclab.sim as sim
     cfg.kitchen = copy.deepcopy(settings)
-    if cfg.multi_object["objects"] != ["bowl"] or cfg.multi_object.get("split") != "all":
-        raise ValueError("Kitchen task requires the fixed bowl bank, split=all")
+    if len(cfg.multi_object["objects"]) != 1 or cfg.multi_object.get("split") != "all":
+        raise ValueError("Kitchen task requires one fixed object bank, split=all")
     for key in ("base_ranges", "object_xy", "object_yaw_degrees", "reset_corners"):
         if key in cfg.multi_object:
             raise ValueError(f"Kitchen sampling is configured by kitchen, not multi_object.{key}")
@@ -41,6 +41,8 @@ def ensure_filter(bank):
     if not hasattr(bank, "position_filter"):
         bank.position_filter = ReferencePositionFilter(bank.env.cfg.kitchen["mask"],
             bank.settings["manifest"], ROOT, bank.env.device)
+        if bank.position_filter.data['object_name'] != bank.objects[0]['name']:
+            raise ValueError('Kitchen mask object differs from the spawned object')
         bank.sampled_map_xy = torch.zeros(bank.env.num_envs, 2, device=bank.env.device)
     return bank.position_filter
 
@@ -57,8 +59,16 @@ def reset_filtered(bank, ids):
     root[:, 3:7] = torch.tensor([1., 0., 0., 0.], device=env.device)
     root[:, 7:] = 0.
     regions = settings["bowl_regions"]
-    right = random[:, 2] >= regions[0]["probability"]
-    bounds = torch.tensor([r["bounds_map_xy"] for r in regions], device=env.device)[right.long()]
+    if settings.get('sampling_mode') == 'validated_subregions':
+        weights = torch.tensor([r['probability'] for r in regions], device=env.device)
+        if (not torch.isfinite(weights).all() or (weights < 0).any()
+                or abs(float(weights.sum())-1.) > 1.e-5):
+            raise ValueError('Validated subregion probabilities must be finite, nonnegative and sum to one')
+        selected_region = torch.searchsorted(weights.cumsum(0), random[:, 2].contiguous(), right=True)
+        selected_region = selected_region.clamp_max(len(regions)-1)
+    else:
+        selected_region = (random[:, 2] >= regions[0]["probability"]).long()
+    bounds = torch.tensor([r["bounds_map_xy"] for r in regions], device=env.device)[selected_region]
     map_xy = bounds[:, 0] + random[:, 3:5] * (bounds[:, 1]-bounds[:, 0])
     chosen = position_filter.sample(map_xy, 0., bank.pools[0], random[:, 5])
     bank.sampled_map_xy[ids] = map_xy

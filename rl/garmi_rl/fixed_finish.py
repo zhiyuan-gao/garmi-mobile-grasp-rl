@@ -17,7 +17,8 @@ from .actions import PlanarVelocityAction, PlanarVelocityActionCfg
 PHASES = ("approach", "settle", "close", "lift", "hold")
 DEFAULTS = dict(alignment_distance=.015, alignment_angle=.15, alignment_seconds=.10,
                 approach_seconds=6., settle_seconds=.5, close_seconds=2.,
-                lift_seconds=3., lift_distance=.12, hold_seconds=3.)
+                lift_seconds=3., lift_distance=.12, hold_seconds=3.,
+                close_on_approach_timeout=True, gripper_open_width_m=.08)
 
 
 class FixedFinish:
@@ -31,6 +32,9 @@ class FixedFinish:
         self.trigger = torch.zeros_like(self.phase)  # 1=alignment; 2=approach deadline
         self.handover_distance = torch.zeros(n, device=dev)
         self.handover_angle = torch.zeros(n, device=dev)
+        self.approach_timed_out = torch.zeros(n, dtype=torch.bool, device=dev)
+        self.close_start_distance = torch.zeros(n, device=dev)
+        self.close_start_angle = torch.zeros(n, device=dev)
         self.position = torch.zeros(n, 3, device=dev)
         self.rotation = torch.zeros(n, 4, device=dev)
         self.rotation[:, 0] = 1.
@@ -50,6 +54,9 @@ class FixedFinish:
             value[env_ids] = 0
         self.handover_distance[env_ids] = 0
         self.handover_angle[env_ids] = 0
+        self.approach_timed_out[env_ids] = False
+        self.close_start_distance[env_ids] = 0
+        self.close_start_angle[env_ids] = 0
         self.position[env_ids] = 0
         self.rotation[env_ids] = 0
         self.rotation[env_ids, 0] = 1.
@@ -62,21 +69,29 @@ class FixedFinish:
         env = self.env
         hp, hq, gp, gq = mdp.geometry(env)
         self.phase_steps += 1
-        approaching = self.phase == 0
+        approaching = (self.phase == 0) & ~self.approach_timed_out
         aligned = ((gp-hp).norm(dim=-1) < self.settings["alignment_distance"]) & (
             quat_error_magnitude(hq, gq) < self.settings["alignment_angle"])
         self.aligned_steps = torch.where(approaching & aligned, self.aligned_steps + 1, 0)
         ready = self.aligned_steps >= self.ticks("alignment_seconds")
         deadline = self.phase_steps >= self.ticks("approach_seconds")
-        enter = approaching & (ready | deadline)
+        abort = approaching & deadline & ~ready & (not self.settings['close_on_approach_timeout'])
+        self.approach_timed_out |= abort
+        enter = approaching & (ready | (deadline & self.settings['close_on_approach_timeout']))
         self.position[enter] = hp[enter]
         self.rotation[enter] = hq[enter]
         self.trigger[enter] = torch.where(ready[enter], 1, 2)
         self.handover_distance[enter] = (gp-hp).norm(dim=-1)[enter]
         self.handover_angle[enter] = quat_error_magnitude(hq,gq)[enter]
+        self.trigger[abort] = 2
+        self.handover_distance[abort] = (gp-hp).norm(dim=-1)[abort]
+        self.handover_angle[abort] = quat_error_magnitude(hq,gq)[abort]
         # Descending order prevents two phase transitions in the same tick.
         for phase, duration in ((3, "lift_seconds"), (2, "close_seconds"), (1, "settle_seconds")):
             switch = (self.phase == phase) & (self.phase_steps >= self.ticks(duration))
+            if phase == 1:
+                self.close_start_distance[switch] = (gp-hp).norm(dim=-1)[switch]
+                self.close_start_angle[switch] = quat_error_magnitude(hq,gq)[switch]
             self.phase[switch] += 1
             self.phase_steps[switch] = 0
         self.phase[enter] = 1
@@ -127,7 +142,8 @@ class FinishGripperAction(ActionTerm):
         super().__init__(cfg, env)
         self._joint_ids = self._asset.find_joints("right_fr3_finger_joint.*")[0]
         self._raw_actions = torch.zeros(env.num_envs, 0, device=env.device)
-        self._processed_actions = torch.full((env.num_envs, 2), .04, device=env.device)
+        self._open_position = env.cfg.fixed_finish['gripper_open_width_m']/2
+        self._processed_actions = torch.full((env.num_envs, 2), self._open_position, device=env.device)
         env.fixed_finish = FixedFinish(env)
 
     @property
@@ -143,13 +159,15 @@ class FinishGripperAction(ActionTerm):
         return self._processed_actions
 
     def process_actions(self, actions):
-        self._processed_actions[:] = torch.where(self._env.fixed_finish.phase[:, None] >= 2, 0., .04)
+        opening = getattr(self._env, 'grasp_open_width', None)
+        position = self._open_position if opening is None else opening[:, None]/2
+        self._processed_actions[:] = torch.where(self._env.fixed_finish.phase[:, None] >= 2, 0., position)
 
     def apply_actions(self):
         self._asset.set_joint_position_target(self._processed_actions, joint_ids=self._joint_ids)
 
     def reset(self, env_ids=None):
-        self._processed_actions[env_ids] = .04
+        self._processed_actions[env_ids] = self._open_position
 
 
 @configclass

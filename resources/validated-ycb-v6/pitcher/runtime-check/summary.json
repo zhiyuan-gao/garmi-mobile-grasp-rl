@@ -1,0 +1,172 @@
+{
+  "status": "passed",
+  "reference_count": 40,
+  "random_reset_cases": 400,
+  "maximum_roundtrip_error_m": 1.0490417476916036e-06,
+  "per_reference_openings_and_observations_verified": true,
+  "contact_policy": "fingers_and_wrist",
+  "configuration_sha256": "da1e3c8120125722a4365299a6c7ffbd0066db063ca0f264b9fe8309bff80c0e",
+  "references": [
+    {
+      "reference": "pitcher-innerouter-oblique-010",
+      "opening_m": 0.04
+    },
+    {
+      "reference": "pitcher-v4e-n089",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4e-n029",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4c-c00622",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4f-n054",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4c-c01136",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4c-c00810",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4e-n067",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c03607",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c06611",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c06403",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c03379",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c02164",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n111",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c00004",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c03397",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n040",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c00097",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n149",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n035",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n045",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4f-n116",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c04606",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n129",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n124",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c01606",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4f-n096",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4f-n041",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4e-n018",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4a-c00425",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4f-n037",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n136",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4e-n024",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n103",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n050",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n025",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n022",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n160",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4g-n049",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "pitcher-v4e-n063",
+      "opening_m": 0.08
+    }
+  ],
+  "scope": "Runtime paths, reference indexing, reset/restore, and finger/observation consistency; physical successes are in validation.json"
+}

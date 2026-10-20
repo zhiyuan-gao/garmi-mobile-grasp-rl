@@ -17,8 +17,15 @@ p.add_argument('--audit-cases', help='Execute every supplied case once, retainin
 p.add_argument('--focus-references', nargs='+', help='Collect quotas only for these references from the configured bank')
 p.add_argument('--balance-collection', action='store_true', help='Assign underfilled allowed references to sampled positions')
 p.add_argument('--resume', action='store_true', help='Keep saved successes and continue quotas with an explicitly new seed')
+p.add_argument('--allow-parallel-resize', action='store_true', help='Explicitly allow local strict collection to resume with a different environment count')
+p.add_argument('--local-sampling', help='Frozen local start specification; balances remaining split/reference quotas')
+p.add_argument('--require-strict-success', action='store_true', help='Require strict handover AND actual close-start accuracy for dataset acceptance')
+p.add_argument('--bootstrap-train', nargs='+', default=[], help='Existing successful train indices; preserve their split')
+p.add_argument('--bootstrap-validation', nargs='+', default=[], help='Existing successful validation indices; preserve their split')
 AppLauncher.add_app_launcher_args(p)
 args = p.parse_args()
+if args.allow_parallel_resize:
+    assert args.resume and args.local_sampling and args.require_strict_success
 app = AppLauncher(args).app
 
 import collections
@@ -36,6 +43,8 @@ from garmi_rl.giskard_io import COMMAND_VERSION, GiskardClient, advance_stages, 
 from garmi_rl.joint_delta import COMMAND_VERSION as DELTA_VERSION, is_joint_delta, encode_joint_target
 from garmi_rl.augmentation import sample_hand_perturbation, approach_label_mask
 from garmi_rl import mdp
+from garmi_rl.collision_pairs import planner_collision_settings
+from garmi_rl.expert_collection import LocalCaseSampler, excluded_cases, strict_success
 from scipy.spatial.transform import Rotation
 
 torch.set_num_threads(4)
@@ -51,19 +60,29 @@ if joint_delta:
 env = ManagerBasedRLEnv(cfg)
 env.forbidden_sensors = cfg.forbidden_sensors
 original_reset = env._reset_idx
-references = profile['garmi_task']['multi_object']['reference_ids']['bowl']
+object_names = profile['garmi_task']['multi_object']['objects']
+if len(object_names) != 1:
+    raise ValueError('Giskard collection currently requires one object per run')
+object_name = object_names[0]
+references = profile['garmi_task']['multi_object']['reference_ids'][object_name]
 if args.focus_references:
     assert set(args.focus_references) <= set(references)
     references = args.focus_references
 audit_cases = json.loads(Path(args.audit_cases).read_text()) if args.audit_cases else None
 if audit_cases is not None:
     assert len(audit_cases) and not args.dart and not args.balance_collection
+if args.local_sampling:
+    assert audit_cases is None and not args.balance_collection and args.require_strict_success
 quotas = {'train': args.success_per_reference, 'validation': args.validation_per_reference}
 accepted = {split: collections.Counter() for split in quotas}
 demonstrations = {split: [] for split in quotas}
 results, audits, batch_timings = [], [], []
 started = time.perf_counter()
-client = GiskardClient(out/'giskard-service.log', args.workers)
+client = GiskardClient(out/'giskard-service.log', args.workers,
+    manifest=profile['garmi_task']['multi_object']['manifest'] if object_name != 'bowl' else None,
+    object_name=object_name, precision=profile.get('expert_precision'),
+    contact_policy=profile['garmi_task'].get('contact_policy','fingers_only'),
+    **planner_collision_settings(profile))
 maximum_action_error = 0.
 dart_events = []
 dart_rng = np.random.default_rng(args.seed + 1)
@@ -72,6 +91,9 @@ dart_ticks = round(.15 / env.step_dt)
 assert np.isclose(dart_ticks * env.step_dt, .15)
 frozen = json.loads(Path(profile['evaluation']['cases']).read_text())
 heldout_keys = {tuple(c['robot_state']+c['object_state']) for c in frozen}
+local_spec = json.loads(Path(args.local_sampling).read_text()) if args.local_sampling else None
+local_spec_sha256 = hashlib.sha256(Path(args.local_sampling).read_bytes()).hexdigest() if local_spec else None
+bootstrap_sources = []
 previous_seconds = 0.
 start_batch = 0
 collection_segments = []
@@ -82,13 +104,21 @@ if args.resume:
     previous = json.loads((out/'summary.json').read_text())
     assert previous['status'] in ('failed', 'collecting') and audit_cases is None
     assert previous['configuration_sha256'] == hashlib.sha256(Path(args.config).read_bytes()).hexdigest()
-    assert previous['num_envs'] == args.num_envs and previous['quotas'] == quotas
+    assert previous['num_envs'] == args.num_envs or args.allow_parallel_resize
+    assert previous['quotas'] == quotas
     assert previous['quota_references'] == references and previous['balance_collection'] == args.balance_collection
     assert previous['command_version'] == COMMAND_VERSION
     assert bool(previous['augmentation']) == args.dart
+    assert previous.get('local_sampling_sha256') == local_spec_sha256
+    assert previous.get('require_strict_success', False) == args.require_strict_success
+    assert not args.bootstrap_train and not args.bootstrap_validation
+    bootstrap_sources = previous.get('bootstrap_sources', [])
     collection_segments = previous.get('collection_segments', [])
     if not collection_segments:
         collection_segments = [dict(seed=previous['seed'], seconds=previous['wall_seconds'], status=previous['status'])]
+    for segment in collection_segments:
+        segment.setdefault('num_envs', previous['num_envs'])
+        segment.setdefault('workers', previous.get('workers'))
     assert args.seed not in {s['seed'] for s in collection_segments}, 'Resume needs a new independent sampling seed'
     archive = out/f'recovery-before-seed-{args.seed}'
     archive.mkdir()
@@ -109,8 +139,41 @@ if args.resume:
     maximum_action_error = previous['maximum_action_alignment_error']
     maximum_reset_roundtrip_error = previous.get('maximum_reset_roundtrip_error_m', 0.)
     previous_seconds = previous['wall_seconds']
-    start_batch = 1 + max(int(re.search(r'-b(\d+)-c', r['id'])[1]) for r in results)
-collection_segments.append(dict(seed=args.seed, start_batch=start_batch, status='running'))
+    start_batch = 1 + max((int(re.search(r'-b(\d+)-c', r['id'])[1]) for r in results), default=-1)
+elif args.bootstrap_train or args.bootstrap_validation:
+    assert local_spec is not None and args.require_strict_success
+    imported_ids, imported_states = {}, set()
+    for split, paths in [('train', args.bootstrap_train), ('validation', args.bootstrap_validation)]:
+        for source in paths:
+            source_path = Path(source)
+            manifest = json.loads(source_path.read_text())
+            assert manifest['status'] == 'complete' and manifest['command_version'] == COMMAND_VERSION
+            bootstrap_sources.append(dict(split=split, file=source, sha256=hashlib.sha256(source_path.read_bytes()).hexdigest()))
+            for row in manifest['demonstrations']:
+                assert row['split'] == split and row['initial_case']['object'] == object_name
+                assert strict_success(row) and bool(row.get('augmentation')) == args.dart
+                assert tuple(row['initial_case']['robot_state']+row['initial_case']['object_state']) not in heldout_keys
+                if row['id'] in imported_ids:
+                    assert imported_ids[row['id']] == (split, row['sha256'])
+                    continue
+                imported_ids[row['id']] = (split, row['sha256'])
+                assert hashlib.sha256(Path(row['file']).read_bytes()).hexdigest() == row['sha256']
+                if row['reference'] not in references or accepted[split][row['reference']] >= quotas[split]:
+                    continue
+                key = tuple(row['initial_case']['robot_state']+row['initial_case']['object_state'])
+                assert key not in imported_states
+                imported_states.add(key)
+                demonstrations[split].append(dict(row, strict_success_verified=True))
+                accepted[split][row['reference']] += 1
+local_sampler = None
+if local_spec is not None:
+    assert local_spec['object'] == object_name and set(references) <= set(local_spec['references'])
+    excluded = frozen + excluded_cases(local_spec)
+    excluded += [r['initial_case'] for rows in demonstrations.values() for r in rows]
+    excluded += [r['initial_case'] for r in results]
+    local_sampler = LocalCaseSampler(local_spec, args.seed+2, excluded)
+collection_segments.append(dict(seed=args.seed, start_batch=start_batch, status='running',
+                               num_envs=args.num_envs, workers=args.workers))
 
 
 def atomic(path, data):
@@ -126,11 +189,12 @@ def complete():
 
 
 def save(status, **extra):
-    value = dict(status=status, seed=args.seed, num_envs=args.num_envs, results=results,
+    value = dict(status=status, seed=args.seed, num_envs=args.num_envs, workers=args.workers, results=results,
         counts=dict(collections.Counter(r['reason'] for r in results)), accepted=accepted,
         quotas=quotas, wall_seconds=previous_seconds+time.perf_counter()-started, timing=client.timing(),
-        task=task, command_version=COMMAND_VERSION, configuration_sha256=hashlib.sha256(Path(args.config).read_bytes()).hexdigest(),
-        collection='random normal reset; no IK/path screening or teleport to grasp',
+        task=task, expert_precision=profile.get('expert_precision'), command_version=COMMAND_VERSION, configuration_sha256=hashlib.sha256(Path(args.config).read_bytes()).hexdigest(),
+        collection=('Frozen local XY windows around successful PARK-arm approach starts; split/reference balanced quotas'
+                    if local_spec else 'random normal reset; no IK/path screening or teleport to grasp'),
         augmentation='ga_ddpg_dart' if args.dart else None,
         dart=dict(events=len(dart_events),translation_per_axis_m=.04,rotation_per_axis_rad=.2,
             probability=.5,logical_expert_steps=[6,12],logical_action_seconds=.15,
@@ -140,9 +204,13 @@ def save(status, **extra):
         maximum_action_alignment_error=maximum_action_error, **extra)
     collection_segments[-1].update(seconds=time.perf_counter()-started, status=status)
     value.update(audit_cases=args.audit_cases, quota_references=references,
+                 batch_timings_seconds=batch_timings, allow_parallel_resize=args.allow_parallel_resize,
+                 local_sampling=args.local_sampling, local_sampling_sha256=local_spec_sha256,
+                 require_strict_success=args.require_strict_success, bootstrap_sources=bootstrap_sources,
+                 strict_successes=sum(strict_success(r) for r in results),
                  collection_segments=collection_segments, resumed=args.resume,
                  maximum_reset_roundtrip_error_m=maximum_reset_roundtrip_error,
-                 balance_collection=args.balance_collection,
+        balance_collection=args.balance_collection,
                  selection=('Every supplied audit case, without success filtering' if audit_cases is not None
                             else 'First physical successes per reference; split assigned before execution'))
     atomic(out/'summary.json', value)
@@ -169,7 +237,21 @@ try:
             maximum_reset_roundtrip_error = max(maximum_reset_roundtrip_error, roundtrip_error)
         splits = ['validation' if (batch*args.num_envs+i) % 4 == 0 else 'train' for i in range(args.num_envs)]
         valid_count = len(cases)
-        if audit_cases is not None:
+        if local_sampler is not None:
+            import copy
+            chunk = local_sampler.sample(args.num_envs, references, accepted, quotas)
+            valid_count = len(chunk)
+            assert valid_count, 'Unfilled quota without an available local reference'
+            planned_splits = [c['split'] for c in chunk]
+            env.grasp_bank.restore(copy.deepcopy(chunk) + [copy.deepcopy(chunk[-1]) for _ in range(args.num_envs-valid_count)])
+            cases = env.grasp_bank.cases()
+            splits = planned_splits + [planned_splits[-1]]*(args.num_envs-valid_count)
+            for i in range(valid_count):
+                error = max(abs(a-b) for field in ['robot_state','object_state'] for a,b in zip(chunk[i][field],cases[i][field]))
+                maximum_reset_roundtrip_error = max(maximum_reset_roundtrip_error, error)
+                assert error < 5.e-5, ('Local case restore drift', error)
+                cases[i]['source_window'] = chunk[i]['source_window']
+        elif audit_cases is not None:
             import copy
             chunk = audit_cases[batch*args.num_envs:(batch+1)*args.num_envs]
             valid_count = len(chunk)
@@ -224,6 +306,7 @@ try:
         event_ids = np.full(count, -1, int)
         perturbation_counts = np.zeros(count, int)
         stage = np.zeros(count, bool)
+        last_expert_diagnostics = [None] * count
         xs[0] = obs.cpu().numpy()
         phases[0] = env.fixed_finish.phase.cpu().numpy()
         batch_start = time.perf_counter()
@@ -255,6 +338,7 @@ try:
             joint_commands = measured_joints.clone() if joint_delta else None
             audit_start = len(audits)
             for i, request, command in zip(selected, requests, commands):
+                last_expert_diagnostics[i] = command.get('diagnostic')
                 if command['status'] != 'command_found':
                     results.append(dict(id=cases[i]['id'], initial_case=cases[i], reference=cases[i]['reference'],
                         split=splits[i], reason='expert_query_failed', step=step, expert_result=command))
@@ -306,20 +390,35 @@ try:
                         event.update(after_pose=np.r_[positions[i],rotations[i]].tolist(),
                             actual_translation_m=float(np.linalg.norm(positions[i]-before[:3])),
                             actual_rotation_rad=float(angle),terminated_during_perturbation=bool(ended[i]))
+            ending_cases = env.grasp_bank.cases() if ended.any() else []
             for i in np.flatnonzero(ended):
-                reason = next((key for key in ('collision','dropped','out_of_bounds','success','attempt_failed') if bool(d[key][i])), 'timeout')
+                reason = next((key for key in ('collision','dropped','out_of_bounds','success','approach_timeout','attempt_failed') if bool(d[key][i])), 'timeout')
                 case = cases[i]
                 row = dict(id=case['id'], reference=case['reference'], initial_case=case, split=splits[i],
                     region=case['region'], depth=case['depth'], reason=reason, steps=step+1,
                     seconds=(step+1)*env.step_dt, command_version=COMMAND_VERSION,
                     handover_trigger=int(d['handover_trigger'][i]), handover_distance=float(d['handover_distance'][i]),
+                    handover_angle=float(d['handover_angle'][i]),
+                    close_start_distance=float(env.fixed_finish.close_start_distance[i]),
+                    close_start_angle=float(env.fixed_finish.close_start_angle[i]),
+                    final_phase=int(env.fixed_finish.phase[i]),
+                    final_gripper_width=float(d['gripper_width'][i]),
                     height=float(d['height'][i]), contact=bool(d['contact'][i]), supported=bool(d['supported'][i]),
                     slip=float(d['slip'][i]), hold_seconds=float(env.grasp_state['hold'][i]),
                     teacher_reached_pregrasp=bool(stage[i]),
                     augmentation='ga_ddpg_dart' if args.dart else None,
                     perturbations=int(perturbation_counts[i]),
                     collision_bodies={body:float(f) for body,f in zip(BODIES,d['forbidden_force'][i]) if f>.1})
-                row['selected_for_dataset'] = bool(reason == 'success' and accepted[splits[i]][case['reference']] < quotas[splits[i]] and (not args.dart or perturbation_counts[i]>0))
+                row['final_snapshot'] = dict(**ending_cases[i],
+                    observed_joint_positions=env.scene['robot'].data.joint_pos[i,env.observed_joint_ids].cpu().tolist(),
+                    goal_relative_position=xs[step+1,i,30:33].tolist(),
+                    goal_relative_quaternion=xs[step+1,i,33:37].tolist())
+                row['last_expert_diagnostic'] = last_expert_diagnostics[i]
+                row['strict_success_verified'] = strict_success(row)
+                row['selected_for_dataset'] = bool(reason == 'success' and
+                    (not args.require_strict_success or row['strict_success_verified']) and
+                    accepted[splits[i]][case['reference']] < quotas[splits[i]] and
+                    (not args.dart or perturbation_counts[i]>0))
                 if reason == 'success':
                     assert row['height'] >= .08 and row['contact'] and not row['supported'] and row['slip'] < .02 and row['hold_seconds'] >= 2.
                     assert not np.any(np.diff(teacher_stages[:step+1,i].astype(int)) < 0)

@@ -1,0 +1,12 @@
+{
+  "status": "40_references_ready_expert_approach_requires_confirmation",
+  "source_directory": "runs/validated-reference-bank-v4/final/mug/expert-inputs",
+  "source_configuration_sha256": "a31ca522720d4bb4f75a70320d67869aed57b1de59146c69131cd4b7fea5f8f6",
+  "source_runtime_check_sha256": "1a95995fce01f49c71a0cced50b31e81f8a0782279da36321294b32b0d253297",
+  "published_configuration_sha256": "27e285cf22bc671d226124276fe40f33c677714f13ee730c1db0fa86f2661bf2",
+  "reference_count": 40,
+  "expert_trajectories_generated": 0,
+  "optimizer_updates": 0,
+  "note": "Runtime input paths use project resources and assets. Full historical physics evidence remains under runs; compact accepted evidence is copied here.",
+  "runtime_reset_check_sha256": "4597834eca344d4bfa65f82d39856edea389966497160722d642d004432aa8fd"
+}

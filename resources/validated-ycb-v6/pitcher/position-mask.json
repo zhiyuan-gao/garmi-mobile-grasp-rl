@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "status": "validated",
+  "object_name": "pitcher",
+  "bank_path": "resources/validated-ycb-v6/pitcher/bank.json",
+  "reference_ids": [
+    "pitcher-innerouter-oblique-010",
+    "pitcher-v4e-n089",
+    "pitcher-v4e-n029",
+    "pitcher-v4c-c00622",
+    "pitcher-v4f-n054",
+    "pitcher-v4c-c01136",
+    "pitcher-v4c-c00810",
+    "pitcher-v4e-n067",
+    "pitcher-v4a-c03607",
+    "pitcher-v4a-c06611",
+    "pitcher-v4a-c06403",
+    "pitcher-v4a-c03379",
+    "pitcher-v4a-c02164",
+    "pitcher-v4g-n111",
+    "pitcher-v4a-c00004",
+    "pitcher-v4a-c03397",
+    "pitcher-v4g-n040",
+    "pitcher-v4a-c00097",
+    "pitcher-v4g-n149",
+    "pitcher-v4g-n035",
+    "pitcher-v4g-n045",
+    "pitcher-v4f-n116",
+    "pitcher-v4a-c04606",
+    "pitcher-v4g-n129",
+    "pitcher-v4g-n124",
+    "pitcher-v4a-c01606",
+    "pitcher-v4f-n096",
+    "pitcher-v4f-n041",
+    "pitcher-v4e-n018",
+    "pitcher-v4a-c00425",
+    "pitcher-v4f-n037",
+    "pitcher-v4g-n136",
+    "pitcher-v4e-n024",
+    "pitcher-v4g-n103",
+    "pitcher-v4g-n050",
+    "pitcher-v4g-n025",
+    "pitcher-v4g-n022",
+    "pitcher-v4g-n160",
+    "pitcher-v4g-n049",
+    "pitcher-v4e-n063"
+  ],
+  "bowl_map_yaw_degrees": 0.0,
+  "bowl_origin_z_m": 0.9488219999999999,
+  "cell_size_m": 0.01,
+  "numeric_position_tolerance_m": 1e-06,
+  "sources_sha256": {
+    "runs/wrist-contact-v6/pitcher/new-repeat/position-mask.json": "82cd8438d2cff5abe2410272cff8569a95ba990b0303ea2884e4f085eedc50ec",
+    "resources/validated-ycb-v5/pitcher/position-mask.json": "20f4d1fb120e50f0b844ad6a5fe79cb69a81baac1e4265397e0036100dd56462",
+    "runs/wrist-contact-v6/pitcher/extra/position-mask.json": "364c50b3ba132b74d512cefecb9c5f19d3985d84ca6fc1762bdb7d8dba12bf49",
+    "runs/wrist-contact-v6/pitcher/backup/position-mask.json": "81f593847c2a46b2159c8c9a83094edefb63f33715e4065c220d13d87b5efc62",
+    "resources/validated-ycb-v6/pitcher/bank.json": "c6b4cb7320561ca947609c6404fe302f944e8f89b1f396a1da4f940b0630b57d"
+  },
+  "regions": [
+    {
+      "name": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 0
+    },
+    {
+      "name": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 1
+    },
+    {
+      "name": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2750000000000001,
+          7.255
+        ],
+        [
+          1.285,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 2
+    },
+    {
+      "name": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 3
+    }
+  ],
+  "cells": [
+    {
+      "region": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        4,
+        8,
+        10,
+        14,
+        18,
+        21,
+        22,
+        25,
+        26,
+        29,
+        32,
+        35
+      ]
+    },
+    {
+      "region": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        2,
+        3,
+        11,
+        12
+      ]
+    },
+    {
+      "region": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2750000000000001,
+          7.255
+        ],
+        [
+          1.285,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        0
+      ]
+    },
+    {
+      "region": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        1,
+        5,
+        6,
+        7,
+        9,
+        13,
+        15,
+        16,
+        17,
+        19,
+        20,
+        23,
+        24,
+        27,
+        28,
+        30,
+        31,
+        33,
+        34,
+        36,
+        37,
+        38,
+        39
+      ]
+    }
+  ],
+  "extra_margin_m": 0.002,
+  "method": "Reindexed 1 cm local windows wholly covered by source geometry masks at the same per-reference opening.",
+  "scope": "Geometry clearance only; all physical labels must be retested with wrist permission.",
+  "empty_cells": [],
+  "allowed_cells_per_reference": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "placement_adjustment": "Only accepted local windows; no sampling across the original whole-counter rectangles."
+}

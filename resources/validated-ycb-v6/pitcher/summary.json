@@ -1,0 +1,14 @@
+{
+  "status": "complete",
+  "object": "pitcher",
+  "reference_count": 40,
+  "handle_count": 37,
+  "inner_outer_handle_count": 1,
+  "contact_policy": "fingers_and_wrist",
+  "configuration": "configs/pitcher-wrist-v6.yaml",
+  "configuration_sha256": "da1e3c8120125722a4365299a6c7ffbd0066db063ca0f264b9fe8309bff80c0e",
+  "validation_sha256": "c580d902afd1228d54aafb2b1cbcd2fff34dc6ac7484414f39fc22ac1d292f8b",
+  "scope": "Local +/-5 mm placement repeatability and at least one successful full approach from a legal parked-arm start per reference; not a random-reset success-rate guarantee",
+  "training_started": false,
+  "saved_traces_purpose": "Validation evidence only; not a formal expert training dataset"
+}

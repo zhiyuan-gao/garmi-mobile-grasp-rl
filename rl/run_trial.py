@@ -14,6 +14,7 @@ import yaml
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+CONTAINER = ['bash', str(ROOT / 'scripts/container_exec.sh')]
 parser = argparse.ArgumentParser()
 parser.add_argument("--out", required=True)
 parser.add_argument("--config", default="configs/task.yaml")
@@ -202,7 +203,7 @@ for p in files:
     shutil.copy2(p, destination)
 files += [p for p in (ROOT / "rl/assets").rglob("*") if p.suffix in (".usd", ".usda", ".json")]
 atomic_json(out / "fingerprint.json", {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
-cmd = ["docker", "exec", "-e", "PYTHONPATH=/workspace/rl", os.environ.get("GARMI_RL_CONTAINER", "garmi-mobile-grasp-rl"), "/isaac-sim/python.sh",
+cmd = CONTAINER + ["/isaac-sim/python.sh",
        "/workspace/rl/train_trial.py", "--headless", "--num_envs", str(args.num_envs),
        "--updates", str(args.updates), "--eval-interval", str(args.eval_interval),
        "--eval-envs", str(args.eval_envs), "--out", container_out,
@@ -239,7 +240,7 @@ signal.signal(signal.SIGINT, request_stop)
 with (out / "run.log").open("w") as log, (out / "gpu.csv").open("w", buffering=1) as gpu:
     gpu.write("timestamp,memory_used_mib,utilization_percent,temperature_c\n")
     process = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
-    supervision["docker_exec_pid"] = process.pid
+    supervision["container_exec_pid"] = process.pid
     atomic_json(out / "supervisor.json", supervision)
     sent_stop = False
     offset = 0
@@ -257,7 +258,7 @@ with (out / "run.log").open("w") as log, (out / "gpu.csv").open("w", buffering=1
                 supervision["errors"].append(word)
                 stop = True
         if stop and not sent_stop and progress.get("pid"):
-            subprocess.run(["docker", "exec", os.environ.get("GARMI_RL_CONTAINER", "garmi-mobile-grasp-rl"), "kill", "-TERM", str(progress["pid"])], check=False)
+            subprocess.run(CONTAINER + ["kill", "-TERM", str(progress["pid"])], check=False)
             sent_stop = True
         sample = subprocess.run(["nvidia-smi", "--query-gpu=timestamp,memory.used,utilization.gpu,temperature.gpu",
                                  "--format=csv,noheader,nounits"], capture_output=True, text=True)
@@ -277,7 +278,7 @@ supervision["status"] = "complete" if completed else ("interrupted" if progress[
 
 if completed and args.defer_evaluation and not stop:
     supervision["status"] = "running"
-    deferred_command = ["docker", "exec", "-e", "PYTHONPATH=/workspace/rl", os.environ.get("GARMI_RL_CONTAINER", "garmi-mobile-grasp-rl"),
+    deferred_command = CONTAINER + [
         "/isaac-sim/python.sh", "/workspace/rl/evaluate_trial_checkpoint.py",
         "--out", container_out, "--checkpoint", progress["latest_checkpoint"],
         "--eval-envs", str(args.eval_envs)]
@@ -291,7 +292,7 @@ if completed and args.defer_evaluation and not stop:
         while deferred.poll() is None:
             progress = read_progress()
             if stop and not sent_stop and progress.get("evaluation_mode") == "after_training_process_exit":
-                subprocess.run(["docker", "exec", os.environ.get("GARMI_RL_CONTAINER", "garmi-mobile-grasp-rl"), "kill", "-TERM", str(progress["pid"])], check=False)
+                subprocess.run(CONTAINER + ["kill", "-TERM", str(progress["pid"])], check=False)
                 sent_stop = True
             sample = subprocess.run(["nvidia-smi", "--query-gpu=timestamp,memory.used,utilization.gpu,temperature.gpu",
                                      "--format=csv,noheader,nounits"], capture_output=True, text=True)
@@ -312,5 +313,5 @@ if completed and args.defer_evaluation and not stop:
 supervision["end_unix"] = time.time()
 atomic_json(out / "supervisor.json", supervision)
 write_report(progress, supervision)
-subprocess.run(["docker", "exec", os.environ.get("GARMI_RL_CONTAINER", "garmi-mobile-grasp-rl"), "chown", "-R", f"{os.getuid()}:{os.getgid()}", container_out], check=False)
+subprocess.run(CONTAINER + ["chown", "-R", f"{os.getuid()}:{os.getgid()}", container_out], check=False)
 print(json.dumps(supervision, ensure_ascii=False), flush=True)

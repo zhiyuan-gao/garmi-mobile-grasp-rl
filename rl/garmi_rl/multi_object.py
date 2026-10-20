@@ -41,11 +41,18 @@ class GraspBank:
         self.tables = []
         self.corners = []
         self.pools = []
+        self.opening_tables = []
+        default_opening = getattr(env.cfg, 'fixed_finish', {}).get('gripper_open_width_m', .08)
+        env.grasp_open_width = torch.full((env.num_envs,), default_opening, device=env.device)
         for obj in self.objects:
             for path_key, hash_key in (("mesh","mesh_sha256"),("usd","usd_sha256")):
                 if hashlib.sha256(Path(obj[path_key]).read_bytes()).hexdigest() != obj[hash_key]:
                     raise ValueError(f"Asset changed: {obj['name']} {path_key}")
             refs = obj["references"]
+            openings = [r.get('opening_m', default_opening) for r in refs]
+            if any(not 0 < w <= .08 for w in openings):
+                raise ValueError('Reference opening_m must be in (0, .08]')
+            self.opening_tables.append(torch.tensor(openings, device=env.device))
             self.references.append(refs)
             self.tables.append(torch.tensor([r["position"]+r["quaternion"] for r in refs], device=env.device))
             self.corners.append(torch.tensor(list(itertools.product(*zip(*obj["bounds"]))), device=env.device))
@@ -61,6 +68,9 @@ class GraspBank:
             self.pools.append(torch.tensor(indices, device=env.device, dtype=torch.long))
 
     def reset(self, ids):
+        if 'training_reset_pool' in self.settings:
+            from .local_ppo import reset_from_training_pool
+            return reset_from_training_pool(self, ids)
         if hasattr(self.env.cfg, "kitchen"):
             from .kitchen import reset_filtered
             return reset_filtered(self, ids)
@@ -109,6 +119,11 @@ class GraspBank:
         objstate[:,7:] = 0
         return root, objstate
 
+    def set_openings(self, ids):
+        for objid, table in enumerate(self.opening_tables):
+            subset = ids[self.object_ids[ids] == objid]
+            self.env.grasp_open_width[subset] = table[self.reference_ids[subset]]
+
     def cases(self):
         env = self.env
         robot = env.scene["robot"].data.root_state_w.clone()
@@ -137,6 +152,12 @@ class GraspBank:
             env.grasp_pos_o[i] = self.tables[objid][index,:3]
             env.grasp_quat_o[i] = self.tables[objid][index,3:]
         ids = torch.arange(len(cases),device=env.device)
+        self.set_openings(ids)
+        robot = env.scene['robot']
+        finger_ids = robot.find_joints('right_fr3_finger_joint.*')[0]
+        finger_q = (env.grasp_open_width[ids, None]/2).expand(-1, 2)
+        robot.write_joint_state_to_sim(finger_q, torch.zeros_like(finger_q), joint_ids=finger_ids, env_ids=ids)
+        robot.set_joint_position_target(finger_q, joint_ids=finger_ids, env_ids=ids)
         for key, scene_key in (("robot_state","robot"),("object_state","object")):
             state = torch.tensor([c[key] for c in cases], device=env.device)
             state[:,:3] += env.scene.env_origins[ids]

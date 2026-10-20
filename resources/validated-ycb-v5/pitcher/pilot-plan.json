@@ -1,0 +1,14 @@
+{
+  "status": "pilot_complete_full_audit_coverage_gate_failed",
+  "case_count": 40,
+  "method": "One already reset/restore-checked nominal initial state per retained reference; parked robot start. No expert trajectory has been generated.",
+  "configuration": "resources/validated-ycb-v5/pitcher/task.yaml",
+  "configuration_sha256": "af8e1bf5e3d0a5a4beaade9a0cf1391d51c4494f0f9297a6fb69fddd74b1f71d",
+  "cases": "resources/validated-ycb-v5/pitcher/pilot-cases.json",
+  "cases_sha256": "dbdf106a567402118d591ba4806d8db5f3eac81698e8318e63534ec85c64c242",
+  "expert_trajectories_generated": 9,
+  "optimizer_updates": 0,
+  "collection_plan": "runs/ycb-expert-collection-v1/plan.json",
+  "results": "runs/ycb-expert-collection-v1/pitcher/pilot/summary.json",
+  "full_audit_results": "runs/ycb-expert-collection-v1/pitcher/expert-check-400/summary.json"
+}
