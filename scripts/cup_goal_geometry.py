@@ -22,8 +22,8 @@ def convex_geometry(mesh):
 
 
 class GoalGeometry:
-    def __init__(self):
-        self.bank = json.loads(BANK.read_text())['objects'][0]
+    def __init__(self, bank_path=BANK):
+        self.bank = json.loads(Path(bank_path).read_text())['objects'][0]
         self.scene_meshes = pickle.load((PREFLIGHT / 'scene_meshes.pkl').open('rb'))
         self.scene_geometries = []
         self.scene_objects = []
