@@ -25,3 +25,4 @@ events.out.tfevents.*
 garmi-rl-*.tar.gz
 SHA256SUMS
 transfer/
+mug-ppo-*-resume.tar.gz
