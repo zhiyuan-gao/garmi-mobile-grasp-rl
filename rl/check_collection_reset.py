@@ -84,9 +84,6 @@ try:
     (out/'summary.json').write_text(json.dumps(summary, indent=2))
     print('COLLECTION_RESET_CHECK_DONE', json.dumps(summary), flush=True)
 except BaseException:
-    # Application shutdown can mask exceptions; keep the failed check in the log.
+    # Kit's fast shutdown otherwise exits before Python prints the exception.
     traceback.print_exc()
-    raise
-finally:
-    env.close()
-    app.close()
+    app.set_setting('/app/fastShutdown', False)

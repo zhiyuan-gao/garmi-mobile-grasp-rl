@@ -133,6 +133,7 @@ def main():
         cooked_model='assets/cup/cooked-model.pkl', files_sha256=hashes))
     config.pop('expert_bc', None)
     config.pop('evaluation', None)
+    config['garmi_task']['base_velocity_frame'] = 'root_link'
     config['garmi_task']['multi_object'] = dict(manifest='/workspace/assets/cup/bank.json',
         objects=['cup'], reference_ids={'cup':mask['reference_ids']}, split='all')
     settings.update(mask='/workspace/assets/cup/position-mask.json',

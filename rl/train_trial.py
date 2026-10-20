@@ -216,6 +216,8 @@ if initialization["mode"] == "scratch":
                for s in initialization["normalizers"].values())
 atomic_json(out / f"initialization_{resume_update:04d}.json", initialization)
 print("INITIALIZATION_CHECK", json.dumps(initialization), flush=True)
+frozen_state_normalization = (copy.deepcopy(agent.checkpoint_modules['state_preprocessor'].state_dict())
+                              if agent_cfg.get('expert_bc') else None)
 
 counts = collections.Counter(progress["episode_counts"])
 segment_id = len(progress["segments"])
@@ -256,6 +258,10 @@ agent._update = measured_update
 
 
 def save_checkpoint(update):
+    if frozen_state_normalization is not None:
+        current = agent.checkpoint_modules['state_preprocessor'].state_dict()
+        assert all(torch.equal(current[k], v) for k, v in frozen_state_normalization.items()), 'BC state normalization changed during PPO'
+        progress['frozen_state_normalization_verified'] = True
     path = checkpoint_dir / f"update_{update:04d}.pt"
     temp = path.with_suffix(".tmp")
     agent.save(str(temp))

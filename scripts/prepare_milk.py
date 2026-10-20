@@ -64,6 +64,7 @@ def main():
     write(ASSETS/'expert.json',dict(object_name='milk',bank='assets/milk/bank.json',cooked_model='assets/milk/cooked-model.pkl',files_sha256=hashes))
     settings.update(mask='/workspace/assets/milk/position-mask.json',files_sha256=dict(mask=sha(ASSETS/'position-mask.json'),scene_usd=sha(ROOT/'assets/kitchen/kitchen.usda')))
     config.pop('expert_bc',None);config.pop('evaluation',None)
+    config['garmi_task']['base_velocity_frame'] = 'root_link'
     config['garmi_task']['multi_object']=dict(manifest='/workspace/assets/milk/bank.json',objects=['milk'],reference_ids={'milk':refs},split='all')
     OUT.mkdir(parents=True)
     forbidden=set()

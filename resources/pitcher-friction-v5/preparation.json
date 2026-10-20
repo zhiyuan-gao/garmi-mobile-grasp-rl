@@ -1,0 +1,21 @@
+{
+  "status": "candidate_input_archive_superseded_by_validated_40_profile",
+  "source": "runs/grasp-expansion-v4g/pitcher",
+  "source_bank_sha256": "999d179b9566acb93122b8d548392a76e5b7be680aec59c162af1ecae0fe7aa8",
+  "configuration": "resources/pitcher-friction-v5/task.yaml",
+  "configuration_sha256": "ef299368576e8fb9901ebfed2bcd14372674d26f16a8c699f1226a267868e6c8",
+  "candidate_reference_count": 160,
+  "validation_status": "Old-profile successful labels are not transferred to this profile.",
+  "asset": "assets/ycb/019_pitcher_base/contact-v5-friction",
+  "static_friction": 2.0,
+  "dynamic_friction": 2.0,
+  "expected_robot_contact_friction": 1.25,
+  "expected_worktop_contact_friction": 1.5,
+  "collision_geometry_unchanged": true,
+  "placement_cells_unchanged": true,
+  "expert_trajectories_generated": 0,
+  "optimizer_updates": 0,
+  "comparison": "runs/pitcher-friction-v5/comparison.json",
+  "runtime_material_audit": "runs/pitcher-friction-v5/runtime-materials.json",
+  "current_validated_configuration": "configs/pitcher-friction-v5.yaml"
+}

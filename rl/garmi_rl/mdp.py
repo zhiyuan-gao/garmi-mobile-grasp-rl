@@ -71,8 +71,8 @@ def diagnostics(env):
     slip = (rel-state["anchor"]).norm(dim=-1)
     height = obj[:,2]-state["initial_z"]
     supported = env.scene["support"].data.force_matrix_w.norm(dim=-1).amax(dim=(1,2)) > CONTACT_THRESHOLD
-    forbidden = torch.stack([env.scene[k].data.force_matrix_w_history.norm(dim=-1).flatten(1).amax(dim=1)
-                             for k in env.forbidden_sensors], dim=1)
+    from .contact_policy import collision_forces
+    forbidden, wrist_target_force = collision_forces(env)
     collision = forbidden.amax(dim=1) > CONTACT_THRESHOLD
     held = contact & (height >= .08) & ~supported & (slip < .02) & ~collision
     state["hold"] = torch.where(held, state["hold"] + env.step_dt, 0.)
@@ -89,6 +89,7 @@ def diagnostics(env):
                    | (state["ever_lifted"] & ~contact & (height < .02)))
     env.diagnostics = dict(finger_force=fingers, contact=contact, height=height, slip=slip,
         held=held, supported=supported, forbidden_force=forbidden, collision=collision,
+        wrist_target_force=wrist_target_force,
         dropped=dropped, out_of_bounds=out, success=(state["hold"] >= 2.) & ~collision,
         distance=(gp-hp).norm(dim=-1), angle=quat_error_magnitude(hq,gq),
         base_position=env.scene["robot"].data.root_pos_w.clone(),
@@ -100,12 +101,19 @@ def diagnostics(env):
                                reference_id=env.grasp_bank.reference_ids.clone())
     if hasattr(env, "fixed_finish"):
         finish = env.fixed_finish
+        if getattr(env.cfg, 'require_strict_success', False):
+            from .local_ppo import strict_pose_gate
+            env.diagnostics['physical_success'] = env.diagnostics['success'].clone()
+            env.diagnostics['success'] &= strict_pose_gate(
+                finish.trigger, finish.handover_distance, finish.handover_angle,
+                finish.close_start_distance, finish.close_start_angle) & ~dropped & ~out
         env.diagnostics.update(phase=finish.phase.clone(), phase_steps=finish.phase_steps.clone(),
             handover_trigger=finish.trigger.clone(),
             handover_distance=finish.handover_distance.clone(),
             handover_angle=finish.handover_angle.clone(),
-            attempt_failed=(finish.phase == 4) & (finish.phase_steps >= finish.ticks("hold_seconds"))
-                & ~env.diagnostics["success"])
+            approach_timeout=finish.approach_timed_out.clone(),
+            attempt_failed=finish.approach_timed_out | ((finish.phase == 4)
+                & (finish.phase_steps >= finish.ticks("hold_seconds")) & ~env.diagnostics["success"]))
     env.diagnostic_step = env.common_step_counter
     return env.diagnostics
 
@@ -124,7 +132,10 @@ def observation(env):
     previous_action = env.action_manager.action
     if hasattr(env, "fixed_finish"):
         previous_action = previous_action * (env.fixed_finish.phase == 0)[:, None]
-    state = torch.cat(((robot.data.joint_pos-robot.data.default_joint_pos)[:,ids],robot.data.joint_vel[:,ids],
+    joint_relative = (robot.data.joint_pos-robot.data.default_joint_pos)[:,ids]
+    # Keep the published observation frame independent of per-reference opening.
+    joint_relative[:, -2:] = robot.data.joint_pos[:, env.finger_joint_ids]-.04
+    state = torch.cat((joint_relative,robot.data.joint_vel[:,ids],
         basevel,env.action_manager.get_term("base").velocity,object_b,
         quat_apply_inverse(hq,obj.data.root_pos_w-hp),relp,relq,
         (fingers>CONTACT_THRESHOLD).float(), previous_action),dim=-1)
@@ -165,6 +176,9 @@ def reset(env, env_ids):
     r.write_root_pose_to_sim(root[:,:7],env_ids)
     r.write_root_velocity_to_sim(root[:,7:],env_ids)
     q = r.data.default_joint_pos[env_ids].clone()
+    if hasattr(env, 'grasp_bank'):
+        env.grasp_bank.set_openings(env_ids)
+        q[:, env.finger_joint_ids] = env.grasp_open_width[env_ids, None]/2
     r.write_joint_state_to_sim(q,torch.zeros_like(q),env_ids=env_ids)
     r.set_joint_position_target(q,env_ids=env_ids)
     rs = o.data.default_root_state[env_ids].clone()

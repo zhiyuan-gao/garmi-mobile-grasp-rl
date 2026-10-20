@@ -22,7 +22,8 @@ class TestExpertContract(unittest.TestCase):
         scene=Scene(robot=robot,object=S(data=S(root_state_w=link)))
         env=S(scene=scene,action_manager=S(action=torch.zeros(1,10),
               get_term=lambda _:S(velocity=torch.zeros(1,3))),
-              cfg=S(joint_delta_actions=False,fixed_finish={'approach_seconds':30.}),
+              cfg=S(joint_delta_actions=False,fixed_finish={'approach_seconds':30.},
+                    actions=S(base=S(velocity_at_link=True))),
               fixed_finish=S(phase_steps=torch.zeros(1),aligned_steps=torch.zeros(1)),
               episode_length_buf=torch.zeros(1),step_dt=.05)
         result=snapshot_queries(env,np.zeros((1,64)),[{'object':'cup','reference':'cup-r004'}],

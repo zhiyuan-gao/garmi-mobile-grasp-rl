@@ -38,6 +38,8 @@ def evaluate_checkpoint(checkpoint, update, *, out, args, agent_cfg, progress):
            "--headless", "--num_envs", str(args.eval_envs), "--seed", str(args.eval_seed),
            "--checkpoint", str(checkpoint), "--config", str(out / "ppo.yaml"),
            "--out", str(destination)]
+    if agent_cfg['garmi_task'].get('require_strict_success'):
+        cmd += ['--require-strict-success']
     tick = time.perf_counter()
     with (destination / "run.log").open("w") as log:
         result = run_evaluator(cmd, log)
@@ -48,6 +50,9 @@ def evaluate_checkpoint(checkpoint, update, *, out, args, agent_cfg, progress):
     if result.returncode or bad or "EVALUATION_DONE" not in log_text:
         raise RuntimeError(f"Independent evaluation failed: returncode={result.returncode}, errors={bad}")
     summary = json.loads((destination / "summary.json").read_text())
+    if agent_cfg['garmi_task'].get('require_strict_success'):
+        assert summary['require_strict_success']
+        assert all(r['strict_success_verified'] for r in summary['results'] if r['reason']=='success')
     if any(r is None for r in summary["results"]):
         raise RuntimeError("Evaluation did not finish all episodes")
     initial_hash = hashlib.sha256(json.dumps(summary.get("initial_cases",summary["initial_states"])).encode()).hexdigest()
@@ -85,6 +90,8 @@ def evaluate_paired_checkpoint(checkpoint, update, *, out, args, agent_cfg, prog
         "--num_envs", str(args.paired_eval_envs), "--seed", str(args.paired_eval_seed),
         "--checkpoint", str(checkpoint), "--config", str(out / "ppo.yaml"),
         "--cases", str(cases_path), "--out", str(destination)]
+    if agent_cfg['garmi_task'].get('require_strict_success'):
+        command += ['--require-strict-success']
     tick = time.perf_counter()
     with (destination / "run.log").open("w") as log:
         result = run_evaluator(command, log)

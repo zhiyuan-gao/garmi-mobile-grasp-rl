@@ -1,0 +1,172 @@
+{
+  "status": "passed",
+  "reference_count": 40,
+  "random_reset_cases": 400,
+  "maximum_roundtrip_error_m": 1.0490417476916036e-06,
+  "per_reference_openings_and_observations_verified": true,
+  "contact_policy": "fingers_and_wrist",
+  "configuration_sha256": "6ed06f602ea6ebe720bdd70e1da00fc2a487708df2a1ab6c1bb5b7e44f71ec80",
+  "references": [
+    {
+      "reference": "mug-innerouter-oblique-006",
+      "opening_m": 0.02
+    },
+    {
+      "reference": "mug-v3-ref007",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref004",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c07010",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref001",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref008",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c04923",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c00195",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c00172",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c01714",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c07600",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02805",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02898",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c05202",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c07230",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref024",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref025",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref023",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c00139",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02804",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02801",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c06400",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02411",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02006",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c00922",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c00461",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c04006",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c06006",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v3-ref030",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c00001",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c00807",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c06808",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c04017",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c06802",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c04013",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c02409",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c04008",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c05612",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4b-c00805",
+      "opening_m": 0.08
+    },
+    {
+      "reference": "mug-v4a-c05203",
+      "opening_m": 0.08
+    }
+  ],
+  "scope": "Runtime paths, reference indexing, reset/restore, and finger/observation consistency; physical successes are in validation.json"
+}

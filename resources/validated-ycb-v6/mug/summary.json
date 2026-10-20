@@ -1,0 +1,14 @@
+{
+  "status": "complete",
+  "object": "mug",
+  "reference_count": 40,
+  "handle_count": 10,
+  "inner_outer_handle_count": 1,
+  "contact_policy": "fingers_and_wrist",
+  "configuration": "configs/mug-wrist-v6.yaml",
+  "configuration_sha256": "6ed06f602ea6ebe720bdd70e1da00fc2a487708df2a1ab6c1bb5b7e44f71ec80",
+  "validation_sha256": "0c1918fe61aaf8c9620aaf82b26be8d35716fb59bd4ce041d83e22eef5ad93c0",
+  "scope": "Local +/-5 mm placement repeatability and at least one successful full approach from a legal parked-arm start per reference; not a random-reset success-rate guarantee",
+  "training_started": false,
+  "saved_traces_purpose": "Validation evidence only; not a formal expert training dataset"
+}

@@ -53,8 +53,8 @@ class PlanarVelocityAction(ActionTerm):
 @configclass
 class PlanarVelocityActionCfg(ActionTermCfg):
     class_type: type = PlanarVelocityAction
-    # Commands refer to base_link, as do planner poses. Isaac's generic root
-    # velocity writer instead addresses the displaced center of mass.
-    velocity_at_link: bool = True
+    # Historical PPO profiles command the COM. New expert tasks explicitly
+    # select root_link so the planner and execution share a velocity origin.
+    velocity_at_link: bool = False
     scale: tuple = (.15, .15, .4)
     acceleration: tuple = (.3, .3, .8)

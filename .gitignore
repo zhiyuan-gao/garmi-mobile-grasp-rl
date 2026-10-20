@@ -9,6 +9,7 @@ bootstrap/
 runs/
 results/
 third_party/IsaacLab/
+third_party/GraspGen/
 *.pt
 *.pth
 *.npz
@@ -20,3 +21,8 @@ third_party/IsaacLab/
 *.log
 events.out.tfevents.*
 .pytest_cache/
+.runtime/
+garmi-rl-*.tar.gz
+SHA256SUMS
+transfer/
+mug-ppo-*-resume.tar.gz

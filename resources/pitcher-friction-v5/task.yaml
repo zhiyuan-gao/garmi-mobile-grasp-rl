@@ -1,0 +1,304 @@
+agent:
+  class: PPO
+  clip_predicted_values: true
+  discount_factor: 0.998
+  entropy_loss_scale: 0.01
+  experiment:
+    checkpoint_interval: 0
+    directory: /workspace/runs
+    experiment_name: pitcher_friction_v5
+    write_interval: 24
+  grad_norm_clip: 1.0
+  kl_threshold: 0.0
+  lambda: 0.95
+  learning_epochs: 5
+  learning_rate: 0.0001
+  learning_rate_scheduler: KLAdaptiveLR
+  learning_rate_scheduler_kwargs:
+    kl_threshold: 0.01
+  learning_starts: 0
+  mini_batches: 4
+  random_timesteps: 0
+  ratio_clip: 0.2
+  rewards_shaper_scale: 1.0
+  rollouts: 24
+  state_preprocessor: RunningStandardScaler
+  state_preprocessor_kwargs: null
+  time_limit_bootstrap: true
+  value_clip: 0.2
+  value_loss_scale: 1.0
+  value_preprocessor: RunningStandardScaler
+  value_preprocessor_kwargs: null
+garmi_task:
+  action_space: base_velocity_joint_delta_v1
+  approach_reward: gap_pose_v1
+  approach_reward_parameters:
+    distance_clip_m: 2.0
+    distance_scale_per_m: 2.0
+  controller:
+    alignment_angle: 0.15
+    alignment_distance: 0.015
+    alignment_seconds: 0.1
+    approach_seconds: 30.0
+    close_seconds: 2.0
+    hold_seconds: 3.0
+    lift_distance: 0.12
+    lift_seconds: 3.0
+    settle_seconds: 0.5
+  episode_length_s: 39.0
+  kitchen:
+    base_bounds_map_xy:
+    - - -0.25
+      - 6.2
+    - - 0.85
+      - 6.5
+    base_map_yaw_degrees: 90.0
+    bowl_map_yaw_degrees: 0.0
+    bowl_regions:
+    - bounds_map_xy:
+      - - -0.23
+        - 7.23
+      - - 0.55
+        - 7.61
+      name: left
+      probability: 0.75
+    - bounds_map_xy:
+      - - 1.17
+        - 7.23
+      - - 1.43
+        - 7.61
+      name: right
+      probability: 0.25
+    drop_height_m: 0.845
+    files_sha256:
+      mask: 6c805558ebf7e121108b8cf8468223535d35fabc2d566bf2f87b4b31d593586e
+      scene_usd: 640e59de11726c31fbc411aa7f44a25c754b0b65030b20907b5f77e8ca526080
+    mask: /workspace/resources/pitcher-friction-v5/position-mask.json
+    movement_bounds_task_xy:
+    - - -0.5
+      - -1.4
+    - - 0.45
+      - 1.2
+    scene_usd: /workspace/assets/kitchen/kitchen.usda
+  multi_object:
+    manifest: /workspace/resources/pitcher-friction-v5/bank.json
+    objects:
+    - pitcher
+    reference_ids:
+      pitcher:
+      - pitcher-v4g-n001
+      - pitcher-v4g-n002
+      - pitcher-v4g-n003
+      - pitcher-v4g-n004
+      - pitcher-v4g-n005
+      - pitcher-v4g-n006
+      - pitcher-v4g-n007
+      - pitcher-v4g-n008
+      - pitcher-v4g-n009
+      - pitcher-v4g-n010
+      - pitcher-v4g-n011
+      - pitcher-v4g-n012
+      - pitcher-v4g-n013
+      - pitcher-v4g-n014
+      - pitcher-v4g-n015
+      - pitcher-v4g-n016
+      - pitcher-v4g-n017
+      - pitcher-v4g-n018
+      - pitcher-v4g-n019
+      - pitcher-v4g-n020
+      - pitcher-v4g-n021
+      - pitcher-v4g-n022
+      - pitcher-v4g-n023
+      - pitcher-v4g-n024
+      - pitcher-v4g-n025
+      - pitcher-v4g-n026
+      - pitcher-v4g-n027
+      - pitcher-v4g-n028
+      - pitcher-v4g-n029
+      - pitcher-v4g-n030
+      - pitcher-v4g-n031
+      - pitcher-v4g-n032
+      - pitcher-v4g-n033
+      - pitcher-v4g-n034
+      - pitcher-v4g-n035
+      - pitcher-v4g-n036
+      - pitcher-v4g-n037
+      - pitcher-v4g-n038
+      - pitcher-v4g-n039
+      - pitcher-v4g-n040
+      - pitcher-v4g-n041
+      - pitcher-v4g-n042
+      - pitcher-v4g-n043
+      - pitcher-v4g-n044
+      - pitcher-v4g-n045
+      - pitcher-v4g-n046
+      - pitcher-v4g-n047
+      - pitcher-v4g-n048
+      - pitcher-v4g-n049
+      - pitcher-v4g-n050
+      - pitcher-v4g-n051
+      - pitcher-v4g-n052
+      - pitcher-v4g-n053
+      - pitcher-v4g-n054
+      - pitcher-v4g-n055
+      - pitcher-v4g-n056
+      - pitcher-v4g-n057
+      - pitcher-v4g-n058
+      - pitcher-v4g-n059
+      - pitcher-v4g-n060
+      - pitcher-v4g-n061
+      - pitcher-v4g-n062
+      - pitcher-v4g-n063
+      - pitcher-v4g-n064
+      - pitcher-v4g-n065
+      - pitcher-v4g-n066
+      - pitcher-v4g-n067
+      - pitcher-v4g-n068
+      - pitcher-v4g-n069
+      - pitcher-v4g-n070
+      - pitcher-v4g-n071
+      - pitcher-v4g-n072
+      - pitcher-v4g-n073
+      - pitcher-v4g-n074
+      - pitcher-v4g-n075
+      - pitcher-v4g-n076
+      - pitcher-v4g-n077
+      - pitcher-v4g-n078
+      - pitcher-v4g-n079
+      - pitcher-v4g-n080
+      - pitcher-v4g-n081
+      - pitcher-v4g-n082
+      - pitcher-v4g-n083
+      - pitcher-v4g-n084
+      - pitcher-v4g-n085
+      - pitcher-v4g-n086
+      - pitcher-v4g-n087
+      - pitcher-v4g-n088
+      - pitcher-v4g-n089
+      - pitcher-v4g-n090
+      - pitcher-v4g-n091
+      - pitcher-v4g-n092
+      - pitcher-v4g-n093
+      - pitcher-v4g-n094
+      - pitcher-v4g-n095
+      - pitcher-v4g-n096
+      - pitcher-v4g-n097
+      - pitcher-v4g-n098
+      - pitcher-v4g-n099
+      - pitcher-v4g-n100
+      - pitcher-v4g-n101
+      - pitcher-v4g-n102
+      - pitcher-v4g-n103
+      - pitcher-v4g-n104
+      - pitcher-v4g-n105
+      - pitcher-v4g-n106
+      - pitcher-v4g-n107
+      - pitcher-v4g-n108
+      - pitcher-v4g-n109
+      - pitcher-v4g-n110
+      - pitcher-v4g-n111
+      - pitcher-v4g-n112
+      - pitcher-v4g-n113
+      - pitcher-v4g-n114
+      - pitcher-v4g-n115
+      - pitcher-v4g-n116
+      - pitcher-v4g-n117
+      - pitcher-v4g-n118
+      - pitcher-v4g-n119
+      - pitcher-v4g-n120
+      - pitcher-v4g-n121
+      - pitcher-v4g-n122
+      - pitcher-v4g-n123
+      - pitcher-v4g-n124
+      - pitcher-v4g-n125
+      - pitcher-v4g-n126
+      - pitcher-v4g-n127
+      - pitcher-v4g-n128
+      - pitcher-v4g-n129
+      - pitcher-v4g-n130
+      - pitcher-v4g-n131
+      - pitcher-v4g-n132
+      - pitcher-v4g-n133
+      - pitcher-v4g-n134
+      - pitcher-v4g-n135
+      - pitcher-v4g-n136
+      - pitcher-v4g-n137
+      - pitcher-v4g-n138
+      - pitcher-v4g-n139
+      - pitcher-v4g-n140
+      - pitcher-v4g-n141
+      - pitcher-v4g-n142
+      - pitcher-v4g-n143
+      - pitcher-v4g-n144
+      - pitcher-v4g-n145
+      - pitcher-v4g-n146
+      - pitcher-v4g-n147
+      - pitcher-v4g-n148
+      - pitcher-v4g-n149
+      - pitcher-v4g-n150
+      - pitcher-v4g-n151
+      - pitcher-v4g-n152
+      - pitcher-v4g-n153
+      - pitcher-v4g-n154
+      - pitcher-v4g-n155
+      - pitcher-v4g-n156
+      - pitcher-v4g-n157
+      - pitcher-v4g-n158
+      - pitcher-v4g-n159
+      - pitcher-v4g-n160
+    split: all
+  observation_time_scale_s: 15.0
+  success_bonus: 115.0
+  variant: fixed_finish_v3
+memory:
+  class: RandomMemory
+  memory_size: -1
+models:
+  policy:
+    class: GaussianMixin
+    clip_actions: true
+    clip_log_std: true
+    initial_log_std: 0.0
+    max_log_std: 2.0
+    min_log_std: -20.0
+    network:
+    - activations: elu
+      input: STATES
+      layers:
+      - 1024
+      - 512
+      - 512
+      - 256
+      - 128
+      - 128
+      - 128
+      - 64
+      - 64
+      name: net
+    output: ACTIONS
+  separate: false
+  value:
+    class: DeterministicMixin
+    clip_actions: false
+    network:
+    - activations: elu
+      input: STATES
+      layers:
+      - 1024
+      - 512
+      - 512
+      - 256
+      - 128
+      - 128
+      - 128
+      - 64
+      - 64
+      name: net
+    output: ONE
+seed: 42
+trainer:
+  class: SequentialTrainer
+  close_environment_at_exit: false
+  disable_progressbar: true
+  environment_info: log
+  timesteps: 192000

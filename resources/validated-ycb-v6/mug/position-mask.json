@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "status": "validated",
+  "object_name": "mug",
+  "bank_path": "resources/validated-ycb-v6/mug/bank.json",
+  "reference_ids": [
+    "mug-innerouter-oblique-006",
+    "mug-v3-ref007",
+    "mug-v3-ref004",
+    "mug-v4b-c07010",
+    "mug-v3-ref001",
+    "mug-v3-ref008",
+    "mug-v4b-c04923",
+    "mug-v4b-c00195",
+    "mug-v4b-c00172",
+    "mug-v4b-c01714",
+    "mug-v4a-c07600",
+    "mug-v4a-c02805",
+    "mug-v4a-c02898",
+    "mug-v4a-c05202",
+    "mug-v4b-c07230",
+    "mug-v3-ref024",
+    "mug-v3-ref025",
+    "mug-v3-ref023",
+    "mug-v4a-c00139",
+    "mug-v4a-c02804",
+    "mug-v4a-c02801",
+    "mug-v4b-c06400",
+    "mug-v4a-c02411",
+    "mug-v4a-c02006",
+    "mug-v4a-c00922",
+    "mug-v4b-c00461",
+    "mug-v4a-c04006",
+    "mug-v4a-c06006",
+    "mug-v3-ref030",
+    "mug-v4a-c00001",
+    "mug-v4b-c00807",
+    "mug-v4a-c06808",
+    "mug-v4a-c04017",
+    "mug-v4b-c06802",
+    "mug-v4a-c04013",
+    "mug-v4a-c02409",
+    "mug-v4a-c04008",
+    "mug-v4a-c05612",
+    "mug-v4b-c00805",
+    "mug-v4a-c05203"
+  ],
+  "bowl_map_yaw_degrees": 0.0,
+  "bowl_origin_z_m": 0.9465359430589999,
+  "cell_size_m": 0.01,
+  "numeric_position_tolerance_m": 1e-06,
+  "sources_sha256": {
+    "runs/wrist-contact-v6/mug/new-repeat/position-mask.json": "d03da866b0bd4fac0c6b8142626c177ded9389a9071f0e9d34f481ffd26a6f3b",
+    "resources/validated-ycb-v4/mug/position-mask.json": "decbe1de0c0aeb7f7a79599b14c5f8d9ab110dc377ea299c44a48ae28f4b869b",
+    "runs/wrist-contact-v6/mug/backup/position-mask.json": "301b9369a4aba261222b6c2d6e1ebe98be3fbbb303cf6770b7aa50a73caaabcd",
+    "resources/validated-ycb-v6/mug/bank.json": "31433473e85d65b5425170efdbd121a51ac1aa3941058edb604d0906a7137973"
+  },
+  "regions": [
+    {
+      "name": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 0
+    },
+    {
+      "name": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 1
+    },
+    {
+      "name": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 2
+    },
+    {
+      "name": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.535
+        ],
+        [
+          1.305,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 3
+    }
+  ],
+  "cells": [
+    {
+      "region": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        0,
+        2,
+        4,
+        5,
+        13,
+        16,
+        17,
+        19,
+        26,
+        30,
+        32,
+        34,
+        37
+      ]
+    },
+    {
+      "region": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        14,
+        15,
+        18,
+        24,
+        25,
+        28,
+        31,
+        36,
+        38
+      ]
+    },
+    {
+      "region": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        11,
+        20,
+        21,
+        33,
+        39
+      ]
+    },
+    {
+      "region": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.535
+        ],
+        [
+          1.305,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        12,
+        22,
+        23,
+        27,
+        29,
+        35
+      ]
+    }
+  ],
+  "extra_margin_m": 0.002,
+  "method": "Reindexed 1 cm local windows wholly covered by source geometry masks at the same per-reference opening.",
+  "scope": "Geometry clearance only; all physical labels must be retested with wrist permission.",
+  "empty_cells": [],
+  "allowed_cells_per_reference": [
+    1,
+    1,
+    2,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "placement_adjustment": "Only accepted local windows; no sampling across the original whole-counter rectangles."
+}

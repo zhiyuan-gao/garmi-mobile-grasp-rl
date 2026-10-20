@@ -1,0 +1,10 @@
+{
+  "status": "partial_pool_target_not_complete",
+  "reference_count": 28,
+  "target_reference_count": 40,
+  "handle_reference_count": 23,
+  "object_window_halfwidth_m": null,
+  "expert_trajectories_generated": 0,
+  "optimizer_updates": 0,
+  "scope": "Evidence archive and preview only. No executable task configuration is supplied for the mixed validation domains."
+}

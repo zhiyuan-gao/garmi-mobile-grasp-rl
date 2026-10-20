@@ -1,0 +1,24 @@
+{
+  "objects": [
+    {
+      "name": "019_pitcher_base",
+      "source": "https://ycb-benchmarks.s3.amazonaws.com/data/google/019_pitcher_base_google_16k.tgz",
+      "archive_sha256": "cba78f0521f38b98d43b648bf68fd788373b43628f1941f476a5adb35819a8aa",
+      "mesh": "assets/ycb/019_pitcher_base/google_16k/textured.obj",
+      "mesh_sha256": "0642b636f2e7e80d8f0f8f573754e7347dfaec28f4bfb936fb6531db70873c20",
+      "scale": 1.0,
+      "units": "meters",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "025_mug",
+      "source": "https://ycb-benchmarks.s3.amazonaws.com/data/google/025_mug_google_16k.tgz",
+      "archive_sha256": "4b640afc1baaa940b66948d1e59426d8da2c5a16558c7c7a118bbe28d0737de5",
+      "mesh": "assets/ycb/025_mug/google_16k/textured.obj",
+      "mesh_sha256": "2d40b407e9e97402de788bebaa703ff03d682da95318db5ff9bfa1aa083b3a57",
+      "scale": 1.0,
+      "units": "meters",
+      "license": "CC BY 4.0"
+    }
+  ]
+}

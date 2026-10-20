@@ -40,9 +40,8 @@ def snapshot_queries(env, observations, cases, selected, stages, prefix, step):
     """Capture measured state, previous target, timing, and teacher stage together."""
     robot = env.scene['robot']
     arm = robot.find_joints('right_fr3_joint[1-7]')[0]
-    # root_state_w mixes link pose with COM velocity. Giskard's OmniDrive
-    # needs the velocity of the same base_link origin as its x/y/yaw pose.
-    roots = robot.data.root_link_state_w.clone()
+    from .base_velocity import planning_root_state
+    roots = planning_root_state(env).clone()
     roots[:, :3] -= env.scene.env_origins
     objects = env.scene['object'].data.root_state_w.clone()
     objects[:, :3] -= env.scene.env_origins
@@ -75,11 +74,27 @@ def snapshot_queries(env, observations, cases, selected, stages, prefix, step):
 class GiskardClient:
     """Persistent separate interpreter; no ROS or full navigation task invocation."""
 
-    def __init__(self, logfile, workers=8):
+    def __init__(self, logfile, workers=8, manifest=None, object_name='bowl', precision=None, contact_policy='fingers_only', self_collision_buffer_m=.03, self_collision_model='legacy_srdf', distal_collision_buffer_m=.05):
         self.log = Path(logfile).open('w')
+        extra = ['--manifest', str(manifest), '--object', object_name] if manifest is not None else []
+        if contact_policy not in ('fingers_only', 'fingers_and_wrist'):
+            raise ValueError('Unknown expert contact policy')
+        extra += ['--contact-policy', contact_policy]
+        if not .001 <= self_collision_buffer_m <= .03:
+            raise ValueError('Self-collision planning buffer must be between 1 and 30 mm')
+        extra += ['--self-collision-buffer-m', str(self_collision_buffer_m)]
+        if self_collision_model not in ('legacy_srdf','usd_adjacent'):
+            raise ValueError('Unknown planner self-collision model')
+        if not .001 <= distal_collision_buffer_m <= .05:
+            raise ValueError('Distal-arm planning buffer must be between 1 and 50 mm')
+        extra += ['--self-collision-model',self_collision_model,'--distal-collision-buffer-m',str(distal_collision_buffer_m)]
+        for key, value in (precision or {}).items():
+            if key not in ('translation_threshold', 'orientation_threshold'):
+                raise ValueError(f'Unknown expert precision option: {key}')
+            extra += ['--'+key.replace('_', '-'), str(value)]
         self.process = subprocess.Popen([
             '/home/jovyan/cram-vrb-lab/cognitive_robot_abstract_machine/.venv/bin/python',
-            str(Path(__file__).resolve().parents[1] / 'giskard_expert_service.py'), '--serve', '--workers', str(workers)],
+            str(Path(__file__).resolve().parents[1] / 'giskard_expert_service.py'), '--serve', '--workers', str(workers), *extra],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=self.log,
             text=True, bufsize=1, env=dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]),
                 OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1', MKL_NUM_THREADS='1'))

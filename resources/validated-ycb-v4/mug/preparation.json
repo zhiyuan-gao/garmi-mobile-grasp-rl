@@ -1,0 +1,25 @@
+{
+  "status": "40_references_ready_expert_approach_requires_confirmation",
+  "object": "mug",
+  "reference_count": 40,
+  "accepted_conditions": 48,
+  "local_window_count": 4,
+  "object_window_halfwidth_m": 0.005,
+  "audit_cases": 144,
+  "evaluation_cases": 48,
+  "default_configuration_changed": false,
+  "expert_trajectories_generated": 0,
+  "optimizer_updates": 0,
+  "asset_sha256": {
+    "mesh": "cca6e16f5ff3417083322c8ea3b18fa83e767671aeaf847e1c6ebd208d286b12",
+    "usd": "0b439ce679c095ff4240770ae67daca8f79bcf22694916d9e32b47b4fd1d6835",
+    "cooked": "4e02bd498740d8915779fd579ca0fa16d23c7cb69c2f22a167c7ffc754ad38dc"
+  },
+  "limitations": [
+    "Local windows are supported by finite probes, not exhaustive continuous physics validation.",
+    "Expert motion is still untested and planner may reach a different base/arm endpoint.",
+    "No random initial-base generalization claimed; initial audit base is the existing parked pose."
+  ],
+  "source_configuration_sha256": "a31ca522720d4bb4f75a70320d67869aed57b1de59146c69131cd4b7fea5f8f6",
+  "runtime_reset_check_sha256": "4597834eca344d4bfa65f82d39856edea389966497160722d642d004432aa8fd"
+}
