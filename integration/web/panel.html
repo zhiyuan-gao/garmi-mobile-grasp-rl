@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GARMI · 柜台到餐桌</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#cdd6f4;background:#1e1e2e}
+*{box-sizing:border-box}body{margin:0;padding:26px;line-height:1.55}h1{font-size:25px;letter-spacing:-.5px;margin:3px 0 5px;color:#f5f7ff}h2{font-size:15px;margin:0 0 15px}p{margin:0;color:#a6adc8;font-size:13px}a{color:#89b4fa}button{border:1px solid #45475a;border-radius:7px;padding:10px 16px;font:inherit;font-size:13px;cursor:pointer;background:#313244;color:#cdd6f4}button.primary{background:#89b4fa;border-color:#89b4fa;color:#11111b;font-weight:650}button:disabled{opacity:.4;cursor:default}button:not(:disabled):hover{filter:brightness(1.12)}.heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px;flex-wrap:wrap}.eyebrow{font-size:11px;font-weight:600;letter-spacing:2px;color:#89b4fa}.buttons{display:flex;gap:8px}.layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(290px,1fr);gap:20px;align-items:start}.card{background:#181825;border:1px solid #313244;border-radius:12px;overflow:hidden}.card-body{padding:20px}.media{aspect-ratio:16/9;position:relative;background:#11111b;display:flex;align-items:center;justify-content:center}.media img,.media video{width:100%;height:100%;object-fit:contain;position:absolute;inset:0}.media img[hidden],.media video[hidden]{display:none}.empty{padding:30px;text-align:center;max-width:480px}.empty strong{display:block;font-size:20px;font-weight:500;margin:10px;color:#cdd6f4}.tag{display:inline-flex;padding:4px 10px;border:1px solid #45475a;border-radius:20px;font-size:11px;color:#bac2de}.media-tag{position:absolute;top:14px;left:14px;z-index:2;background:#11111bd9}.line{display:flex;justify-content:space-between;gap:12px;align-items:center}.status{font-size:14px;color:#f5f7ff;margin-top:12px;overflow-wrap:anywhere}.success{color:#a6e3a1}.error{color:#f38ba8}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.metric{border-top:1px solid #313244;padding-top:12px;font-size:11px;color:#a6adc8}.metric b{display:block;font-size:17px;color:#cdd6f4;font-weight:500;line-height:1.9}.steps{list-style:none;padding:0;margin:0;display:grid;gap:6px}.steps li{display:flex;gap:12px;padding:10px;border:1px solid transparent;border-radius:8px;color:#7f849c;font-size:13px}.steps .number{border:1px solid #45475a;width:25px;height:25px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;font-size:11px}.steps li.current{background:#89b4fa12;border-color:#89b4fa50;color:#cdd6f4}.steps li.current .number{border-color:#89b4fa;color:#89b4fa}.steps li.done{color:#a6e3a1}.steps small{display:block;font-size:11px;color:#7f849c;margin-top:3px}.below{margin-top:20px}.note{padding-top:14px;margin-top:16px;border-top:1px solid #313244;font-size:12px}details{margin-top:16px}summary{font-size:12px;cursor:pointer;color:#a6adc8}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.7 ui-monospace,monospace;max-height:250px;overflow:auto}.files{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;margin-top:14px}#run-id{font:11px ui-monospace,monospace;color:#7f849c}#notice{margin-bottom:12px}.fine{font-size:11px;color:#7f849c}#replay-button{padding:5px 10px;font-size:11px} @media(max-width:850px){body{padding:16px}.layout{grid-template-columns:1fr}.metrics{gap:8px}h1{font-size:22px}.card-body{padding:16px}}
+</style>
+</head>
+<body>
+<div class="heading"><div><div class="eyebrow">GARMI / MOBILE MANIPULATION</div><h1>从厨房柜台，到餐桌</h1><p>完整 GARMI 场景 · 柜台左侧抓碗 · CRAM + RL</p></div><div class="buttons"><button id="start" class="primary" disabled>开始一次运行</button><button id="stop" disabled>停止本次运行</button></div></div>
+<p id="notice" class="error" role="alert"></p>
+<div class="layout">
+ <section class="card">
+  <div class="media"><span id="media-tag" class="tag media-tag">等待启动</span><div class="empty" id="empty"><span class="eyebrow">ISAAC SIM 5.1</span><strong>观察一次完整的移动抓取</strong><p>启动后，这里显示仿真的实时相机画面。运行结束后可播放本次录像。</p></div><img id="preview" alt="Isaac Sim 实时仿真画面" hidden><video id="replay" controls preload="metadata" hidden></video></div>
+  <div class="card-body"><div class="line"><span id="badge" class="tag">连接页面服务…</span><button id="replay-button" hidden>播放本次录像</button></div><div id="message" class="status" role="status">正在读取运行状态…</div>
+   <div class="metrics"><div class="metric">当前控制方<b id="owner">—</b></div><div class="metric">仿真时间<b id="sim-time">—</b></div><div class="metric">实际耗时<b id="wall-time">—</b></div></div>
+   <p class="note" id="frame-note">可在 NeemHub 标签页旋转、缩放 3D 场景，并查看 CRAM 计划。</p>
+  </div>
+ </section>
+ <section class="card"><div class="card-body"><h2>执行流程</h2><ol id="steps" class="steps"></ol><p class="note">RL 同时控制底盘和右臂接近。闭爪、提起由固定程序完成，随后由 CRAM 搬运和放置。</p><p class="fine" style="margin-top:10px">抓取参考 bowl-r020 · 策略 checkpoint 7500</p></div></section>
+</div>
+<section class="card below"><div class="card-body"><div class="line"><h2 style="margin:0">本次运行记录</h2><span id="run-id">尚未启动</span></div><div class="files" id="files"></div><details><summary>查看执行事件</summary><pre id="events">等待任务事件…</pre></details></div></section>
+<script>
+const $=id=>document.getElementById(id);
+const names=['启动仿真','CRAM 导航到柜台','RL 控制底盘和右臂接近','固定程序闭爪、提起','CRAM 搬运','CRAM 放置、检查、收臂'];
+const descriptions=['加载完整场景和策略','到达柜台前的接管区域','底盘与右臂共同移动','稳定抓持并交回控制权','将碗送到餐桌旁','确认释放、支撑和稳定性'];
+let token='',currentRun='',lastStatus=null,showReplay=false,imagePending=false;
+names.forEach((name,i)=>{const li=document.createElement('li');li.innerHTML=`<span class="number">${i+1}</span><div>${name}<small>${descriptions[i]}</small></div>`;$('steps').append(li)});
+const statusNames={idle:'准备就绪',starting:'正在启动',running:'运行中',stopping:'正在停止',completed:'已完成',failed:'运行失败',stopped:'已停止',interrupted:'运行中断'};
+function update(s){
+ lastStatus=s;token=s.csrf_token;
+ if(currentRun!==s.run_id){currentRun=s.run_id;showReplay=false;$('replay').pause();$('replay').removeAttribute('src');$('replay').load()}
+ $('start').disabled=s.active;$('stop').disabled=!s.active||s.status==='stopping';$('badge').textContent=statusNames[s.status]||s.status;
+ $('badge').className='tag '+(s.status==='completed'?'success':s.status==='failed'?'error':'');
+ $('message').textContent=s.message;$('run-id').textContent=s.run_id||'尚未启动';
+ [...$('steps').children].forEach((li,i)=>{li.className=(s.status==='completed'||i<s.stage)?'done':s.active&&i===s.stage?'current':'';li.querySelector('.number').textContent=(s.status==='completed'||i<s.stage)?'✓':i+1});
+ const state=s.state||{},snap=state.snapshot||{};
+ $('owner').textContent=state.owner==='rl'?(snap.phase>0?'固定程序':'RL'):state.owner==='cram'?'CRAM':state.owner==='holding'?'交接中':'—';
+ $('sim-time').textContent=snap.simulation_seconds!=null?snap.simulation_seconds.toFixed(1)+' s':'—';
+ $('wall-time').textContent=s.started_at?Math.floor(((s.finished_at||Date.now()/1000)-s.started_at)/60)+' 分 '+Math.floor(((s.finished_at||Date.now()/1000)-s.started_at)%60)+' 秒':'—';
+ $('empty').hidden=s.preview||showReplay;$('preview').hidden=!s.preview||showReplay;$('replay').hidden=!showReplay;
+ $('media-tag').textContent=showReplay?'本次录像回放':s.preview?(s.active?'Isaac Sim · 实时画面':'本次运行 · 最后画面'):'等待仿真画面';
+ $('replay-button').hidden=!s.replay;$('replay-button').textContent=showReplay?'查看最后画面':'播放本次录像';
+ if(s.preview&&!showReplay&&!imagePending){imagePending=true;$('preview').src='api/preview?t='+Date.now()}
+ const age=state.wall_time?Date.now()/1000-state.wall_time:0;
+ $('frame-note').textContent=s.active&&age>5?'正在等待新的仿真状态（已 '+Math.round(age)+' 秒）…':'NeemHub 可旋转、缩放 3D 场景；这里显示 Isaac Sim 相机画面。';
+ $('events').textContent=(s.events||[]).map(e=>new Date(e.time*1000).toLocaleTimeString()+'  '+e.event+(e.label?' · '+e.label:'')+(e.error?'\n'+e.error:'')).join('\n')||'等待任务事件…';
+ const files=$('files');files.replaceChildren();(s.files||[]).forEach(file=>{const a=document.createElement('a');a.href='runs/'+encodeURIComponent(s.run_id)+'/'+file;a.target='_blank';a.rel='noopener';a.textContent=file;files.append(a)});
+}
+$('preview').onload=$('preview').onerror=()=>{imagePending=false};
+async function poll(){try{const r=await fetch('api/status',{cache:'no-store'});if(!r.ok)throw new Error('状态服务返回 '+r.status);update(await r.json())}catch(e){$('notice').textContent='页面服务暂时无法连接：'+e.message;$('start').disabled=$('stop').disabled=true}setTimeout(poll,1000)}
+async function command(action){$('notice').textContent='';$('start').disabled=$('stop').disabled=true;try{const r=await fetch('api/'+action,{method:'POST',headers:{'X-Demo-Token':token}});const data=await r.json();if(!r.ok)throw new Error(data.error);update(await fetch('api/status',{cache:'no-store'}).then(r=>r.json()))}catch(e){$('notice').textContent=e.message}}
+$('start').onclick=()=>command('start');$('stop').onclick=()=>command('stop');
+$('replay-button').onclick=()=>{showReplay=!showReplay;if(showReplay){$('replay').src='runs/'+currentRun+'/sim/replay.mp4';$('replay').play().catch(()=>{})}else $('replay').pause();update(lastStatus)};
+poll();
+</script>
+</body></html>

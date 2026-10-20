@@ -8,6 +8,8 @@
 
 [抓取近景](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [多组不同初始位置的录像](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/episodes/) · [完整演示与工作区入口](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
 
+本分支同时包含交互演示入口，见[部署快速开始](binder/README.md)。
+
 ## 任务
 
 机器人从厨房柜台前的随机位置出发，根据物体位置和参考抓取姿态，一边调整底盘，一边移动右臂接近物体。接近完成后，固定程序负责闭爪、提起和保持。
@@ -51,10 +53,18 @@ flowchart LR
 
 | 用途 | 分支与入口 |
 | --- | --- |
-| 采集示范、训练与评估 | 当前 `main` 分支：[安装与运行](docs/usage.md) |
-| 运行 CRAM＋RL 完整演示 | [`vrb-demo` 分支](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/tree/vrb-demo)：[部署快速开始（英文）](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/README.md) |
+| 采集示范、训练与评估 | 本整合分支：[安装与运行](docs/usage.md) |
+| 运行 CRAM＋RL 完整演示 | 本整合分支：[部署快速开始](binder/README.md) |
 
 演示分支已打包训练好的策略、40 个参考抓取和位置过滤表，构建容器时自动准备所需资产。快速开始包含从克隆到运行的完整命令、GPU 环境要求、VRB 接入和结果保存方法，可直接用于同事部署，无需复制原 FAME_RL 工作区。
+
+## 整合分支
+
+`codex/integrate-grasp-training-and-vrb` 汇集碗训练、杯子/牛奶盒专家实验、YCB 马克杯/水壶训练和 CRAM＋RL 演示。杯子及牛奶盒分别使用 `scripts/prepare_cup.py`、`scripts/prepare_milk.py` 准备任务，再由对应的 `rl/run_*` 入口执行。
+
+- 旧 PPO 配置默认保持原来的底盘速度接口；新杯子/牛奶盒配置显式设置 `garmi_task.base_velocity_frame: root_link`。旧实验配置移入本分支时也需要明确这项设置。
+- 马克杯第 2000 次迁移包的代码哈希对应原始分支，原实验续训继续使用 `codex/ycb-wrist-v6-ppo2000` 的独立目录。
+- VRB 演示保留原策略、参考和资产的哈希；整合代码的兼容清单另存于 `runtime/code_compatibility.json`，不改写原训练来源。当前训练结束后仍需进行完整 GPU 演示回归。
 
 ## 主要代码
 
