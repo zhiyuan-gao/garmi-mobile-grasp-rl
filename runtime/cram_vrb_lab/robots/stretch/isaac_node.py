@@ -211,7 +211,7 @@ def create_head_camera(world, render, want_depth=False):
     import omni
     from pxr import UsdGeom
     from isaacsim.sensors.camera import Camera
-    import isaacsim.core.utils.numpy.rotations as rot_utils 
+    import isaacsim.core.utils.numpy.rotations as rot_utils
 
     stage = omni.usd.get_context().get_stage()
     if not stage.GetPrimAtPath(HEAD_CAM_FRAME_PRIM):

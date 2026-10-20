@@ -16,13 +16,16 @@ The build automatically extracts and verifies [runtime/data.tar.gz](../runtime/d
 
 Use a Linux host with Docker, NVIDIA Container Toolkit configured with the `nvidia` runtime, and an NVIDIA GPU/driver compatible with Isaac Sim 5.1.0, including Vulkan rendering. The host needs network access to pull the base image and install dependencies. The container supplies Isaac Sim, Isaac Lab and CRAM; their licenses and asset terms apply as described in [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
 
-Clone the **demo branch** and build from its repository root:
+Build from the integrated checkout's repository root:
 
 ```bash
-git clone --branch vrb-demo --single-branch https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl.git
-cd garmi-mobile-grasp-rl
 docker build -t garmi-vrb-demo -f binder/Dockerfile .
 ```
+
+The integrated branch retains the original policy and asset manifests. Its
+`runtime/code_compatibility.json` records the merged Python runtime separately;
+CPU and bundle checks pass, while a complete GPU demo regression is still pending.
+The published `vrb-demo` branch and Binder link below refer to the earlier release.
 
 Start the workspace:
 
