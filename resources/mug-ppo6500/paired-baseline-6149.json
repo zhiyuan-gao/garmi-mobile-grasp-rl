@@ -1,0 +1,21 @@
+{
+  "update": 6149,
+  "model_weights_identical": true,
+  "cases": 80,
+  "old_counts": {
+    "attempt_failed": 36,
+    "success": 34,
+    "collision": 7,
+    "approach_timeout": 3
+  },
+  "new_counts": {
+    "success": 59,
+    "collision": 7,
+    "approach_timeout": 3,
+    "attempt_failed": 11
+  },
+  "old_success_rate": 0.425,
+  "new_success_rate": 0.7375,
+  "criterion_changed_not_model_improvement": true,
+  "new_successes_outside_pose_gate": 25
+}

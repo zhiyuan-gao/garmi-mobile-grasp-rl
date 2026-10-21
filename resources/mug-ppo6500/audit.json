@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "success_criterion": "physical_grasp_v1",
+  "update": 6500,
+  "normalization_unchanged": true,
+  "policy_updated": true,
+  "expert_bc_loss": 0.0023592320969328283,
+  "optimizer_state_entries": 23,
+  "initialization": {
+    "mode": "resume",
+    "checkpoint": "/workspace/runs/mug-physical-success-review/preflight-6159/checkpoints/update_6159.pt",
+    "seed": 2026102002,
+    "optimizer_state_entries": 23,
+    "normalizers": {
+      "state_preprocessor": {
+        "count": 3709506.0,
+        "mean_max_abs": 0.9402174347582855,
+        "variance_min": 0.00012771701451812575,
+        "variance_max": 1.0108419354902098
+      },
+      "value_preprocessor": {
+        "count": 1087242241.0,
+        "mean_max_abs": 35.97059993771373,
+        "variance_min": 797.1427754744773,
+        "variance_max": 797.1427754744773
+      }
+    },
+    "previous_num_envs": 4096,
+    "num_envs": 4096,
+    "transitions": 543621120,
+    "optimizer_steps": [
+      123180.0
+    ],
+    "learning_rates": [
+      1.9753086419753083e-05
+    ]
+  },
+  "checkpoint_sha256": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2"
+}
