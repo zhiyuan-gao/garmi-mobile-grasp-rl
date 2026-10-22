@@ -1,91 +1,92 @@
-# GARMI mobile grasp RL
+# GARMI Mobile Grasp RL
 
-在 Isaac Sim 的 GARMI 厨房环境中，结合 **Giskard 专家示范、模仿学习和 PPO**，训练机器人同时控制底盘与机械臂完成抓取。
+Mobile grasping in the GARMI kitchen with **Giskard expert demonstrations, imitation learning, and PPO**. The policy coordinates the mobile base and right arm to approach an object, followed by a fixed controller that closes the gripper, lifts the object, and holds it.
 
-**马克杯第 6500 次模型已发布**：[下载 checkpoint 与运行包](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/releases/tag/mug-ppo-6500-20261022) · [评估与续训方法](docs/mug-ppo-6500.md)。在 40 个抓取参考对应的 80 个固定案例中，实际抓起并保持住的成功率为 **77.5%（62/80）**。
+This repository brings together bowl and YCB mug/pitcher training, cup and milk-carton expert workflows, and a CRAM + RL mobile manipulation demo.
 
-## 演示
+## Demo
 
-在完整 GARMI 公寓场景中，机器人从厨房柜台左侧抓起碗，再送到餐桌放置。CRAM 负责导航，RL 同时控制底盘和右臂接近，固定程序闭爪、提起，再由 CRAM 接回搬运和放置。演示页面提供录像和远程工作区入口，工作区内可查看实时画面、任务进度和运行录像。
+In the full GARMI apartment scene, the robot picks up a bowl from the kitchen counter and places it on the dining table. CRAM handles navigation and transport, RL controls the base and right arm during the grasp approach, and a fixed controller performs closing and lifting.
 
-[抓取近景](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [多组不同初始位置的录像](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/episodes/) · [完整演示与工作区入口](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
+[Grasp close-up](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/videos/garmi_rl_grasp.mp4) · [Episodes with varied starting positions](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/episodes/) · [Demo gallery and workspace](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/)
 
-本分支同时包含交互演示入口，见[部署快速开始](binder/README.md)。
+The interactive workspace provides live views, task progress, and recordings. See the [deployment quickstart](binder/README.md) to run the demo.
 
-## 任务
+## Grasping task
 
-机器人从厨房柜台前的随机位置出发，根据物体位置和参考抓取姿态，一边调整底盘，一边移动右臂接近物体。接近完成后，固定程序负责闭爪、提起和保持。
+The robot starts near the kitchen counter and uses the object state and a reference grasp pose to coordinate its base and arm movements. Training varies object placement and robot starting positions. Position-dependent reference filtering accounts for nearby furniture.
 
-当前任务使用碗和 **40 个固定参考抓取**。每个回合随机摆放碗、随机初始化机器人位置，并根据家具遮挡情况选择可用的抓取参考。
+- **Observations:** 64-dimensional state including robot joints, base state, relative object pose, reference grasp pose, and finger contacts.
+- **Actions:** three base velocity commands and seven right-arm joint increments.
+- **Objective:** grasp, lift, and hold the object.
+- **Grasp references:** 40 fixed references for the bowl, plus separately validated sets of 40 references each for the YCB mug and pitcher.
 
-水壶和马克杯另有两套各 **40 个经过物理复测及严格完整接近验证的参考**，允许手腕接触目标物体。
-配置、可用放置区域、验证证据及静态预览见 [YCB v6 抓取参考](resources/validated-ycb-v6/README.md)。
-两套物体均已完成专家采集、行为克隆与三轮纠偏，并进入 PPO 实验。
-本分支收录相关代码及[马克杯第 2000 轮换机续训说明](docs/mug-ppo-2000-handoff.md)。
-马克杯的最新配置见 [configs/mug-ppo6500.yaml](configs/mug-ppo6500.yaml)，模型、实际运行代码和恢复状态见[第 6500 次发布说明](docs/mug-ppo-6500.md)。
+Reference visualizations, placement regions, and validation records are available in [YCB v6 grasp references](resources/validated-ycb-v6/README.md).
 
-- **策略输入**：机器人关节与底盘状态、物体相对位置、参考抓取位姿、手指接触等 64 维状态。
-- **策略动作**：底盘的 3 个速度，以及右臂的 7 个关节增量。
-- **任务目标**：抓起碗并稳定保持。
-
-## 训练流程
+## Training workflow
 
 ```mermaid
 flowchart LR
-    A[Giskard 专家示范] --> B[行为克隆]
-    B --> C[策略执行与专家纠偏]
-    C --> D[聚合数据，继续模仿]
-    D -->|三轮纠偏| C
-    D --> E[PPO + 模仿损失]
-    E --> F[评估与录像]
+    A[Giskard demonstrations] --> B[Behavior cloning]
+    B --> C[Policy rollouts and expert corrections]
+    C --> D[Aggregate data and refine imitation]
+    D -->|Three correction rounds| C
+    D --> E[PPO with an imitation loss]
+    E --> F[Evaluation and recordings]
 ```
 
-1. **采集示范**：用 Giskard 完成接近抓取，收集普通示范和加入运动扰动后的示范。
-2. **行为克隆**：让策略学习专家的底盘和手臂动作。
-3. **专家纠偏**：让策略自己执行，再用 Giskard 标注策略实际访问的状态，聚合数据继续学习。
-4. **PPO 训练**：通过仿真交互提高抓取能力，同时保留专家动作的模仿损失。
-5. **评估与录像**：在固定场景中比较不同检查点，记录成功率和执行视频。
+1. **Collect demonstrations:** execute Giskard grasp approaches, including demonstrations with motion perturbations.
+2. **Train behavior cloning:** learn the expert's base and arm actions.
+3. **Collect expert corrections:** query Giskard at states visited by the policy, aggregate the data, and refine the policy.
+4. **Train with PPO:** improve through simulation while retaining an expert imitation loss.
+5. **Evaluate:** compare checkpoints on fixed cases and record episodes.
 
-默认配置使用三轮纠偏、4096 个并行 PPO 环境和 8000 次 PPO 更新，每 500 次更新评估一次。
+The training setup uses three correction rounds, 4096 parallel PPO environments, and 8000 PPO updates, with evaluation every 500 updates.
 
-## 使用
+## Published mug checkpoint
 
-运行环境为 **Isaac Sim 5.1.0、Isaac Lab 2.3.2、PyTorch 2.7.0 和 skrl 1.4.3**。
+The **update-6500 checkpoint** achieves **77.5% success (62/80)** on fixed evaluation cases covering 40 known grasp references. Success measures physically lifting and holding the mug.
 
-[安装与运行](docs/usage.md)包含环境搭建、仿真资产导入、训练启动、评估和录像命令。[实验设置](docs/experiment.md)说明状态、动作、奖励、随机化范围和训练参数。
+[Download the checkpoint and runtime bundle](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/releases/tag/mug-ppo-6500-20261022) · [Evaluation and resume instructions](docs/mug-ppo-6500.md) · [Training configuration](configs/mug-ppo6500.yaml) · [Evaluation records](resources/mug-ppo6500/evaluation.json)
 
-| 用途 | 分支与入口 |
+The release includes the model, paired resume state, training source snapshot, configuration, fixed starting states, and evaluation records. The usage guide covers asset and expert-data import, evaluation, and continued training.
+
+## Getting started
+
+The runtime uses **Isaac Sim 5.1.0, Isaac Lab 2.3.2, PyTorch 2.7.0, and skrl 1.4.3**.
+
+```bash
+git clone --branch codex/integrate-grasp-training-and-vrb \
+  https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl.git
+cd garmi-mobile-grasp-rl
+```
+
+| Goal | Guide |
 | --- | --- |
-| 采集示范、训练与评估 | 本整合分支：[安装与运行](docs/usage.md) |
-| 运行 CRAM＋RL 完整演示 | 本整合分支：[部署快速开始](binder/README.md) |
+| Set up the environment and run training | [Installation and usage](docs/usage.md) |
+| Evaluate or resume the published mug model | [Mug checkpoint guide](docs/mug-ppo-6500.md) |
+| Run the CRAM + RL demo | [Deployment quickstart](binder/README.md) |
+| Explore observations, actions, rewards, and randomization | [Experiment settings](docs/experiment.md) |
 
-演示分支已打包训练好的策略、40 个参考抓取和位置过滤表，构建容器时自动准备所需资产。快速开始包含从克隆到运行的完整命令、GPU 环境要求、VRB 接入和结果保存方法，可直接用于同事部署，无需复制原 FAME_RL 工作区。
+The demo packages its trained bowl policy, 40 grasp references, and position filter, with asset preparation handled during container setup.
 
-## 整合分支
+## Code overview
 
-`codex/integrate-grasp-training-and-vrb` 汇集碗训练、杯子/牛奶盒专家实验、YCB 马克杯/水壶训练和 CRAM＋RL 演示。杯子及牛奶盒分别使用 `scripts/prepare_cup.py`、`scripts/prepare_milk.py` 准备任务，再由对应的 `rl/run_*` 入口执行。
-
-- 旧 PPO 配置默认保持原来的底盘速度接口；新杯子/牛奶盒配置显式设置 `garmi_task.base_velocity_frame: root_link`。旧实验配置移入本分支时也需要明确这项设置。
-- 马克杯第 2000 次迁移包的代码哈希对应原始分支，原实验续训继续使用 `codex/ycb-wrist-v6-ppo2000` 的独立目录。
-- VRB 演示保留原策略、参考和资产的哈希；整合代码的兼容清单另存于 `runtime/code_compatibility.json`，不改写原训练来源。当前训练结束后仍需进行完整 GPU 演示回归。
-- 第 6500 次发布包附带原训练代码快照，可在独立目录评估或续训；本分支同时保存整合后的代码、最新配置和评估证据。
-
-## 主要代码
-
-| 文件 | 用途 |
+| File | Purpose |
 | --- | --- |
-| [configs/task.yaml](configs/task.yaml) | 任务与训练配置 |
-| [rl/run_40ref_experiment.py](rl/run_40ref_experiment.py) | 完整训练流程 |
-| [rl/collect_giskard.py](rl/collect_giskard.py) | 专家示范与扰动示范采集 |
-| [rl/garmi_rl/giskard_expert.py](rl/garmi_rl/giskard_expert.py) | 控制底盘与右臂的 Giskard 专家 |
-| [rl/train_expert_bc.py](rl/train_expert_bc.py) | 行为克隆 |
-| [rl/garmi_rl/expert_ppo.py](rl/garmi_rl/expert_ppo.py) | 带模仿损失的 PPO |
-| [rl/evaluate_kitchen.py](rl/evaluate_kitchen.py) | 策略评估与录像 |
+| [configs/task.yaml](configs/task.yaml) | Bowl task and training configuration |
+| [configs/mug-ppo6500.yaml](configs/mug-ppo6500.yaml) | Published mug experiment configuration |
+| [rl/run_40ref_experiment.py](rl/run_40ref_experiment.py) | End-to-end bowl training workflow |
+| [rl/collect_giskard.py](rl/collect_giskard.py) | Expert and perturbed demonstration collection |
+| [rl/garmi_rl/giskard_expert.py](rl/garmi_rl/giskard_expert.py) | Giskard expert for coordinated base and arm control |
+| [rl/train_expert_bc.py](rl/train_expert_bc.py) | Behavior cloning |
+| [rl/garmi_rl/expert_ppo.py](rl/garmi_rl/expert_ppo.py) | PPO with an expert imitation loss |
+| [rl/evaluate_kitchen.py](rl/evaluate_kitchen.py) | Policy evaluation and recordings |
+| [scripts/prepare_cup.py](scripts/prepare_cup.py) | Cup experiment preparation |
+| [scripts/prepare_milk.py](scripts/prepare_milk.py) | Milk-carton experiment preparation |
 
-## VRB 发布材料
+## VRB presentation materials
 
-[介绍页内容预览](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-overview.html) · [下载发布包](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-intro-package.zip)
+[Lab introduction preview](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-overview.html) · [Presentation package](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-intro-package.zip)
 
-发布包包含抓取和完整任务录像、说明文字、项目链接、可追加到 VRB 介绍页的 HTML，以及 Enter Lab 按钮接入说明。现有介绍页内容和演示画廊可继续保留。
-
-截至 2026-10-19，完整演示已在本地 GPU 容器验证通过；VRB 远程工作区已可打开，运行仿真仍待平台配置 GPU。介绍页材料已备好，尚待网站编辑发布。详见[部署验证与平台配置记录](https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/blob/vrb-demo/binder/VRB_DEPLOYMENT.md)。
+The package includes grasping and full-task videos, project descriptions, repository links, an embeddable introduction section, and instructions for connecting the Enter Lab button to the interactive workspace.
