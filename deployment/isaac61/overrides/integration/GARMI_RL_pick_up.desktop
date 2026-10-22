@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=GARMI RL Counter to Table
+Comment=Run 10 counter-to-table episodes, resetting the scene and left-counter object each time
+Exec=/opt/conda/bin/python -u /mnt/dev-tools/rl_project/garmi-mobile-grasp-rl/scripts/run_desktop_demo.py --episodes 10 --keep-open
+Icon=
+Path=/mnt/dev-tools/rl_project/garmi-mobile-grasp-rl
+Terminal=true
+StartupNotify=false

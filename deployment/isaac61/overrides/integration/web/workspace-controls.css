@@ -1,0 +1,18 @@
+#garmi-rl-controls{padding:10px 14px;background:#181825;border-bottom:1px solid #45475a;flex-shrink:0;font-size:13px}
+#garmi-rl-controls[hidden]{display:none}
+.rl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rl-row select{padding:6px 10px;border:1px solid #45475a;border-radius:6px;background:#313244;color:#cdd6f4;font:inherit}
+#rl-runtime{margin-top:8px}
+#rl-runtime[hidden],#garmi-original-help[hidden]{display:none}
+#garmi-original-help{color:#a6adc8}
+.rl-row button,.rl-row a{padding:6px 10px;border:1px solid #45475a;border-radius:6px;background:#313244;color:#cdd6f4;font:inherit;text-decoration:none}
+.rl-row button{cursor:pointer}
+.rl-row button:disabled{opacity:.45;cursor:default}
+#rl-start{background:#89b4fa;color:#11111b;border-color:#89b4fa;font-weight:600}
+#rl-status{flex:1;min-width:180px}
+#rl-stages{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;list-style:none;font-size:12px;color:#9399b2}
+#rl-stages li{padding:3px 8px;border:1px solid #313244;border-radius:5px}
+#rl-stages li.current{border-color:#89b4fa;color:#89b4fa}
+#rl-stages li.done{color:#a6e3a1}
+#rl-error{color:#f38ba8;margin-top:4px}
+#rl-error:empty{display:none}

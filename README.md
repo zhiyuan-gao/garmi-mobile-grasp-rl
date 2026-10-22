@@ -56,7 +56,7 @@ The release includes the model, paired resume state, training source snapshot, c
 The runtime uses **Isaac Sim 5.1.0, Isaac Lab 2.3.2, PyTorch 2.7.0, and skrl 1.4.3**.
 
 ```bash
-git clone --branch codex/integrate-grasp-training-and-vrb \
+git clone --branch main \
   https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl.git
 cd garmi-mobile-grasp-rl
 ```
@@ -100,3 +100,12 @@ assets are reused from the existing releases and runtime.
 [Lab introduction preview](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-overview.html) · [Presentation package](https://zhiyuan-gao.github.io/franka-tabletop-tasks/demos/garmi/vrb-intro-package.zip)
 
 The package includes grasping and full-task videos, project descriptions, repository links, an embeddable introduction section, and instructions for connecting the Enter Lab button to the interactive workspace.
+
+## Repositories
+
+This repository's `main` branch maintains training, evaluation and task code,
+including the bowl counter-to-table and mug-to-drawer demonstrations.
+The [CRAM Lab fork](https://github.com/zhiyuan-gao/cram-vrb-lab/tree/garmi-rl-native-demo)
+provides the Binder image and desktop workspace. It installs a versioned runtime
+built from the [Isaac Sim 6.1 deployment sources](deployment/isaac61/README.md).
+See [repository roles and the update workflow](docs/repositories.md).

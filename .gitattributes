@@ -1,2 +1,4 @@
 # Published evidence CSVs retain CRLF bytes used by their SHA256 manifests.
 resources/**/*.csv -text whitespace=cr-at-eol
+# Preserve hashes of imported deployment source, including patch context lines.
+deployment/isaac61/overrides/** -text -whitespace

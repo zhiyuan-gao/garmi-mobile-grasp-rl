@@ -1,0 +1,742 @@
+{
+  "schema_version": 1,
+  "environment": "Isaac Sim 6.1 / Isaac Lab 2.3.2 compatibility runtime",
+  "imported_from": {
+    "repository": "https://github.com/zhiyuan-gao/cram-vrb-lab",
+    "commit": "9b7d8f3b21b350ca1dba986e57e377f416ee4935",
+    "archive": "demos/garmi_rl/runtime.tar.gz",
+    "archive_sha256": "818fdcff7e1d1f9be0fda60f42292ed0bca14bb226f8d3cc434cc1d430464590"
+  },
+  "files": {
+    "LICENSE": {
+      "source": "LICENSE",
+      "sha256": "5fa760fd69df120de3fab84a4c84dcbc3b4a363eadb1cde7e35bb5a16babc585",
+      "mode": 420
+    },
+    "README.md": {
+      "source": "deployment/isaac61/overrides/README.md",
+      "sha256": "e102105ff0ae61cd99d37d9297c196b8fd7273bc4dc3172b5f68d032074297af",
+      "mode": 420
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "source": "THIRD_PARTY_NOTICES.md",
+      "sha256": "d348bcc8c79c8630c91cf3ac7eea09e7b16e33e3f0da172f280f6452a9898ca4",
+      "mode": 420
+    },
+    "cram-vrb-lab/assets/garmi-apartment/world.usda": {
+      "source": "deployment/isaac61/overrides/cram-vrb-lab/assets/garmi-apartment/world.usda",
+      "sha256": "55891e640c93cf6794c5a0b90e7d2e1f4bf1d8e371cb27570fa7007e878de699",
+      "mode": 420
+    },
+    "integration/GARMI_RL_pick_up.desktop": {
+      "source": "deployment/isaac61/overrides/integration/GARMI_RL_pick_up.desktop",
+      "sha256": "7ace6f181b83be694491d80f457281a4a1779f08f6331fac41a8a37dbedc7875",
+      "mode": 420
+    },
+    "integration/check_idle.py": {
+      "source": "integration/check_idle.py",
+      "sha256": "91ebdbc60ccf23dcfc15610b0d5101e6a3ca4634582144463fb41e49b4bc2843",
+      "mode": 420
+    },
+    "integration/cram_demo.py": {
+      "source": "deployment/isaac61/overrides/integration/cram_demo.py",
+      "sha256": "3171f611a3922d81c5e38493bdc8419561640bef9b52b596b31a37baad7ea057",
+      "mode": 420
+    },
+    "integration/fastdds.xml": {
+      "source": "integration/fastdds.xml",
+      "sha256": "fbdf510c88b1bc89066b5a3159351d10744bcaecfc069ba866cf6d7cd0b3c200",
+      "mode": 420
+    },
+    "integration/garmi-desktop.kit": {
+      "source": "deployment/isaac61/overrides/integration/garmi-desktop.kit",
+      "sha256": "b58296b0090fa105b4db38a30e88ebb90ef0e955b270811b73b1e9c58b10f8b5",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/__init__.py": {
+      "source": "integration/garmi_cram_rl/__init__.py",
+      "sha256": "aaf1f8382d5aee80a983d658d1e0da5842d528cd0cd5740d04abf3909b0735ba",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/client.py": {
+      "source": "integration/garmi_cram_rl/client.py",
+      "sha256": "051eb75c2b3acb5565067c1ad7cc2e7a3018bc1cb929569bf626c49ccbabbcf5",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/contract.py": {
+      "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/contract.py",
+      "sha256": "447d8bccf0e2e28d274bc273336ac90d15c783884cb613ec9bfb854f902d55b9",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/gripper_geometry.py": {
+      "source": "integration/garmi_cram_rl/gripper_geometry.py",
+      "sha256": "1693bb54dc24b106056016138e4b9e8196fc01a41521039300cd2ec2be31be73",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/lab_backend.py": {
+      "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/lab_backend.py",
+      "sha256": "98514b9a1ec4dca8171e7fe2eff02b0048c50e06c813c7ba91a4a08cf0c0b446",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/policy.py": {
+      "source": "integration/garmi_cram_rl/policy.py",
+      "sha256": "6555ad369d346899b0e57768f76b2241c408d56db19e1f83f10d0dd160e6a2ad",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/robot_interface.py": {
+      "source": "integration/garmi_cram_rl/robot_interface.py",
+      "sha256": "5372e6baa8e0861e9797d424266ce22e3f66a6447f6fe75eb94999c18c415c67",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/ros_bridge.py": {
+      "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/ros_bridge.py",
+      "sha256": "1c698430f79a30bf9177e8d974c73e5e5f7fc22d849915c43a35fb3c34139953",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/session.py": {
+      "source": "integration/garmi_cram_rl/session.py",
+      "sha256": "ddca50601fb18ad944a612aa24789cf92790e6f27af5ec159d7a786037e2e7de",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/viewport.py": {
+      "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/viewport.py",
+      "sha256": "dd302290ca4b47ab1c69156f0bbc8707cdd87db445a0aa3177931fa6a7dcd888",
+      "mode": 420
+    },
+    "integration/giskard_server.py": {
+      "source": "deployment/isaac61/overrides/integration/giskard_server.py",
+      "sha256": "b9a005d4414d2aad2e0d3a40a9bfcc101e9efa5fa1a4593b4b905e1f18e4efe1",
+      "mode": 420
+    },
+    "integration/left_counter_episodes.json": {
+      "source": "integration/left_counter_episodes.json",
+      "sha256": "f969297dcb9f7ec228f46cc6fc961ee4bb29008c8014527e5b7c5f0178b97b8b",
+      "mode": 420
+    },
+    "integration/make_episode_report.py": {
+      "source": "integration/make_episode_report.py",
+      "sha256": "c83908bb73bb4d84ad9d1cd69ee57260fa425fd82f5760409abd248d21699f1c",
+      "mode": 420
+    },
+    "integration/motion_watchdog.py": {
+      "source": "deployment/isaac61/overrides/integration/motion_watchdog.py",
+      "sha256": "64837250db3c4be5a1ef30ef1e3b1ed30222ecdfc36440a7b598b201b7b0ba98",
+      "mode": 420
+    },
+    "integration/prepare_full_scene.py": {
+      "source": "deployment/isaac61/overrides/integration/prepare_full_scene.py",
+      "sha256": "c658ecbd84c6d07b44c493add9f831f646ea350603f2ae3676c01cc9ec962c06",
+      "mode": 420
+    },
+    "integration/record_episodes.py": {
+      "source": "integration/record_episodes.py",
+      "sha256": "886658fca13d7d87cdb3ad148d632c0d42aec678be076afc6e9c340287a05884",
+      "mode": 420
+    },
+    "integration/reset_episode.py": {
+      "source": "deployment/isaac61/overrides/integration/reset_episode.py",
+      "sha256": "ced4f07664f538425cf43ef57c169c36775235122bf6c1ad9bd191d587b9ec4f",
+      "mode": 420
+    },
+    "integration/sim.py": {
+      "source": "deployment/isaac61/overrides/integration/sim.py",
+      "sha256": "a99373c028b5b2eceed7317a00b4868da755ca8b0207a4d5609cd4acf6e6b1ad",
+      "mode": 420
+    },
+    "integration/tests/test_backend.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_backend.py",
+      "sha256": "40585ede59fc56235fa8a39303b3e02631e3fc9bcb914af9fd5fc43e3f3048e5",
+      "mode": 420
+    },
+    "integration/tests/test_contract.py": {
+      "source": "integration/tests/test_contract.py",
+      "sha256": "8464a5861065ce0ffeccd8a9f3916728167dcf4b97db182b1ade0adb7ffb754d",
+      "mode": 420
+    },
+    "integration/tests/test_desktop_demo.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_desktop_demo.py",
+      "sha256": "79cefb9c2a693f2a9f185f1d993d9973421ee86175a8460270e2b3f809d15a17",
+      "mode": 420
+    },
+    "integration/tests/test_episode_bridge.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_episode_bridge.py",
+      "sha256": "fbd3be20599a955086a5565005c1f96dfcb6de025ccb7556525801ae427f417b",
+      "mode": 420
+    },
+    "integration/tests/test_gripper_geometry.py": {
+      "source": "integration/tests/test_gripper_geometry.py",
+      "sha256": "209d7f838c6de8816cf65b776fe30e5ac2890d1b36cce5e1dbc9edf9366dc9d5",
+      "mode": 420
+    },
+    "integration/tests/test_kinematics.py": {
+      "source": "integration/tests/test_kinematics.py",
+      "sha256": "b5c0e493446c8240fa7a13d475612256487b19c3263568a74adb9afc3c3894bb",
+      "mode": 420
+    },
+    "integration/tests/test_motion_watchdog.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_motion_watchdog.py",
+      "sha256": "730f7560cc22f77be0bac9b614d0f782cb99e02ff5fc2cce690cb1257bc42167",
+      "mode": 420
+    },
+    "integration/tests/test_viewport.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_viewport.py",
+      "sha256": "7467eb889ef6214c0cec9ecfe76379b58dec868ea470bda626a1f9ce73f1e1e4",
+      "mode": 420
+    },
+    "integration/tests/test_web.py": {
+      "source": "deployment/isaac61/overrides/integration/tests/test_web.py",
+      "sha256": "4df558527a80b2298a8c04bd395d8ab6bc9db4b0da103693621f733a795d96f5",
+      "mode": 420
+    },
+    "integration/web/README.md": {
+      "source": "deployment/isaac61/overrides/integration/web/README.md",
+      "sha256": "df7f281f7f3bd476e0b645e5ddcc769fe07931ca669d0b173aefc555dc9b3e0e",
+      "mode": 420
+    },
+    "integration/web/index.html": {
+      "source": "deployment/isaac61/overrides/integration/web/index.html",
+      "sha256": "d1e28c09e69d7b2c0dfd0a01e9b4f8baf389c48b193f50f1d7e75b383b9fab1a",
+      "mode": 420
+    },
+    "integration/web/panel.html": {
+      "source": "deployment/isaac61/overrides/integration/web/panel.html",
+      "sha256": "5187aefb8a7f9c5ee1f3f8f2ba6b64dbcb9726d054db526db99fb316c7b33e5d",
+      "mode": 420
+    },
+    "integration/web/replay.html": {
+      "source": "deployment/isaac61/overrides/integration/web/replay.html",
+      "sha256": "431bbc7843b071ac074d9782ad3bdb77c2c2418a79b4456e2d10d489f0d4ffbc",
+      "mode": 420
+    },
+    "integration/web/run.sh": {
+      "source": "integration/web/run.sh",
+      "sha256": "e2df0554fbe4838d420d074d4bfe301b3f523b6f5062b5748b51d52cf0c60727",
+      "mode": 420
+    },
+    "integration/web/workspace-controls.css": {
+      "source": "deployment/isaac61/overrides/integration/web/workspace-controls.css",
+      "sha256": "3e84107eeb38510aa612477efe50964f16a267ecab8e208df635a282653a11b7",
+      "mode": 420
+    },
+    "integration/web/workspace-controls.js": {
+      "source": "deployment/isaac61/overrides/integration/web/workspace-controls.js",
+      "sha256": "f46a80fbc152c1625d8b605586960c8f1f11d2573eae2bc9733018fa6c3928b2",
+      "mode": 420
+    },
+    "integration/web_demo.py": {
+      "source": "deployment/isaac61/overrides/integration/web_demo.py",
+      "sha256": "26231bb2fefb2c25387dc948cefdc4bd0a4921bade273f6d2ad377d52d74112d",
+      "mode": 420
+    },
+    "integration/web_server.py": {
+      "source": "deployment/isaac61/overrides/integration/web_server.py",
+      "sha256": "8286261a33f8246f853bfc6718cb73c803c1353bb15798be08a7c47246ef8e3b",
+      "mode": 420
+    },
+    "rl/build-constraints.txt": {
+      "source": "rl/build-constraints.txt",
+      "sha256": "56d7bcebd6a47a9c8ed50156726a02abfc15ad00e8d02b94d3e2f8a9bb7caaee",
+      "mode": 420
+    },
+    "rl/garmi_rl/__init__.py": {
+      "source": "rl/garmi_rl/__init__.py",
+      "sha256": "16f2948969d4fd00a47f20f4229597f2f536a7bd5f728c8e5f1ea8989aa97d12",
+      "mode": 420
+    },
+    "rl/garmi_rl/actions.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/actions.py",
+      "sha256": "ea99dbb7846c1e0165c26b33b1fc30a39e711b55199cc8a5f5a8dbe6a50ac291",
+      "mode": 420
+    },
+    "rl/garmi_rl/augmentation.py": {
+      "source": "rl/garmi_rl/augmentation.py",
+      "sha256": "1af53e151e7aef1776302a6c596b21272679f31f04a5d955280062ea34bf7901",
+      "mode": 420
+    },
+    "rl/garmi_rl/config.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/config.py",
+      "sha256": "a4fabf6e4117a8e4a2539747800fbcb34c5ef3e77eb2768dfbbd29af0d60c072",
+      "mode": 420
+    },
+    "rl/garmi_rl/diagnostic_ik.py": {
+      "source": "rl/garmi_rl/diagnostic_ik.py",
+      "sha256": "18634cd6bdf7adab7790cf85060d2b3ecf14f0d6fe7b2759b5d46d24039ba2dd",
+      "mode": 420
+    },
+    "rl/garmi_rl/expert_actions.py": {
+      "source": "rl/garmi_rl/expert_actions.py",
+      "sha256": "e5a9cdf46ebf802a02e698827559b24f147743df35ca501bf16496e05eb307ee",
+      "mode": 420
+    },
+    "rl/garmi_rl/expert_learning.py": {
+      "source": "rl/garmi_rl/expert_learning.py",
+      "sha256": "c12783509432f825b89510c05789aa40da8cda6797b1877b8dabd54bbf57302f",
+      "mode": 420
+    },
+    "rl/garmi_rl/expert_ppo.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/expert_ppo.py",
+      "sha256": "dd2ad21b392afe3e581d0b591bf37ba5d0384d7dec46f0e8f3c6326a008d6493",
+      "mode": 420
+    },
+    "rl/garmi_rl/fixed_finish.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/fixed_finish.py",
+      "sha256": "631b0118b7623c93c381f7a6c1340e10d72622d4ea63a220dc038457696e2e5d",
+      "mode": 420
+    },
+    "rl/garmi_rl/gap_rewards.py": {
+      "source": "rl/garmi_rl/gap_rewards.py",
+      "sha256": "987be991c35d1bc84434f0e23685c9f50b37846dcaf491b2b2b0dc3cff829664",
+      "mode": 420
+    },
+    "rl/garmi_rl/giskard_expert.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/giskard_expert.py",
+      "sha256": "c84125f212f3506430b7fd3b1270b6e551e866b5600590f50ad92d1f8afe92ca",
+      "mode": 420
+    },
+    "rl/garmi_rl/giskard_io.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/giskard_io.py",
+      "sha256": "7cfa2f273c38f1133bcc6cbb767279178139b6b78427794e4fd8e8af10af529c",
+      "mode": 420
+    },
+    "rl/garmi_rl/grasp_rewards.py": {
+      "source": "rl/garmi_rl/grasp_rewards.py",
+      "sha256": "a58440a55dfd8ae785aa110480f3c43f3971e45a91faae3858d15f9c0c2d922e",
+      "mode": 420
+    },
+    "rl/garmi_rl/joint_delta.py": {
+      "source": "rl/garmi_rl/joint_delta.py",
+      "sha256": "f162bf0cee0baa91a1ed04a03d2c30c74d9f2fcd69def6e49303e1ae03a29514",
+      "mode": 420
+    },
+    "rl/garmi_rl/joint_delta_action.py": {
+      "source": "rl/garmi_rl/joint_delta_action.py",
+      "sha256": "50f23307cab75bf6ce4be5b1ac36fd70fe44ba2cec8bcebbe8b8e889315a1d4b",
+      "mode": 420
+    },
+    "rl/garmi_rl/kitchen.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/kitchen.py",
+      "sha256": "f18780a0e89fd22534d5607b4e46674de0b6b20a91996a47d353e69666334a97",
+      "mode": 420
+    },
+    "rl/garmi_rl/mdp.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/mdp.py",
+      "sha256": "e2adfdd5827018aef4922d28425f778e0950d06b4e97ee0baba8249f40e33d3e",
+      "mode": 420
+    },
+    "rl/garmi_rl/multi_object.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/multi_object.py",
+      "sha256": "035f477e375e4cecac541515ed6aac5a9333bcf19678f1ab5c1b196b098658d7",
+      "mode": 420
+    },
+    "rl/garmi_rl/reference_position_filter.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/reference_position_filter.py",
+      "sha256": "03ed2ac95a47517827a43c1998c7f152962cac4d4a39640fdf29ec66910be7c6",
+      "mode": 420
+    },
+    "rl/garmi_rl/trial_evaluation.py": {
+      "source": "deployment/isaac61/overrides/rl/garmi_rl/trial_evaluation.py",
+      "sha256": "123a20f7390d8c11099271f69985803344857a4e38bc5a57bd73cfc81375dbe6",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/__init__.py": {
+      "source": "runtime/cram_vrb_lab/__init__.py",
+      "sha256": "4660724adadb0d6b6ae8df218ca152ed966ebf6582ecf9d8cdf160de7fd8688a",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/control/__init__.py": {
+      "source": "runtime/cram_vrb_lab/control/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/control/giskard_client.py": {
+      "source": "runtime/cram_vrb_lab/control/giskard_client.py",
+      "sha256": "bee6e6986d0d8d4abc38796836d7a574d6487d33fc905840f939ba99448c9aa9",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/control/giskard_server.py": {
+      "source": "runtime/cram_vrb_lab/control/giskard_server.py",
+      "sha256": "aaca41887c93f165b082e15bf845e47e83a9864e67d2362d45e8db4f6a355de8",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/control/giskard_world.py": {
+      "source": "runtime/cram_vrb_lab/control/giskard_world.py",
+      "sha256": "610bd1f4efab5983789934a1887032e8d2ea5a0a79ebded568f45356403fd2f5",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/control/rate.py": {
+      "source": "runtime/cram_vrb_lab/control/rate.py",
+      "sha256": "2ecc3dea252d60f52daec691dc876120a3f0782884548dd1c77c1779676fd229",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/paths.py": {
+      "source": "runtime/cram_vrb_lab/paths.py",
+      "sha256": "80464c37f54bdb1a0dbe2fb1290552e9cdd99df67d3dedc24475d6cbef3f6906",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/perception/__init__.py": {
+      "source": "runtime/cram_vrb_lab/perception/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/perception/pipeline.py": {
+      "source": "runtime/cram_vrb_lab/perception/pipeline.py",
+      "sha256": "0110fff21421dfacd79fe8cde2732782247742f60c3fd6bfed71ac2b7b23fd4b",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/perception/twin_objects.py": {
+      "source": "runtime/cram_vrb_lab/perception/twin_objects.py",
+      "sha256": "c56021aca8b619b7c032fa921c382ae8837ac00dbedd94afd7003e40456f1735",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/__init__.py": {
+      "source": "runtime/cram_vrb_lab/robots/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/__init__.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/giskard_config.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/giskard_config.py",
+      "sha256": "eb7493d293329b575aff366c49f306962ea67c285aa12f9d8defe15e7582f20e",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/isaac_node.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/isaac_node.py",
+      "sha256": "c15cbf3bb1aa96aade72120d059f894347e08d4cf07664c4275d1adcc6a3600f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/joints.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/joints.py",
+      "sha256": "7d3792a625968948fe7492af587a844b755812a41e5286c77bb25790a2ac2017",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/motions.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/motions.py",
+      "sha256": "167035dba30f479fa0b71a2d9c063edd97e4a693910084acdc93c752e6696ed9",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/garmi/spec.py": {
+      "source": "runtime/cram_vrb_lab/robots/garmi/spec.py",
+      "sha256": "e1eac7344df8c8028d5be7313a51442380253de02282cb455c2c38f01148e808",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/__init__.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/giskard_config.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/giskard_config.py",
+      "sha256": "f4e33da0d8dc581536eda1395912266c41c3978e9e99b87d74f3046818fe5e77",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/isaac_node.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/isaac_node.py",
+      "sha256": "1dc7efc45eaa8075d37329bcd77e594033b099f826a149ec5041cb243d247e38",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/joints.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/joints.py",
+      "sha256": "5fd4d4db4f018e3cf2b26543f2381aca83e7bf3801180a06191a14c68414190f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/motions.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/motions.py",
+      "sha256": "5b2cef0e129a73f595c4eb0ab2a744fa42b46f6caa508727efe63adc824a0d6a",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/semantic_model.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/semantic_model.py",
+      "sha256": "3467c141bc8952b3bd7ced05d987f7b3e474a3db96ff2183b55d66270016904c",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/panda/spec.py": {
+      "source": "runtime/cram_vrb_lab/robots/panda/spec.py",
+      "sha256": "397ee912a3483a7b87330cfce480112c4382206305337c273d0fe1e52d0cd63a",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/__init__.py": {
+      "source": "runtime/cram_vrb_lab/robots/stretch/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/giskard_config.py": {
+      "source": "runtime/cram_vrb_lab/robots/stretch/giskard_config.py",
+      "sha256": "4cc1d2989d53f3380feefdd803c9fabb2c054b753890ea021c32ff6edbdf4c79",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/gripper.py": {
+      "source": "runtime/cram_vrb_lab/robots/stretch/gripper.py",
+      "sha256": "e9814515011f3fd81d9108d1864e5ab2cde86db656c20eb08969370d9ebfb7ae",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/isaac_node.py": {
+      "source": "deployment/isaac61/overrides/runtime/cram_vrb_lab/robots/stretch/isaac_node.py",
+      "sha256": "b008c679f8bc96138af9fabd0b5c81d349e1dbc648ce0c8668345417c6e7507d",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/joints.py": {
+      "source": "runtime/cram_vrb_lab/robots/stretch/joints.py",
+      "sha256": "c1a5ce3ffe51204c1f0424277aba4201f0e6164e09e3c6d1bd03c65f454eb4e7",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/robots/stretch/spec.py": {
+      "source": "runtime/cram_vrb_lab/robots/stretch/spec.py",
+      "sha256": "f8debc8f973372f7448d7f2842c5343e1a779040a03436f298b1369fb0ef0c1f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/__init__.py": {
+      "source": "runtime/cram_vrb_lab/scenes/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/apartment/__init__.py": {
+      "source": "runtime/cram_vrb_lab/scenes/apartment/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/apartment/constants.py": {
+      "source": "runtime/cram_vrb_lab/scenes/apartment/constants.py",
+      "sha256": "986bf05310a876f39382c2f4000ed90323c07f67aebce70bb9385fa63ac080e1",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/apartment/giskard_world.py": {
+      "source": "runtime/cram_vrb_lab/scenes/apartment/giskard_world.py",
+      "sha256": "fd4a371d39d3bb728aff6ef452c2fce2e50020397147e145ccfd0c969fa62407",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/apartment/isaac_scene.py": {
+      "source": "runtime/cram_vrb_lab/scenes/apartment/isaac_scene.py",
+      "sha256": "d079a780ebbdc7a0149fccdea9c4c44526696e7e6d9f4663a77fe903d1d58aff",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/apartment/spec.py": {
+      "source": "runtime/cram_vrb_lab/scenes/apartment/spec.py",
+      "sha256": "96f4116e772a07c03424cd091518d1e18f208f916822b7ee518c79b8f5dbe85e",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/empty/__init__.py": {
+      "source": "runtime/cram_vrb_lab/scenes/empty/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/empty/isaac_scene.py": {
+      "source": "runtime/cram_vrb_lab/scenes/empty/isaac_scene.py",
+      "sha256": "b839479492abec138e582a9600361e2a1626525e275a47198dc331202403a496",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/empty/spec.py": {
+      "source": "runtime/cram_vrb_lab/scenes/empty/spec.py",
+      "sha256": "de7204a98169d74e8975f965220862c33feab80a27b0ef018e15458835d3527f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/garmi_apartment/__init__.py": {
+      "source": "runtime/cram_vrb_lab/scenes/garmi_apartment/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/garmi_apartment/constants.py": {
+      "source": "runtime/cram_vrb_lab/scenes/garmi_apartment/constants.py",
+      "sha256": "2e51dedf3e8f68c80eebd1cb1bb6a35f47884d454af82678aea47b18be9732d6",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/garmi_apartment/giskard_world.py": {
+      "source": "runtime/cram_vrb_lab/scenes/garmi_apartment/giskard_world.py",
+      "sha256": "f21851d258daabdfc00fb821d4ac3c7aec819cb5d71b526c12aa819251d3e3b7",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/garmi_apartment/isaac_scene.py": {
+      "source": "runtime/cram_vrb_lab/scenes/garmi_apartment/isaac_scene.py",
+      "sha256": "8809d6ba9c0635742cddb69681222b2fb926c67258105003f9871b2eda057cfa",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/garmi_apartment/spec.py": {
+      "source": "runtime/cram_vrb_lab/scenes/garmi_apartment/spec.py",
+      "sha256": "1c487e4a53630b207c83727a2e1dddb85e69bd1665ebd2cd7edf6cc81ec831a2",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/props/__init__.py": {
+      "source": "runtime/cram_vrb_lab/scenes/props/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/props/constants.py": {
+      "source": "runtime/cram_vrb_lab/scenes/props/constants.py",
+      "sha256": "6e2c8b1975ee52e667480389c8178debb739503b403fb2e24808444e7dcb254f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/props/isaac_props.py": {
+      "source": "runtime/cram_vrb_lab/scenes/props/isaac_props.py",
+      "sha256": "7f04ab1a26eb8115c18a7eb389c8fde3279ee90475d23050a675927dab01cc55",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/scenes/props/twin_props.py": {
+      "source": "runtime/cram_vrb_lab/scenes/props/twin_props.py",
+      "sha256": "83e8cdedb282735431dc749442d560a4abec90096dcb448b524e8ea96f0b3b33",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/setups.py": {
+      "source": "runtime/cram_vrb_lab/setups.py",
+      "sha256": "e40a922952da444c1d022c05901795d50a44273d466837b724346f0b518961f5",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/__init__.py": {
+      "source": "runtime/cram_vrb_lab/sim/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/isaac_app.py": {
+      "source": "runtime/cram_vrb_lab/sim/isaac_app.py",
+      "sha256": "b4359361081c245099af2f07303b98571f82865dc9d9bc68ba0f2564c45948ea",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/ros_utils.py": {
+      "source": "runtime/cram_vrb_lab/sim/ros_utils.py",
+      "sha256": "e7c8601787e763ffb57673eaec190128af89cd7d6ffe5404b61ba93ecc952952",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/runner.py": {
+      "source": "runtime/cram_vrb_lab/sim/runner.py",
+      "sha256": "5db049e31f7fd8e54af0ce7755c35531f814b2cfe35c57ba3167938e7c8f5651",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/scene_reset.py": {
+      "source": "runtime/cram_vrb_lab/sim/scene_reset.py",
+      "sha256": "67bc2c2cbf694a57119cf8aae624e8dddd85b97e4f9744611786be78e62a9e74",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/scene_reset_bridge.py": {
+      "source": "runtime/cram_vrb_lab/sim/scene_reset_bridge.py",
+      "sha256": "bf7055202640251549ddde4f6d750d1b4ff4984a12d13c0893fa3d760b235e57",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/scene_sync.py": {
+      "source": "runtime/cram_vrb_lab/sim/scene_sync.py",
+      "sha256": "b6ba4c730f0fee7daa9af6f536d38d6a30cc7c043d5a79732f9809edca164634",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/scene_sync_bridge.py": {
+      "source": "runtime/cram_vrb_lab/sim/scene_sync_bridge.py",
+      "sha256": "36708e24559db487055accadd12bbecf252d26365ee0cbb52c8f30ee14235674",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/sim/velocity_integrator.py": {
+      "source": "runtime/cram_vrb_lab/sim/velocity_integrator.py",
+      "sha256": "25e92a625575ba1e64282d5dc4a534c414fc778e7113af0b577f4aca0e51e90f",
+      "mode": 420
+    },
+    "runtime/cram_vrb_lab/specs.py": {
+      "source": "runtime/cram_vrb_lab/specs.py",
+      "sha256": "b126acd67c8f4bcf9b1ad878fb251a5e4be33d1bedbdb7efe41a5f1b39f16090",
+      "mode": 420
+    },
+    "runtime/data-manifest.json": {
+      "source": "runtime/data-manifest.json",
+      "sha256": "aed4ddd203432ebaae5882bfb302c8dcfbca4b3ac949ef51c084c829c5a8374e",
+      "mode": 420
+    },
+    "runtime/data.tar.gz": {
+      "source": "runtime/data.tar.gz",
+      "sha256": "ec27db9738d48a6d62fe917258548e540684ab8e04c376dda52cedcb3d52b36c",
+      "mode": 420
+    },
+    "runtime/unpack.py": {
+      "source": "deployment/isaac61/overrides/runtime/unpack.py",
+      "sha256": "bf37406faaa01a2d28cecbc71c85e1e2885e99c635441d6ed50af939ba23298e",
+      "mode": 420
+    },
+    "scripts/grasp_adapter.py": {
+      "source": "scripts/grasp_adapter.py",
+      "sha256": "27da3577ed36cae9f6d7f8181acd54068a6255c7655df03ac981b269c6b62492",
+      "mode": 420
+    },
+    "scripts/grasp_clearance.py": {
+      "source": "scripts/grasp_clearance.py",
+      "sha256": "21c626ec59fd0f98563ab078a5048808e63638b2e8853c183d3914ef6afd61e9",
+      "mode": 420
+    },
+    "scripts/import_assets.py": {
+      "source": "scripts/import_assets.py",
+      "sha256": "2712d8e81ea8ef5051f2f0a145d108a42391cca30de1279fe32164d909bd6324",
+      "mode": 420
+    },
+    "scripts/import_bootstrap.py": {
+      "source": "scripts/import_bootstrap.py",
+      "sha256": "19683f600d776dc6a1cec526e74c6575d2c4bbf3b4287ca4945e92258e75eca4",
+      "mode": 420
+    },
+    "scripts/install_live_workspace.py": {
+      "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
+      "sha256": "4219725a57404a326edcad55d519744aa562c3c09b9fd7496a73512d546e6a2b",
+      "mode": 420
+    },
+    "scripts/install_neemhub_task.py": {
+      "source": "deployment/isaac61/overrides/scripts/install_neemhub_task.py",
+      "sha256": "681cb3c26e767ba2ebe5e0fcafb245786f6830ffbd7c6306df1dff4c2f3678b4",
+      "mode": 420
+    },
+    "scripts/install_workspace_demo.py": {
+      "source": "deployment/isaac61/overrides/scripts/install_workspace_demo.py",
+      "sha256": "fb00c55f2e58aa70c116309aee5b7aebca3d6f92b478381cb45fb4615f06e4ab",
+      "mode": 420
+    },
+    "scripts/isaaclab23-sim61.patch": {
+      "source": "deployment/isaac61/overrides/scripts/isaaclab23-sim61.patch",
+      "sha256": "cac64df83a192cec756069f10ae727c58d5e8d824595b43d5dc410663311257a",
+      "mode": 420
+    },
+    "scripts/local_python.sh": {
+      "source": "deployment/isaac61/overrides/scripts/local_python.sh",
+      "sha256": "d5ae775299f642918d7ec78e117ad6d4eb5c8ec76b6cc69c8f6c9271927e304b",
+      "mode": 420
+    },
+    "scripts/local_python61.sh": {
+      "source": "deployment/isaac61/overrides/scripts/local_python61.sh",
+      "sha256": "4e7a4437584f9b3d214b04fac94def2e3bd8f4ec2244d1a3c7f43f7035638342",
+      "mode": 420
+    },
+    "scripts/mobile_grasp.py": {
+      "source": "scripts/mobile_grasp.py",
+      "sha256": "d27e26c6311371216dfa69ac204bb03b4cfe8762f1dde177e2c18b7ed720305d",
+      "mode": 420
+    },
+    "scripts/package_native_demo.py": {
+      "source": "deployment/isaac61/overrides/scripts/package_native_demo.py",
+      "sha256": "29b6ef03a9c55dc148fb08ef92091347fa9f65deabc132ac66bba7d470f422a5",
+      "mode": 420
+    },
+    "scripts/requirements-isaac61.lock.txt": {
+      "source": "deployment/isaac61/overrides/scripts/requirements-isaac61.lock.txt",
+      "sha256": "e33c9da89e5a9da062ef540064d2d078ea0ac59326ac3d001a5b5e4042f2debb",
+      "mode": 420
+    },
+    "scripts/restore_neemhub_task.py": {
+      "source": "deployment/isaac61/overrides/scripts/restore_neemhub_task.py",
+      "sha256": "face326d122558e1f3e6d94b25ee4b8853c66e03d6ff189b74ea8004dcfbe29a",
+      "mode": 420
+    },
+    "scripts/run_desktop_demo.py": {
+      "source": "deployment/isaac61/overrides/scripts/run_desktop_demo.py",
+      "sha256": "c8c55c4defc6cbd84a4551c6c35fab79f7f47b22d717e4807600c06d804e86d2",
+      "mode": 420
+    },
+    "scripts/setup_isaac61.sh": {
+      "source": "deployment/isaac61/overrides/scripts/setup_isaac61.sh",
+      "sha256": "1116e67b85b14a663bad213c60eeb597974ae3d6b380a0234a5237d38e0601d3",
+      "mode": 420
+    },
+    "scripts/start_workspace_demo.py": {
+      "source": "deployment/isaac61/overrides/scripts/start_workspace_demo.py",
+      "sha256": "644e5dbc58604c26d43e935c111f32103337e00bd05077441df1f63ad994b1bf",
+      "mode": 420
+    },
+    "scripts/test_pretrained_grasp.py": {
+      "source": "deployment/isaac61/overrides/scripts/test_pretrained_grasp.py",
+      "sha256": "7ae0015ae2c52ebe79f956f7d40a1904a40fdd6fe2d1fd88639d0b14ea7f6a05",
+      "mode": 420
+    }
+  }
+}

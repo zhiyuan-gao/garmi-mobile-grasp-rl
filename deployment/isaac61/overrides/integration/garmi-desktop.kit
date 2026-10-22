@@ -1,0 +1,39 @@
+[package]
+title = "GARMI RL Demo"
+version = "1.0.0"
+
+[dependencies]
+"isaaclab.python.headless.rendering" = {}
+"omni.kit.mainwindow" = {}
+"omni.kit.viewport.window" = {}
+"omni.kit.manipulator.camera" = {}
+"omni.kit.viewport.menubar.camera" = {}
+"omni.kit.viewport.menubar.display" = {}
+"omni.kit.window.toolbar" = {}
+
+[settings]
+app.name = "GARMI RL Demo"
+app.version = "6.1.0"
+exts."omni.renderer.core".present.enabled = true
+app.window.title = "GARMI RL · Isaac Sim"
+# Keep this demo's camera tuning local instead of saving shared Isaac preferences.
+app.settings.persistent = false
+# Standard Isaac Sim mouse navigation speeds.
+persistent.exts."omni.kit.manipulator.camera".tumbleSpeed = 360.0
+persistent.exts."omni.kit.manipulator.camera".lookSpeed.0 = 180.0
+persistent.exts."omni.kit.manipulator.camera".lookSpeed.1 = 90.0
+persistent.exts."omni.kit.manipulator.camera".moveSpeed.0 = 1.0
+persistent.exts."omni.kit.manipulator.camera".moveSpeed.1 = 1.0
+persistent.exts."omni.kit.manipulator.camera".moveSpeed.2 = 1.0
+
+[settings.app.exts]
+folders = [
+    "${exe-path}/exts",
+    "${exe-path}/extscore",
+    "${exe-path}/../exts",
+    "${exe-path}/../extsDeprecated",
+    "${exe-path}/../extscache",
+    "${exe-path}/../extsPhysics",
+    "${app}/../third_party/IsaacLab23Sim61/apps",
+    "${app}/../third_party/IsaacLab23Sim61/source",
+]
