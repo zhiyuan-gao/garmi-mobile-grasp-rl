@@ -1,0 +1,14 @@
+{
+  "source_branch": "codex/integrate-grasp-training-and-vrb",
+  "integration_commit": "54f2b1b90669f2b16c7fbf9052c0cfe875f51ee9",
+  "runtime_commit": "73d6da26edd0a260278aaeb93537aeda7697a760",
+  "release_url": "https://github.com/zhiyuan-gao/garmi-mobile-grasp-rl/releases/tag/mug-ppo-6500-20261022",
+  "checkpoint_relative": "runs/mug-ppo-physical-success/ppo-6500/checkpoints/update_6500.pt",
+  "checkpoint_sha256": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2",
+  "config_relative": "runs/mug-physical-success-review/ppo.yaml",
+  "cases_relative": "runs/wrist-ppo-v6/mug/evaluation-cases.json",
+  "cases_sha256": "11e6ed520136f0186308780ad4b02dc41b6d73b96c8bf1a1321c207cf2c7bc1b",
+  "success_criterion": "physical_grasp_v1",
+  "demonstration_case": "position-1-body-16",
+  "controller": "PPO body grasp followed by scripted Cartesian IK"
+}

@@ -66,6 +66,7 @@ cd garmi-mobile-grasp-rl
 | Set up the environment and run training | [Installation and usage](docs/usage.md) |
 | Evaluate or resume the published mug model | [Mug checkpoint guide](docs/mug-ppo-6500.md) |
 | Run the CRAM + RL demo | [Deployment quickstart](binder/README.md) |
+| Record a mug grasp followed by dual-arm drawer manipulation | [Mug-to-drawer demo](demos/mug_drawer/README.md) |
 | Explore observations, actions, rewards, and randomization | [Experiment settings](docs/experiment.md) |
 
 The demo packages its trained bowl policy, 40 grasp references, and position filter, with asset preparation handled during container setup.
@@ -84,6 +85,15 @@ The demo packages its trained bowl policy, 40 grasp references, and position fil
 | [rl/evaluate_kitchen.py](rl/evaluate_kitchen.py) | Policy evaluation and recordings |
 | [scripts/prepare_cup.py](scripts/prepare_cup.py) | Cup experiment preparation |
 | [scripts/prepare_milk.py](scripts/prepare_milk.py) | Milk-carton experiment preparation |
+
+## Mug-to-drawer demonstration
+
+The [standalone drawer demo](demos/mug_drawer/README.md) uses the published mug
+PPO 6500 policy for a right-hand body grasp, followed by Cartesian IK for
+left-hand drawer opening, right-hand placement and left-hand closing. It runs
+in the complete GARMI apartment, exports a standalone 4× MP4, and includes an
+optional renderer for all 40 mug and bowl reference grasps. Models and scene
+assets are reused from the existing releases and runtime.
 
 ## VRB presentation materials
 

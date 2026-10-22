@@ -1,0 +1,6 @@
+assets/
+runs/
+exports/
+.runtime/
+__pycache__/
+*.py[cod]

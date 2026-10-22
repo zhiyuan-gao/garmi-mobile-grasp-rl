@@ -1,0 +1,31 @@
+{
+  "original_recording_date": "2026-10-22",
+  "checkpoint_sha256": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2",
+  "controller": "PPO grasp; scripted Cartesian IK after grasp; passive drawer; contact-only object support",
+  "full_apartment": true,
+  "status": "completed",
+  "simulation_seconds": 55.7,
+  "mug_inside": true,
+  "mug_tilt_degrees": 0.40381221800346057,
+  "drawer_opening_m": 3.23219299325217e-07,
+  "mug_speed_m_s": 4.980374069418758e-05,
+  "source_video_sha256": "4ff383e4c69de17121b70f6239073c4148d8de7680d9bb9636badf31da169690",
+  "recorder_sha256": "1fd228aeba5890a8d1e57a2c0106daa93b6bd64fbe3bdf6a931818dc65353315",
+  "video_duration_seconds": 13.933333,
+  "video_dimensions": [
+    1600,
+    900
+  ],
+  "video_playback_speed": 4,
+  "standalone_integration_check": {
+    "status": "completed",
+    "mug_inside": true,
+    "mug_tilt_degrees": 0.40381221800346057,
+    "drawer_opening_m": 3.23219299325217e-07,
+    "mug_speed": 4.980374069418758e-05,
+    "date": "2026-10-23",
+    "simulation_seconds": 55.7,
+    "fresh_assets": true,
+    "continuous": true
+  }
+}
