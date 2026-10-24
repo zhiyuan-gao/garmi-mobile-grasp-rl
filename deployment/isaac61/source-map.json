@@ -215,12 +215,12 @@
     },
     "integration/web/workspace-controls.css": {
       "source": "deployment/isaac61/overrides/integration/web/workspace-controls.css",
-      "sha256": "e6c7fc24315ce0b6db876f92e4cab02eb441928ae75b17c976cb63f828e33d34",
+      "sha256": "3e84107eeb38510aa612477efe50964f16a267ecab8e208df635a282653a11b7",
       "mode": 420
     },
     "integration/web/workspace-controls.js": {
       "source": "deployment/isaac61/overrides/integration/web/workspace-controls.js",
-      "sha256": "8bfca722772f0d8943f1fa45bd2b98c0fa27f3f8bef6750fc2d7ceee870d431c",
+      "sha256": "061def3a7d64974294364e846039433b7045fb344eed32d357bd6823bea03045",
       "mode": 420
     },
     "integration/web_demo.py": {
@@ -670,7 +670,7 @@
     },
     "scripts/install_live_workspace.py": {
       "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
-      "sha256": "d63e8c2f5fb985ee50ffc6e6b0d1e44c34a8c0fe24c196d23c6defcad38c9b17",
+      "sha256": "223730626cad7fd6bac2139c1cf57f0565fad7060a5fac45b57d671368f09c29",
       "mode": 420
     },
     "scripts/install_neemhub_task.py": {
@@ -900,7 +900,7 @@
     },
     "demos/household_sequence/server.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/server.py",
-      "sha256": "878cb3bcb6ea3a374170928f2871717d0f499f1cc91fc6ad31e6ef853b659ed9",
+      "sha256": "268fccfc5bfbf2bd1d89ad960a9e7cd16c0458ace00f168e39763dfb28ddadec",
       "mode": 420
     },
     "demos/household_sequence/live_task.py": {
@@ -950,7 +950,22 @@
     },
     "demos/household_sequence/README.md": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/README.md",
-      "sha256": "4148c1db5230d9c1f161a1ccdcf0f80049ebabff5c36d80d12fe2e18e712dc77",
+      "sha256": "38018f339958dd1f8b92b99fe2e43351ee0f6a153d5fad6173f8271b11347d8e",
+      "mode": 420
+    },
+    "demos/household_sequence/neemhub.py": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/neemhub.py",
+      "sha256": "f993a199c6cc4116670d648e906d0d3be3c5015fdfcbaf0aefe669d3c31ac6f9",
+      "mode": 420
+    },
+    "demos/household_sequence/household-task.js": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
+      "sha256": "c19c410f6e93cd1c39b37876156199e982e2355ed2cb0e07532b8a2360ec62ce",
+      "mode": 420
+    },
+    "demos/household_sequence/household-task.css": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
+      "sha256": "fb834540582bdde1c33b4d152abdaf8e1ede5d391c2debb5399e3a695f55f3c7",
       "mode": 420
     }
   },

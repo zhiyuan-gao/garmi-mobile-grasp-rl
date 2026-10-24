@@ -1,74 +1,31 @@
-"""Add live RL controls inside the existing NeemHub + Desktop tab."""
+"""Use NeemHub's native task picker without an outer Workspace control bar."""
 import argparse
-import hashlib
 from pathlib import Path
 import re
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTROLS = """  <section id="garmi-rl-controls" aria-label="GARMI bowl and mug task controls">
-    <div id="rl-runtime">
-    <div class="rl-row"><strong>GARMI · Bowl and Mug</strong>
-      <button id="rl-start" disabled>Start task</button>
-      <button id="rl-stop" disabled>Stop run</button>
-      <span id="rl-status" role="status">Connecting to the task service...</span>
-      <a id="rl-details" target="_blank" rel="noopener">Camera / Run details ↗</a>
-    </div>
-    <ol id="rl-stages" aria-label="Task stages"></ol>
-    <p id="rl-error" role="alert"></p>
-    </div>
-  </section>
-"""
-
-
 def install(workspace):
     web = workspace / "demos/web_ui"
     index = web / "index.html"
     original = index.read_text()
     updated = original.replace('const FALLBACK_BASE = "http://localhost:8888/";',
-                                'const FALLBACK_BASE = /^https?:$/.test(location.protocol) ? location.origin + "/" : "http://localhost:8888/";')
-    if 'id="garmi-rl-controls"' not in original:
-        replacements = {
-            "  <main></main>": CONTROLS + "  <main></main>",
-            "</head>": '  <link rel="stylesheet" href="garmi-rl-live/workspace-controls.css">\n</head>',
-            "</body>": '  <script src="garmi-rl-live/workspace-controls.js"></script>\n</body>',
-            "    function activate(i) {":
-                '    function activate(i) {\n      document.getElementById("garmi-rl-controls").hidden = i !== 0;',
-            "    activate(remembered >= 0 ? remembered : 0);":
-                '    activate(window.location.hash === "#garmi-rl" ? 0 : remembered >= 0 ? remembered : 0);',
-        }
-        for before, after in replacements.items():
-            if updated.count(before) != 1:
-                raise RuntimeError(f"Cannot identify Workspace anchor: {before}")
-            updated = updated.replace(before, after)
-    # Upgrade an earlier live install without duplicating the controls or tabs.
-    updated, count = re.subn(
-        r'  <section id="garmi-rl-controls".*?</section>\n',
-        lambda match: CONTROLS, updated, flags=re.DOTALL)
-    if count != 1:
-        raise RuntimeError("Cannot identify the GARMI controls section")
+        'const FALLBACK_BASE = /^https?:$/.test(location.protocol) ? location.origin + "/" : "http://localhost:8888/";')
+    # Restore the original Workspace chrome. Task selection belongs inside NeemHub.
+    updated = re.sub(r'  <section id="garmi-rl-controls".*?</section>\n', '', updated, flags=re.DOTALL)
+    updated = re.sub(r'  <(?:link|script)[^>]*(?:href|src)="garmi-rl-live/[^" ]+"[^>]*>(?:</script>)?\n', '', updated)
+    updated = updated.replace('      document.getElementById("garmi-rl-controls").hidden = i !== 0;\n', '')
     for previous in (
         '{ name: "NeemHub", path: "proxy/8711/" }',
         '{ name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") }',
+        '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }',
     ):
-        updated = updated.replace(previous,
-            '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }')
-    # An older reachability request must not overwrite the live task connection.
-    updated = updated.replace('          iframe.src = url;',
-                              '          if (!iframe.getAttribute("src")) iframe.src = url;')
-    destination = web / "garmi-rl-live"
-    destination.mkdir(exist_ok=True)
-    for name in ("workspace-controls.css", "workspace-controls.js"):
-        shutil.copy2(ROOT / "integration/web" / name, destination / name)
-        digest = hashlib.sha256((destination / name).read_bytes()).hexdigest()[:12]
-        updated = re.sub(
-            rf'garmi-rl-live/{re.escape(name)}(?:\?v=[^"]*)?',
-            f'garmi-rl-live/{name}?v={digest}', updated)
+        updated = updated.replace(previous, '{ name: "NeemHub", path: "proxy/8722/" }')
     backup = web / "index.html.before-garmi-rl-live"
     if not backup.exists():
         shutil.copy2(index, backup)
     index.write_text(updated)
-    print(f"Installed live controls in NeemHub + Desktop: {index}")
+    print(f"Installed the native NeemHub Task entry: {index}")
 
 
 def configure_autostart(home):

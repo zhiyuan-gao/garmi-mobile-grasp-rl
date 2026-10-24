@@ -33,7 +33,7 @@ class HouseholdController(legacy.Controller):
         old=self.services.pop('neemhub',None)
         if old:self.stop_process(old)
         if not legacy.port_free(8722):raise RuntimeError('Household viewer port 8722 is occupied')
-        self.spawn('neemhub',self.native('-m','cramera.server','8722','--no-browser'),service=True)
+        self.spawn('neemhub',self.native(ROOT/'demos/household_sequence/neemhub.py','8722'),service=True)
 
     def spawn(self,name,command,**kwargs):
         if name=='streaming-client':

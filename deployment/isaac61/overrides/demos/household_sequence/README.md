@@ -10,10 +10,14 @@ created. It launches `server.py --autostart`, which owns one simulator, one
 Giskard server, the CRAM task and NVIDIA's streaming viewer. The viewer connects
 automatically. The final scene remains visible until Stop is pressed.
 
-The Workspace exposes only the bowl and mug household task, with no demo
-selector. Start and Stop control this task, and all 13 stages remain visible.
-Reopening the page attaches to the existing run; Start runs a new complete task
-after the preceding run is over. The other Workspace tabs remain available.
+The original Workspace tabs and layout are retained without an outer task toolbar.
+Inside Semantic Digital Twin Scene, the existing Task selector offers **Bowl and
+Mug** in place of **garmi rl pick up**. This entry shows the actual live long task;
+other recorded tasks remain available. Start and Stop are in the scene's existing
+playback area. Selecting another task only changes the viewed scene; it does not
+stop or restart the simulation. Reopening Bowl and Mug attaches to the existing
+run; Start begins a new complete task only when explicitly pressed.
+
 
 ## Live synchronization
 
