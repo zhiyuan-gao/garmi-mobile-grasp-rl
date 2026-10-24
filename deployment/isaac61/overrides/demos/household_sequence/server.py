@@ -33,7 +33,11 @@ class HouseholdController(legacy.Controller):
         old=self.services.pop('neemhub',None)
         if old:self.stop_process(old)
         if not legacy.port_free(8722):raise RuntimeError('Household viewer port 8722 is occupied')
-        self.spawn('neemhub',self.native(ROOT/'demos/household_sequence/neemhub.py','8722'),service=True)
+        viewer_env=self.env()
+        # Show the shared native Task catalog, while CRAMERA_DATA still supplies
+        # the live world. The simulator retains its per-run recording directory.
+        viewer_env.pop('CRAMERA_SCENES',None)
+        self.spawn('neemhub',self.native(ROOT/'demos/household_sequence/neemhub.py','8722'),service=True,env=viewer_env)
 
     def spawn(self,name,command,**kwargs):
         if name=='streaming-client':

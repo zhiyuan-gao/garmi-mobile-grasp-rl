@@ -900,7 +900,7 @@
     },
     "demos/household_sequence/server.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/server.py",
-      "sha256": "268fccfc5bfbf2bd1d89ad960a9e7cd16c0458ace00f168e39763dfb28ddadec",
+      "sha256": "f442e35dd731c30cd4153edb6a7ad7d74e3c64c665b44764e02dfc3de113e1f1",
       "mode": 420
     },
     "demos/household_sequence/live_task.py": {
