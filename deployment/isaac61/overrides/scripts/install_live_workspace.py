@@ -6,21 +6,12 @@ import re
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTROLS = """  <section id="garmi-rl-controls" aria-label="GARMI RL controls">
-    <div class="rl-row">
-      <label for="garmi-demo-select">Demo</label>
-      <select id="garmi-demo-select">
-        <option value="garmi">GARMI</option>
-        <option value="garmi-rl">GARMI RL · Bowl</option>
-        <option value="household" selected>GARMI · Bowl and mug household task</option>
-      </select>
-      <span id="garmi-original-help" hidden>Original GARMI NeemHub. Start the demo using the GARMI_apartment icon on the Desktop.</span>
-    </div>
+CONTROLS = """  <section id="garmi-rl-controls" aria-label="GARMI bowl and mug task controls">
     <div id="rl-runtime">
-    <div class="rl-row"><strong>GARMI RL · CRAM + RL</strong>
-      <button id="rl-start" disabled>Start RL Demo</button>
+    <div class="rl-row"><strong>GARMI · Bowl and Mug</strong>
+      <button id="rl-start" disabled>Start task</button>
       <button id="rl-stop" disabled>Stop run</button>
-      <span id="rl-status" role="status">Connecting to the RL service...</span>
+      <span id="rl-status" role="status">Connecting to the task service...</span>
       <a id="rl-details" target="_blank" rel="noopener">Camera / Run details ↗</a>
     </div>
     <ol id="rl-stages" aria-label="Task stages"></ol>
@@ -56,10 +47,13 @@ def install(workspace):
         lambda match: CONTROLS, updated, flags=re.DOTALL)
     if count != 1:
         raise RuntimeError("Cannot identify the GARMI controls section")
-    updated = updated.replace(
+    for previous in (
+        '{ name: "NeemHub", path: "proxy/8711/" }',
         '{ name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") }',
-        '{ name: "NeemHub", path: "proxy/8711/" }')
-    # An older reachability request must not overwrite the user's demo selection.
+    ):
+        updated = updated.replace(previous,
+            '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }')
+    # An older reachability request must not overwrite the live task connection.
     updated = updated.replace('          iframe.src = url;',
                               '          if (!iframe.getAttribute("src")) iframe.src = url;')
     destination = web / "garmi-rl-live"

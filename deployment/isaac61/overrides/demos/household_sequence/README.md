@@ -10,9 +10,10 @@ created. It launches `server.py --autostart`, which owns one simulator, one
 Giskard server, the CRAM task and NVIDIA's streaming viewer. The viewer connects
 automatically. The final scene remains visible until Stop is pressed.
 
-The Workspace selects the household task by default. The previous GARMI and
-bowl demo entries remain in the selector. Reopening the page attaches to the
-existing run; Start runs a new complete task after the preceding run is over.
+The Workspace exposes only the bowl and mug household task, with no demo
+selector. Start and Stop control this task, and all 13 stages remain visible.
+Reopening the page attaches to the existing run; Start runs a new complete task
+after the preceding run is over. The other Workspace tabs remain available.
 
 ## Live synchronization
 
