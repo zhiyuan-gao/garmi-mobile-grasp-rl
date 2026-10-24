@@ -56,3 +56,42 @@ Evidence remains in the local run directory: `sim/sequence.json`,
 `task/rl-transport-report.json`, `task/live-sync.jsonl`, `live-viewer-check.json`,
 `workspace-completed.png`, and `viewer-connect.log`. Public Binder validation is
 tracked separately from this local deployment-image test.
+
+## Production Binder check (2026-10-24)
+
+The candidate image built and was published successfully:
+`intel4coro/zhiyuan-2dgao-2dcram-2dvrb-2dlab-000a82:75ee1c5e3b4a598c80ccca8bc840f19ff29e0673`.
+The repository installer verified the packaged sources, frozen policy resources
+and all 15 household asset files during the build.
+
+[Candidate Lab entry](https://binder.intel4coro.de/v2/gh/zhiyuan-gao/cram-vrb-lab/75ee1c5e3b4a598c80ccca8bc840f19ff29e0673?urlpath=files%2Fdemos%2Fweb_ui%2Findex.html)
+
+The production Workspace and remote desktop opened, selected the household task,
+and automatically started the simulator launch. Actual simulation could not start:
+
+- No `/dev/nvidia*` devices in the assigned session.
+- `nvidia-smi` was absent.
+- `libcuda.so.1` and `libGLX_nvidia.so.0` were not loadable.
+- Isaac Sim reported `No device could be created` and `Failed to create any GPU devices`.
+- The `.dev` Binder health endpoint returned HTTP 500.
+
+The validation run was `20261024-144021-da83`; it was stopped after diagnosis.
+Platform evidence was saved locally under
+`/home/zgao/FAME_RL/deployment/household-platform-check-20261024/`.
+The website Enter Lab link was not changed because remote execution has not passed.
+
+### Remaining platform setup
+
+The Lab needs a GPU-backed session with CUDA and Vulkan graphics driver access.
+The platform repository documents this under
+[`jupyterhub.singleuser.extraResource` and `extraEnv`](https://github.com/IntEL4CoRo/binder.intel4coro.de-deploy/blob/main/binder.yaml)
+and [GPU graphics setup](https://github.com/IntEL4CoRo/binder.intel4coro.de-deploy/blob/main/docs/03-gpu-time-slicing.md).
+Its published configuration targets the development Hub; the tested production
+session does not expose these GPU resources. This is a platform allocation/runtime
+configuration task, not a change to the CMS account or a repository environment variable.
+
+Once GPU access is available, launch the pinned candidate above and verify:
+`sim/sequence.json` has `status=completed`, `scene_initializations=1`, and a passing
+`final_verification`; the control API reports completion with both live panes
+connected. Then replace only the VRB article's Enter Lab field with the validated
+production link, preserving all descriptions, videos and other task entries.
