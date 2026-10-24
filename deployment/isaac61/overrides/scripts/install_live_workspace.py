@@ -11,7 +11,8 @@ CONTROLS = """  <section id="garmi-rl-controls" aria-label="GARMI RL controls">
       <label for="garmi-demo-select">Demo</label>
       <select id="garmi-demo-select">
         <option value="garmi">GARMI</option>
-        <option value="garmi-rl" selected>GARMI RL</option>
+        <option value="garmi-rl">GARMI RL · Bowl</option>
+        <option value="household" selected>GARMI · Bowl and mug household task</option>
       </select>
       <span id="garmi-original-help" hidden>Original GARMI NeemHub. Start the demo using the GARMI_apartment icon on the Desktop.</span>
     </div>
@@ -33,7 +34,8 @@ def install(workspace):
     web = workspace / "demos/web_ui"
     index = web / "index.html"
     original = index.read_text()
-    updated = original
+    updated = original.replace('const FALLBACK_BASE = "http://localhost:8888/";',
+                                'const FALLBACK_BASE = /^https?:$/.test(location.protocol) ? location.origin + "/" : "http://localhost:8888/";')
     if 'id="garmi-rl-controls"' not in original:
         replacements = {
             "  <main></main>": CONTROLS + "  <main></main>",
@@ -90,7 +92,11 @@ def configure_autostart(home):
         "[Desktop Entry]\nType=Application\nName=GARMI RL Control\n"
         f'Exec=/opt/conda/bin/python "{ROOT / "scripts/start_workspace_demo.py"}"\n'
         "Terminal=false\nX-GNOME-Autostart-enabled=true\n")
-    print(f"Configured RL control service autostart: {folder}")
+    (folder / "GARMI-Household-Control.desktop").write_text(
+        "[Desktop Entry]\nType=Application\nName=GARMI Household Lab\n"
+        f'Exec=/opt/conda/bin/python "{ROOT / "demos/household_sequence/start_service.py"}"\n'
+        "Terminal=false\nX-GNOME-Autostart-enabled=true\n")
+    print(f"Configured RL and household services: {folder}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "files": {
+    "household/assets/apartment.usda": "a18cb9619509aed5c9c1ee66732a465e28c25bc2995c255c4fbdf9688279238b",
+    "household/assets/configuration/materials/textures/fabric.jpg": "602e05f5eaf6d09f43779c3f55489a0c27736764581d03d74ff2bc9b76cd0898",
+    "household/assets/configuration/materials/textures/face.jpg": "1c48aa277c58e5827a8c034a286f0d95eca63e92f0a1c25eddd5a716506c7abf",
+    "household/assets/drawer_visual.usda": "9e30706bde4b10067633ee15c4739a9849fcb32e39e1a2cc7f3841f6ef926b8b",
+    "household/assets/garmi_dual.urdf": "6a5a3a560646a908b880792c4569eae44a4aa522fd7a2e7e7fcc66c272ea8df5",
+    "household/assets/garmi_dual_preserved.usda": "8a30dd416a8dd8bf4dbe76596ac68938999b0397226c4354a95123f068e98ac9",
+    "household/assets/manifest.json": "efe36cfcf56e5f2d12c44942bdc2f2190c508584d029e2bf796b17518104673d",
+    "household/assets/mesh_aliases/body_collision_54dd07d8.stl": "3d2d72c247acf221fcf308cf938337ab35bb1c6214c4cb762d5ac62081bdd4f7",
+    "household/assets/mesh_aliases/end_cover_dcbde6e4.stl": "7e577c85c96d9b46656c8131b622cb7cbd87c593fd97fa0891d4632ee6165f67",
+    "household/assets/mesh_aliases/side_cover_3cb19a62.stl": "97de4812cbad7250bdd6f7c7ae2f55a3bed1c52ebcbb4830f957db786fcd54de",
+    "household/mug/assets/ycb/025_mug/surface-v3/repaired.obj": "cca6e16f5ff3417083322c8ea3b18fa83e767671aeaf847e1c6ebd208d286b12",
+    "household/mug/assets/ycb/025_mug/surface-v3/rl.usda": "0b439ce679c095ff4240770ae67daca8f79bcf22694916d9e32b47b4fd1d6835",
+    "household/mug/resources/validated-ycb-v6/mug/bank.json": "31433473e85d65b5425170efdbd121a51ac1aa3941058edb604d0906a7137973",
+    "household/mug/runs/mug-physical-success-review/ppo.yaml": "729a0024b38f9703bc15fe454e70d5c6241ff0c738ff2bd4f3a5341d4f06c43b",
+    "household/mug/runs/mug-ppo-physical-success/ppo-6500/checkpoints/update_6500.pt": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2"
+  },
+  "source_files": {
+    "household/assets/apartment.usda": "d057accf15efff8db538891ffed96847b931430c54973ad343f310c444225aa8",
+    "household/assets/configuration/materials/textures/fabric.jpg": "602e05f5eaf6d09f43779c3f55489a0c27736764581d03d74ff2bc9b76cd0898",
+    "household/assets/configuration/materials/textures/face.jpg": "1c48aa277c58e5827a8c034a286f0d95eca63e92f0a1c25eddd5a716506c7abf",
+    "household/assets/drawer_visual.usda": "273a4db8697029ac6ca4ea6a61de207cb5348be02e0695c4c6bd9a5aa0117194",
+    "household/assets/garmi_dual.urdf": "7bddaebf24e28b88efdbc76c144453c3fbb0676c70d94eadbf5d45e99cabca7b",
+    "household/assets/garmi_dual_preserved.usda": "5d1e6d1a8a34f02c19ce2015502c0013f4e9036042e28839514637376a270f4d",
+    "household/assets/manifest.json": "efe36cfcf56e5f2d12c44942bdc2f2190c508584d029e2bf796b17518104673d",
+    "household/assets/mesh_aliases/body_collision_54dd07d8.stl": "3d2d72c247acf221fcf308cf938337ab35bb1c6214c4cb762d5ac62081bdd4f7",
+    "household/assets/mesh_aliases/end_cover_dcbde6e4.stl": "7e577c85c96d9b46656c8131b622cb7cbd87c593fd97fa0891d4632ee6165f67",
+    "household/assets/mesh_aliases/side_cover_3cb19a62.stl": "97de4812cbad7250bdd6f7c7ae2f55a3bed1c52ebcbb4830f957db786fcd54de",
+    "household/mug/assets/ycb/025_mug/surface-v3/repaired.obj": "cca6e16f5ff3417083322c8ea3b18fa83e767671aeaf847e1c6ebd208d286b12",
+    "household/mug/assets/ycb/025_mug/surface-v3/rl.usda": "0b439ce679c095ff4240770ae67daca8f79bcf22694916d9e32b47b4fd1d6835",
+    "household/mug/resources/validated-ycb-v6/mug/bank.json": "31433473e85d65b5425170efdbd121a51ac1aa3941058edb604d0906a7137973",
+    "household/mug/runs/mug-physical-success-review/ppo.yaml": "729a0024b38f9703bc15fe454e70d5c6241ff0c738ff2bd4f3a5341d4f06c43b",
+    "household/mug/runs/mug-ppo-physical-success/ppo-6500/checkpoints/update_6500.pt": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2"
+  },
+  "archive_sha256": "ad4a6b4f79fc674b8ac9c6ada9d9aedbf4b3c80372db5ff4c9ac8fb768a2b3d5"
+}

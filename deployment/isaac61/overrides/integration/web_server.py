@@ -93,6 +93,7 @@ def external_integration_running(proc_root=Path('/proc'), ignore_process_groups=
              for name in ('sim.py', 'giskard_server.py', 'cram_demo.py', 'web_demo.py')}
     names.update('/home/jovyan/cram-vrb-lab/demos/' + name
                  for name in ('sim.py', 'giskard_server.py', 'garmi_demo.py'))
+    names.update(str(base / 'demos/household_sequence/sim.py') for base in (ROOT, Path('/workspace')))
     filenames = {Path(name).name for name in names}
     for path in proc_root.glob('[0-9]*/cmdline'):
         try:

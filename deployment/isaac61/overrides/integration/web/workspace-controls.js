@@ -1,5 +1,5 @@
 // Uses the existing Workspace's BASE and frames; credentials stay in its session.
-const rlApi = BASE + "proxy/8781/";
+let rlApi = BASE + "proxy/8782/";
 const rlControls = document.getElementById("garmi-rl-controls");
 const rlStart = document.getElementById("rl-start");
 const rlStop = document.getElementById("rl-stop");
@@ -22,13 +22,16 @@ function rlSetViewer(url) {
 }
 
 function rlSelectDemo() {
-  const selected = rlSelect.value === "garmi-rl";
+  const selected = rlSelect.value !== "garmi";
+  rlApi = BASE + (rlSelect.value === "household" ? "proxy/8782/" : "proxy/8781/");
+  document.getElementById("rl-details").href = rlApi + "panel.html";
+  rlLatestStatus = null;
   store("cram-workspace.demo", rlSelect.value);
   rlRuntime.hidden = !selected;
   originalHelp.hidden = selected;
   rlViewerKey = "";
   if (selected) {
-    rlSetViewer(BASE + "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766"));
+    rlSetViewer(BASE + (rlSelect.value === "household" ? "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") : "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8765")));
     if (rlLatestStatus) rlRender(rlLatestStatus);
   } else {
     rlSetViewer(BASE + "proxy/8711/");
@@ -42,7 +45,7 @@ function rlRender(status) {
   rlLatestStatus = status;
   rlToken = status.csrf_token;
   rlStart.disabled = rlBusy || status.active;
-  rlStop.disabled = rlBusy || !status.active || status.status === "stopping";
+  rlStop.disabled = rlBusy || (!status.active && !status.display_open) || status.status === "stopping";
   const snapshot = (status.state || {}).snapshot || {};
   const elapsed = status.started_at
     ? Math.max(0, Math.floor((status.finished_at || Date.now() / 1000) - status.started_at)) : null;
@@ -57,12 +60,12 @@ function rlRender(status) {
   }));
   const viewerReady = (status.events || []).some(e => e.event === "viewer_ready") ||
     status.stage > 0 || status.recording;
-  if (rlSelect.value === "garmi-rl" && status.run_id && viewerReady) {
-    const recorded = status.recording && !status.active;
+  if (rlSelect.value !== "garmi" && status.run_id && viewerReady) {
+    const recorded = status.recording && !status.active && !status.display_open;
     const key = status.run_id + (recorded ? ":recorded" : ":live");
     if (key !== rlViewerKey) {
       rlViewerKey = key;
-      const url = BASE + "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") +
+      const url = BASE + `proxy/${status.viewer_port || 8721}/?live=` + encodeURIComponent(BASE + `proxy/${status.live_port || 8765}`) +
         "&run=" + encodeURIComponent(status.run_id) + (recorded ? "&scene=__recording__" : "");
       rlSetViewer(url);
     }
@@ -70,9 +73,11 @@ function rlRender(status) {
 }
 
 async function rlFetchStatus() {
-  const response = await fetch(rlApi + "api/status", {cache: "no-store"});
+  const requestedApi = rlApi;
+  const response = await fetch(requestedApi + "api/status", {cache: "no-store"});
   if (!response.ok) throw new Error(`Status service returned ${response.status}`);
-  rlRender(await response.json());
+  const data = await response.json();
+  if (requestedApi === rlApi) rlRender(data);
 }
 
 async function rlPoll() {
@@ -111,8 +116,7 @@ async function rlCommand(action) {
 }
 rlStart.onclick = () => rlCommand("start");
 rlStop.onclick = () => rlCommand("stop");
-rlSelect.value = window.location.hash === "#garmi-rl" ? "garmi-rl"
-  : stored("cram-workspace.demo") === "garmi" ? "garmi" : "garmi-rl";
+rlSelect.value = window.location.hash === "#garmi-rl" ? "garmi-rl" : "household";
 rlSelect.onchange = rlSelectDemo;
 rlSelectDemo();
 rlPoll();

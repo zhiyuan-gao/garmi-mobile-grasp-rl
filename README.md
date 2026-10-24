@@ -109,3 +109,12 @@ The [CRAM Lab fork](https://github.com/zhiyuan-gao/cram-vrb-lab/tree/garmi-rl-na
 provides the Binder image and desktop workspace. It installs a versioned runtime
 built from the [Isaac Sim 6.1 deployment sources](deployment/isaac61/README.md).
 See [repository roles and the update workflow](docs/repositories.md).
+
+## Continuous household task
+
+The [household demo](demos/household_sequence/README.md) starts with a bowl and
+a mug on the left kitchen counter. GARMI delivers the bowl to the dining table,
+returns for the mug, opens the upper drawer with its left hand, places the mug
+inside with its right hand, and closes the drawer in one continuous simulation.
+The [native Lab integration](deployment/isaac61/overrides/demos/household_sequence/README.md)
+connects the Isaac Sim desktop and live NeemHub view to this task.

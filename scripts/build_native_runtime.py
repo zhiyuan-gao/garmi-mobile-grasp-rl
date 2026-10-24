@@ -61,7 +61,7 @@ def build(root, out):
         source_map=MAP, source_map_sha256=digest(root / MAP),
         archive_sha256=digest(archive), files_manifest_sha256=digest(manifest),
         file_count=len(hashes), environment=data['environment'],
-        content_baseline=data['imported_from'], task='bowl_counter_to_table')
+        content_baseline=data['imported_from'], task=data.get('task', 'bowl_counter_to_table'))
     (out / 'source.json').write_text(json.dumps(provenance, indent=2) + '\n')
     print('NATIVE_RUNTIME_BUILT', out, commit, len(hashes))
 
