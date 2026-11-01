@@ -29,7 +29,7 @@ else
   cp -a "$REPO/runtime" "$DEMO/assets/workspace/"
   cp -a "$REPO/rl/garmi_rl" "$DEMO/assets/workspace/rl/"
   cp -a "$REPO/scripts" "$DEMO/assets/workspace/"
-  EXTRA=(); [[ "$MODE" != preview ]] || EXTRA+=(--preview-only)
+  EXTRA=("${@:2}"); [[ "$MODE" != preview ]] || EXTRA+=(--preview-only)
   docker run --name "$NAME" "${COMMON[@]}" \
     --mount "type=bind,src=$DEMO/assets/workspace,dst=/workspace" \
     --mount "type=bind,src=$GARMI_BOWL_WORKSPACE/results,dst=/workspace/results,readonly" \

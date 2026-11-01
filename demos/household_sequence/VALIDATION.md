@@ -95,3 +95,32 @@ Once GPU access is available, launch the pinned candidate above and verify:
 `final_verification`; the control API reports completion with both live panes
 connected. Then replace only the VRB article's Enter Lab field with the validated
 production link, preserving all descriptions, videos and other task entries.
+
+## Whole-body presentation run (2026-10-26, local Isaac Sim 5.1)
+
+Run: `runs/garmi-household-wholebody-v2-20261026`.
+The bowl navigation target is `(0.25, 6.25, pi/2)`, 10 cm farther from the
+counter than the original target. The measured arrival was approximately
+`(0.2349, 6.2868)`. The mug handover and all controller implementations remain
+unchanged.
+
+- Complete continuous task and final physical verification: passed.
+- One scene initialization; 163.95 simulation seconds.
+- During RL approach alone, the bowl's base path was 19.4 cm with 4.8 degrees
+  of heading change, while the right arm also moved.
+- During the mug's RL approach, the base path was 39.9 cm with 44.5 degrees
+  of heading change, while the right arm also moved.
+- The mug ended inside the closed drawer; its speed was 0.00035 m/s.
+- Final drawer opening was below 0.001 mm; the delivered bowl remained on the table.
+
+The earlier attempt `runs/garmi-household-wholebody-20261026`, with navigation
+target `(0.15, 6.25, pi/2)`, is retained as a failed full-task test: RL lifted
+the bowl, but the following Giskard navigation rejected the starting clearance
+between `front_lights_link` and `cabinet_door_1` (2.12 cm versus 5 cm required).
+No collision thresholds were relaxed to obtain the successful run.
+
+The presentation renderer uses the successful run's measured states, an expanded
+fixed counter view and smooth travel to/from the table. Initial waiting is cut.
+At the user's request, `--two-groups` labels the classical stages as Giskard in
+the video; the guide and manifest identify waypoint and drawer IK execution
+separately. No actual controller is changed by this presentation grouping.

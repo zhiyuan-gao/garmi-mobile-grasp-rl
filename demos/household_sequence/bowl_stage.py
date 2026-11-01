@@ -23,9 +23,11 @@ class BowlStage(GraspDemo):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir',type=Path,required=True)
+    parser.add_argument('--base', type=float, nargs=3, default=[.25, 6.35, math.pi/2],
+                        help='Navigation handover pose within the policy training region')
     options=parser.parse_args()
     if options.output_dir.exists():raise FileExistsError(options.output_dir)
-    options.reference='bowl-r020';options.base=[.25,6.35,math.pi/2]
+    options.reference='bowl-r020'
     options.place_base=[.90,5.85,-.85];options.target=[1.6,5.32,.80]
     options.stage='rl-transport';options.carry='physical';options.transport=True
     options.resume_place=False;options.retreat=None

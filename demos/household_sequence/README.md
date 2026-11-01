@@ -45,6 +45,21 @@ under this demo's `assets/`. `preview` loads the initial scene for inspection.
 with the mug in that same simulation. Each invocation owns its Docker container
 and child processes. Run outputs are timestamped beneath this demo's `runs/`.
 
+The container entry `run.py` also accepts `--bowl-base X Y YAW` to change only
+the bowl's navigation handover pose, preserving the original default. For
+example, `--bowl-base 0.15 6.25 1.5707963267948966` moves the handover 10 cm
+sideways and 10 cm farther from the counter. The existing admission checks still
+require the robot to be inside the trained region, facing the counter and
+settled. The policy then controls the base and right arm together; no extra
+base trajectory is inserted during RL.
+
+To keep the same lateral coordinate and move the requested handover 10 cm back:
+
+```bash
+bash demos/household_sequence/docker.sh run \
+  --bowl-base 0.25 6.25 1.5707963267948966
+```
+
 ## Outputs and checks
 
 - `report.json`: overall completion or failure.
@@ -71,3 +86,40 @@ python3 demos/household_sequence/export_review.py \
 
 The exporter checks completion and final verification before producing
 `review/index.html` and `review/household-4x.mp4`.
+
+## Continuous camera recording
+
+`render_continuous_review.py` re-renders the measured states in a completed
+run's `sim/states.jsonl`. It keeps the counter camera fixed through grasping
+and drawer manipulation, and uses smooth camera travel to the dining table
+and back. The camera positions and transition times are in
+`camera_continuous.json`, currently fitted to the successful
+`garmi-household-run-20261023-023241` execution.
+
+Run it with the same Isaac Sim 5.1 image and asset mounts as the local task:
+
+```bash
+/isaac-sim/python.sh /demo/render_continuous_review.py --headless \
+  --run /demo/runs/garmi-household-run-20261023-023241 \
+  --out /demo/runs/household-camera-review \
+  --camera-plan /demo/camera_continuous.json
+```
+
+Add `--preview-times 31.5 70 107 130 145` to inspect still frames before rendering
+the video. Use a new output directory for each invocation. The original run and
+video are preserved.
+
+The initial planner wait is removed automatically, retaining 0.4 simulation
+seconds before the first planned motion (`--lead-in-seconds` controls this).
+
+The output includes an HTML review, a captioned 4× MP4 and a manifest containing
+the source-state hash, camera plan and controller timeline. RL captions include
+the fixed closing/lifting routine. Bowl navigation and transport use Giskard;
+the return waypoints and drawer Cartesian IK are labelled traditional control.
+This is a presentation replay of one successful execution, not a fresh physics
+evaluation or a combination of multiple trials.
+
+`--two-groups` uses the requested RL / Giskard video presentation labels. All
+classical segments share the Giskard label and color, while the HTML guide and
+manifest retain the distinction between actual Giskard motions, waypoint control
+and drawer IK. This option does not change task execution.

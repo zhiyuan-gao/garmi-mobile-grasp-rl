@@ -17,6 +17,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--preview-only',action='store_true')
+    p.add_argument('--bowl-base',type=float,nargs=3,
+                   help='Optional navigation handover pose for the bowl policy')
     args=p.parse_args();args.out.mkdir(parents=True,exist_ok=False)
     env=dict(os.environ,ROS_DOMAIN_ID='49',ROS_AUTOMATIC_DISCOVERY_RANGE='LOCALHOST',RMW_IMPLEMENTATION='rmw_fastrtps_cpp',
              PYTHONUNBUFFERED='1',PYTHONDONTWRITEBYTECODE='1',OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
@@ -45,7 +47,8 @@ def main():
             report['status']='preview_completed';return
         planner=spawn('giskard',native('/workspace/integration/giskard_server.py','--robot','garmi','--scene','garmi_apartment'))
         task=spawn('bowl',native(HERE/'bowl_stage.py',
-                                  '--output-dir',args.out/'bowl'))
+                                  '--output-dir',args.out/'bowl',
+                                  *(['--base', *args.bowl_base] if args.bowl_base is not None else [])))
         deadline=time.monotonic()+1800
         while task.poll() is None:
             if sim.poll() is not None or planner.poll() is not None:raise RuntimeError('Simulation or planner exited during bowl delivery')
