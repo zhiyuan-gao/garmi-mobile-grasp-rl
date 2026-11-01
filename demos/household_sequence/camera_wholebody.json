@@ -1,0 +1,14 @@
+{
+  "coordinate_frame": "map",
+  "counter": {
+    "eye": [-2.7, 7.5, 2.85],
+    "target": [0.15, 6.65, 0.65]
+  },
+  "table": {
+    "eye": [-1.4, 4.25, 2.65],
+    "target": [1.05, 5.65, 0.95]
+  },
+  "outbound_seconds": [38.1, 61.6],
+  "return_seconds": [85.65, 102.80000000000001],
+  "travel_eye_offset": [0.35, 0.0, 0.0]
+}

@@ -47,8 +47,8 @@ and child processes. Run outputs are timestamped beneath this demo's `runs/`.
 
 The container entry `run.py` also accepts `--bowl-base X Y YAW` to change only
 the bowl's navigation handover pose, preserving the original default. For
-example, `--bowl-base 0.15 6.25 1.5707963267948966` moves the handover 10 cm
-sideways and 10 cm farther from the counter. The existing admission checks still
+example, `--bowl-base 0.25 6.25 1.5707963267948966` moves the requested handover
+10 cm farther from the counter. The existing admission checks still
 require the robot to be inside the trained region, facing the counter and
 settled. The policy then controls the base and right arm together; no extra
 base trajectory is inserted during RL.
@@ -123,3 +123,18 @@ evaluation or a combination of multiple trials.
 classical segments share the Giskard label and color, while the HTML guide and
 manifest retain the distinction between actual Giskard motions, waypoint control
 and drawer IK. This option does not change task execution.
+
+The final whole-body recording uses `camera_wholebody.json`, which keeps the
+base in view during both grasps and curves the camera travel past the wall corner:
+
+```bash
+/isaac-sim/python.sh /demo/render_continuous_review.py --headless \
+  --run /demo/runs/garmi-household-wholebody-v2-20261026 \
+  --out /demo/runs/household-wholebody-review \
+  --camera-plan /demo/camera_wholebody.json \
+  --two-groups --resolution 1440 960
+```
+
+These named run directories are local recording inputs, not Git assets. For a
+new execution, supply its run directory and align the camera transition times
+with its bowl handover, table placement and return-to-counter events.

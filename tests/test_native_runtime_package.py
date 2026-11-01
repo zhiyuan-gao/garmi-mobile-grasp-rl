@@ -11,9 +11,19 @@ spec.loader.exec_module(bundle)
 
 
 class NativePackageTests(unittest.TestCase):
-    def test_all_native_sources_match_the_original_manifest(self):
+    def test_native_sources_match_manifest_and_include_live_household_task(self):
         root = Path(__file__).resolve().parents[1]
-        self.assertEqual(len(bundle.verify(root)['files']), 146)
+        files = bundle.verify(root)['files']
+        # verify() checks every source hash. Check the deployment contract rather
+        # than the file count of the old bowl-only package.
+        required = {
+            'demos/household_sequence/server.py',
+            'demos/household_sequence/live_task.py',
+            'demos/household_sequence/neemhub.py',
+            'demos/household_sequence/household-task.js',
+            'integration/web/workspace-controls.js',
+        }
+        self.assertFalse(required - files.keys(), f'Missing live task files: {required - files.keys()}')
 
     def test_corrupt_source_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
