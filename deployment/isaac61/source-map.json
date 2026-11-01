@@ -670,7 +670,7 @@
     },
     "scripts/install_live_workspace.py": {
       "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
-      "sha256": "900e60de129e7a0ad03ac58032a5cd01d8003c70ba11b0c82b7eb2531c368d19",
+      "sha256": "223730626cad7fd6bac2139c1cf57f0565fad7060a5fac45b57d671368f09c29",
       "mode": 420
     },
     "scripts/install_neemhub_task.py": {
@@ -900,7 +900,7 @@
     },
     "demos/household_sequence/server.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/server.py",
-      "sha256": "878cb3bcb6ea3a374170928f2871717d0f499f1cc91fc6ad31e6ef853b659ed9",
+      "sha256": "f442e35dd731c30cd4153edb6a7ad7d74e3c64c665b44764e02dfc3de113e1f1",
       "mode": 420
     },
     "demos/household_sequence/live_task.py": {
@@ -950,7 +950,22 @@
     },
     "demos/household_sequence/README.md": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/README.md",
-      "sha256": "7f98119eb68aa2600a03fad9e6537a3c4ec5f2fbd31a46393a687ca14f52c9e8",
+      "sha256": "38018f339958dd1f8b92b99fe2e43351ee0f6a153d5fad6173f8271b11347d8e",
+      "mode": 420
+    },
+    "demos/household_sequence/neemhub.py": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/neemhub.py",
+      "sha256": "f993a199c6cc4116670d648e906d0d3be3c5015fdfcbaf0aefe669d3c31ac6f9",
+      "mode": 420
+    },
+    "demos/household_sequence/household-task.js": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
+      "sha256": "c19c410f6e93cd1c39b37876156199e982e2355ed2cb0e07532b8a2360ec62ce",
+      "mode": 420
+    },
+    "demos/household_sequence/household-task.css": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
+      "sha256": "fb834540582bdde1c33b4d152abdaf8e1ede5d391c2debb5399e3a695f55f3c7",
       "mode": 420
     }
   },

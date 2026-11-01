@@ -1,0 +1,7 @@
+.household-task #record-btn,
+.household-task #playback-speed,
+.household-task #playback-scrub-row { display: none !important; }
+#household-status { display: block; margin-top: 8px; font-size: 12px; line-height: 1.5; }
+.household-task .panel-robot-scene > .stage { min-height: 0; }
+.household-task .panel-robot-scene > .workflow { flex-shrink: 0; }
+.household-task .workflow-head { flex-wrap: wrap; gap: 6px; }
