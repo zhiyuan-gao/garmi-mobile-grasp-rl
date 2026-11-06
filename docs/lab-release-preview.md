@@ -63,7 +63,7 @@ vertical area. The repeated scene title and task controls are hidden in this
 embedded view, with Start/Stop still in the outer toolbar. Expand/Restore gives
 all five tabs the full left pane without changing the right desktop. Standalone
 NeemHub retains its controls. Browser verification at 1800 × 1100 measured the
-panel at 568 px high normally and 842 px expanded (versus approximately 356 px
+panel at 568 px high normally and 844 px expanded (versus approximately 356 px
 in the earlier review layout).
 
 This presentation-only revision is applied to the running local container and
