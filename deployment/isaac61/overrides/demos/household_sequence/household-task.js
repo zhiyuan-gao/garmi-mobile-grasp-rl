@@ -40,7 +40,7 @@
   };
 
   if (!household) return;
-  let latest = null, busy = false, displayedRun = null;
+  let latest = null, busy = false, displayedRun = null, commandError = '', commandLabel = '';
   function focusPlan() {
     if (params.get('layout') !== 'workspace') return;
     const plan = Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Plan');
@@ -72,11 +72,13 @@
         // A new task publishes a new live world and plan; reconnect both panels.
         location.reload(); return;
       }
-      start.textContent = 'Start task';
+      start.textContent = busy ? 'Please wait…' : data.status === 'starting' ? 'Starting…' : data.active ? 'Running' : 'Start task';
       start.disabled = busy || data.active;
       stop.disabled = busy || (!data.active && !data.display_open) || data.status === 'stopping';
       const stage = data.stages && data.stages[data.stage];
-      status.textContent = data.message + (stage ? ' · ' + (data.stage + 1) + '/' + data.stages.length + ': ' + stage : '');
+      const elapsed = Math.max(0, Math.floor(Date.now() / 1000 - (data.started_at || Date.now() / 1000)));
+      status.textContent = commandError || (busy ? commandLabel : data.message +
+        (data.status === 'starting' ? ` (${elapsed}s)` : stage ? ' · ' + (data.stage + 1) + '/' + data.stages.length + ': ' + stage : ''));
     }
     async function poll() {
       try {
@@ -90,7 +92,10 @@
     }
     async function command(action) {
       if (busy || !latest) return;
-      busy = true; start.disabled = stop.disabled = true;
+      busy = true; commandError = '';
+      commandLabel = action === 'start' ? 'Starting task; preparing Isaac Sim…' : 'Stopping task…';
+      status.textContent = commandLabel; start.textContent = 'Please wait…';
+      start.disabled = stop.disabled = true;
       try {
         const response = await fetch(api + '/api/' + action, {
           method: 'POST', headers: {'X-Demo-Token': latest.csrf_token}
@@ -99,9 +104,11 @@
         if (!response.ok) throw new Error(result.error || 'Task command failed');
         await poll();
       } catch (error) {
-        status.textContent = error.message;
+        commandError = error.message || 'Task request failed';
+        status.textContent = commandError;
       } finally {
         busy = false;
+        await poll();
         if (latest) {
           start.disabled = latest.active;
           stop.disabled = (!latest.active && !latest.display_open) || latest.status === 'stopping';

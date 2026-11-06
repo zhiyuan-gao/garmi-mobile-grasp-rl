@@ -960,7 +960,7 @@
     },
     "demos/household_sequence/household-task.js": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
-      "sha256": "3dcfebb9a9580bf1fe941bde7ec623ae4d1db6fa9ee9e0986819eddfff5005c7",
+      "sha256": "c6a4b88a4708d6b8b685793de4d7af34995422d3ebe5a430f988c4589e57c796",
       "mode": 420
     },
     "demos/household_sequence/household-task.css": {
@@ -1046,7 +1046,7 @@
     "demos/household_sequence/household-workspace.js": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-workspace.js",
       "mode": 420,
-      "sha256": "dfeacfb74c1dd965c627bef5630f68a2fb701bdd88ddd91324268e444644503d"
+      "sha256": "f92eeca86514edd26d0d291074955232dc548e7952045fb0404e16ca2fb7981e"
     },
     "demos/household_sequence/household_plan.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household_plan.py",
