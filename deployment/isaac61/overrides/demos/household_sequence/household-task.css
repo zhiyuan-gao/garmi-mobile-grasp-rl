@@ -5,3 +5,8 @@
 .household-task .panel-robot-scene > .stage { min-height: 0; }
 .household-task .panel-robot-scene > .workflow { flex-shrink: 0; }
 .household-task .workflow-head { flex-wrap: wrap; gap: 6px; }
+/* In the embedded workspace, reserve enough room for both the scene and Plan. */
+@media (max-width: 900px) {
+  .household-task main.split { grid-template-rows: minmax(400px, 55fr) minmax(300px, 45fr); }
+  .household-task .graph-wrap { min-height: 0; }
+}

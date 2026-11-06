@@ -965,7 +965,7 @@
     },
     "demos/household_sequence/household-task.css": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
-      "sha256": "fb834540582bdde1c33b4d152abdaf8e1ede5d391c2debb5399e3a695f55f3c7",
+      "sha256": "eb236030bfd2f9023afae57e9aafda60e12c4ab6eb37577cf59f2aa4104ba5db",
       "mode": 420
     },
     "integration/garmi_cram_rl/pick_up_action.py": {
