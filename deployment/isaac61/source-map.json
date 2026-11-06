@@ -955,7 +955,7 @@
     },
     "demos/household_sequence/neemhub.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/neemhub.py",
-      "sha256": "edc6fc4053f53dac047abe9161a247a404ef20598b4c40974af91b8d7754af4f",
+      "sha256": "81a653e2a07d316d55d4ba71862964b0d2b8e5b81c46dd39e9decf99ddeac078",
       "mode": 420
     },
     "demos/household_sequence/household-task.js": {

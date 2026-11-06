@@ -48,6 +48,14 @@ def workspace_source(route):
         if text.count('title: [label].concat(lines)') != 1:
             raise RuntimeError('Unsupported NeemHub plan payload')
         text = text.replace('title: [label].concat(lines)', 'derived: n.derived, title: [label].concat(lines)')
+        marker_steps = 'if (STEP_KINDS[k]) out.push(c);'
+        if text.count(marker_steps) != 1:
+            raise RuntimeError('Unsupported NeemHub step list')
+        text = text.replace(marker_steps, "if (STEP_KINDS[k] || (k === 'MonitorNode' && c.n.id.indexOf('household_') === 0)) out.push(c);")
+        marker_label = '  function stepLabel(n) {\n'
+        if text.count(marker_label) != 1:
+            raise RuntimeError('Unsupported NeemHub action label')
+        text = text.replace(marker_label, marker_label + "    if (n.label && n.label.indexOf('RLPickUpAction') === 0) return n.label;\n")
     if text.count(marker) != 1:
         raise RuntimeError('Unsupported NeemHub workspace renderer')
     return text.replace(marker, marker + addition)
