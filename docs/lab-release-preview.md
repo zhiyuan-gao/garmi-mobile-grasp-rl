@@ -5,7 +5,8 @@ mug start on the kitchen counter, the bowl is delivered to the dining table, and
 the mug is then picked up and placed inside the drawer before the left hand closes it.
 
 The workspace embeds the original NeemHub interface alongside the live Isaac Sim
-desktop. Plan opens by default. The bowl portion displays actual CRAM actions,
+desktop. The embedded view shows the scene; the NeemHub arrow opens the full
+interface in a separate tab, with Plan selected by default. The bowl portion displays actual CRAM actions,
 station checks, grasp selection and `RLPickUpAction`; the existing mug and drawer
 controller publishes measured stage progress as monitor entries in the same list.
 Start and Stop operate the simulation. Other recorded task entries remain available.
@@ -56,15 +57,13 @@ were checked against the final packaged hashes before the final image was launch
 These commits and the image are local review candidates. GitHub branches and the
 VRB Enter Lab link have not been updated by this preparation.
 
-## Embedded layout revision
+## Arrow-based full-page view
 
-The embedded workspace now gives the five reasoning tabs 68% of the available
-vertical area. The repeated scene title and task controls are hidden in this
-embedded view, with Start/Stop still in the outer toolbar. Expand/Restore gives
-all five tabs the full left pane without changing the right desktop. Standalone
-NeemHub retains its controls. Browser verification at 1800 × 1100 measured the
-panel at 568 px high normally and 844 px expanded (versus approximately 356 px
-in the earlier review layout).
+The embedded left pane shows only the live 3D scene and fills the available height.
+The first arrow beside NeemHub + Desktop opens the complete NeemHub interface in
+another tab, including Knowledge, Plan, Statechart, Kinematics and Transforms.
+The second arrow still opens the remote desktop. Start/Stop and the task controller
+are unchanged. The temporary embedded Expand/Restore controls have been removed.
 
 This presentation-only revision is applied to the running local container and
 included in the deployment runtime archive. The previously built image ID above

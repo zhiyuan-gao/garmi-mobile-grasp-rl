@@ -670,7 +670,7 @@
     },
     "scripts/install_live_workspace.py": {
       "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
-      "sha256": "4b25c31275b1895f19398d1faec908c3233febc24f22f30f89aae277201512ec",
+      "sha256": "bee8d9738f578ac559c68229d295ec05dfd14a1bda0f882e2bdeeac22075a97b",
       "mode": 420
     },
     "scripts/install_neemhub_task.py": {
@@ -960,12 +960,12 @@
     },
     "demos/household_sequence/household-task.js": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
-      "sha256": "dd248351e38b8348782698088d882052d266679a7354dbd16dde51e0d768ad3d",
+      "sha256": "3dcfebb9a9580bf1fe941bde7ec623ae4d1db6fa9ee9e0986819eddfff5005c7",
       "mode": 420
     },
     "demos/household_sequence/household-task.css": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
-      "sha256": "6a76a3a959d830cd4ab6d222a35cc1706858c88ffaa5ec16628397df31126e26",
+      "sha256": "8e8eeca56b6bfc31fe17309ab59af4ed3ed58a6e65fd290d0451b379bde1762c",
       "mode": 420
     },
     "integration/garmi_cram_rl/pick_up_action.py": {

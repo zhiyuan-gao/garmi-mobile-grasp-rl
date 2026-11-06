@@ -17,10 +17,16 @@ def install(workspace):
     updated = updated.replace('      document.getElementById("garmi-rl-controls").hidden = i !== 0;\n', '')
     for previous in (
         '{ name: "NeemHub", path: "proxy/8711/" }',
+        '{ name: "NeemHub", path: "proxy/8722/?layout=workspace" }',
         '{ name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") }',
         '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }',
     ):
-        updated = updated.replace(previous, '{ name: "NeemHub", path: "proxy/8722/?layout=workspace" }')
+        updated = updated.replace(previous, '{ name: "NeemHub", path: "proxy/8722/?scene=__live__", openPath: "proxy/8722/?scene=__live__&layout=workspace" }')
+    # The embedded scene and full-page NeemHub use separate links.
+    updated = updated.replace(
+        'url: resolve(p.path), hideTopBar:',
+        'url: resolve(p.path), openUrl: resolve(p.openPath || p.path), hideTopBar:')
+    updated = updated.replace('openBtn.href = pane.url;', 'openBtn.href = pane.openUrl || pane.url;')
     updated = updated.replace('skipLocal: true, ', '')
     backup = web / "index.html.before-garmi-rl-live"
     if not backup.exists():

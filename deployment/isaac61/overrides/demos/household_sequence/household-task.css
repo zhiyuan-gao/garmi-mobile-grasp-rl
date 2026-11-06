@@ -5,30 +5,10 @@
 .household-task .panel-robot-scene > .stage { min-height: 0; }
 .household-task .panel-robot-scene > .workflow { flex-shrink: 0; }
 .household-task .workflow-head { flex-wrap: wrap; gap: 6px; }
-/* In the embedded workspace, reserve enough room for both the scene and Plan. */
-@media (max-width: 900px) {
-  .household-task main.split { grid-template-rows: minmax(400px, 55fr) minmax(300px, 45fr); }
-  .household-task .graph-wrap { min-height: 0; }
-}
-
-/* The right pane already shows Isaac Sim; give the reasoning tabs most of the
-   embedded left pane. Standalone NeemHub keeps its original controls/layout. */
-.household-embedded body { overflow: hidden; }
-.household-embedded .topbar { padding: 6px 12px; }
-.household-embedded .logo-img { height: 26px; }
-.household-embedded main.split {
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: minmax(170px, 32fr) minmax(0, 68fr);
-  padding: 8px; gap: 8px;
-}
-.household-embedded .slot { display: flex !important; min-height: 0; }
-.household-embedded .pane-divider,
-.household-embedded .panel-robot-scene > .workflow,
-.household-embedded .panel-robot-scene > .panel-head h2 { display: none !important; }
-.household-embedded .panel-robot-scene > .panel-head { padding: 6px 10px; }
-.household-embedded .graph-wrap { min-height: 0; }
-.household-embedded .graph-tabs { gap: 2px; padding-left: 8px; padding-right: 8px; }
-.household-embedded .graph-tabs button { padding-left: 7px; padding-right: 7px; }
-#household-expand-panels { margin-left: auto; flex-shrink: 0; color: var(--accent); }
-.household-panels-expanded main.split { grid-template-rows: minmax(0, 1fr); }
-.household-panels-expanded main.split > [data-slot="left"] { display: none !important; }
+/* The embedded scene occupies the full pane; the top arrow opens all tabs. */
+.household-task.scene-only main.split { grid-template-rows: minmax(0, 1fr); }
+.household-task.scene-only main.split > [data-slot="right"],
+.household-task.scene-only .pane-divider { display: none !important; }
+/* When EQL is hidden, let the remaining graph fill the standalone column. */
+.household-task [data-slot="right"]:has(> .panel-eql.hidden) { display: flex !important; }
+.household-task [data-slot="right"]:has(> .panel-eql.hidden) > .slot-divider { display: none; }
