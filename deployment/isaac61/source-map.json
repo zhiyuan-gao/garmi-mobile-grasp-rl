@@ -960,12 +960,12 @@
     },
     "demos/household_sequence/household-task.js": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
-      "sha256": "3dcfebb9a9580bf1fe941bde7ec623ae4d1db6fa9ee9e0986819eddfff5005c7",
+      "sha256": "dd248351e38b8348782698088d882052d266679a7354dbd16dde51e0d768ad3d",
       "mode": 420
     },
     "demos/household_sequence/household-task.css": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
-      "sha256": "eb236030bfd2f9023afae57e9aafda60e12c4ab6eb37577cf59f2aa4104ba5db",
+      "sha256": "6a76a3a959d830cd4ab6d222a35cc1706858c88ffaa5ec16628397df31126e26",
       "mode": 420
     },
     "integration/garmi_cram_rl/pick_up_action.py": {

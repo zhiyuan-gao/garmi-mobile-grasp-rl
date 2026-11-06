@@ -55,3 +55,17 @@ were checked against the final packaged hashes before the final image was launch
 
 These commits and the image are local review candidates. GitHub branches and the
 VRB Enter Lab link have not been updated by this preparation.
+
+## Embedded layout revision
+
+The embedded workspace now gives the five reasoning tabs 68% of the available
+vertical area. The repeated scene title and task controls are hidden in this
+embedded view, with Start/Stop still in the outer toolbar. Expand/Restore gives
+all five tabs the full left pane without changing the right desktop. Standalone
+NeemHub retains its controls. Browser verification at 1800 × 1100 measured the
+panel at 568 px high normally and 842 px expanded (versus approximately 356 px
+in the earlier review layout).
+
+This presentation-only revision is applied to the running local container and
+included in the deployment runtime archive. The previously built image ID above
+predates this revision; rebuild the deployment image before publishing it.

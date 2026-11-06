@@ -16,6 +16,8 @@
   const originalLiveUrl = SceneContext.liveUrl;
   SceneContext.liveUrl = () => household ? live : originalLiveUrl();
   if (household) document.documentElement.classList.add('household-task');
+  const embedded = household && params.get('layout') === 'workspace' && window.self !== window.top;
+  if (embedded) document.documentElement.classList.add('household-embedded');
 
   window.HouseholdTask = {
     async loadScene(base, name) {
@@ -48,6 +50,23 @@
     plan.click();
     const query = Array.from(document.querySelectorAll('input[type=checkbox]')).find(x => x.parentElement.textContent.includes('EQL'));
     if (query && query.checked) query.click();
+    if (embedded && !document.getElementById('household-expand-panels')) {
+      const expand = document.createElement('button');
+      expand.id = 'household-expand-panels';
+      expand.textContent = 'Expand';
+      expand.title = 'Give these tabs the full left pane';
+      expand.setAttribute('aria-pressed', 'false');
+      expand.addEventListener('click', event => {
+        event.stopPropagation();
+        const expanded = document.documentElement.classList.toggle('household-panels-expanded');
+        expand.textContent = expanded ? 'Restore' : 'Expand';
+        expand.title = expanded ? 'Show the scene above these tabs' : 'Give these tabs the full left pane';
+        expand.setAttribute('aria-pressed', String(expanded));
+        window.dispatchEvent(new Event('resize'));
+        if (window.Graph && Graph.resize) Graph.resize();
+      });
+      document.getElementById('graph-tabs').append(expand);
+    }
   }
   document.addEventListener('DOMContentLoaded', focusPlan, {once: true});
   function mount() {
