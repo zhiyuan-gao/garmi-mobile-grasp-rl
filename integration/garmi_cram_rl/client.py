@@ -57,6 +57,12 @@ class GraspClient:
             raise RuntimeError(reply['error'])
         return reply
 
+    def describe_skill(self):
+        return self.call('describe', str(uuid.uuid4()))['description']
+
+    def recover(self, request_id):
+        return self.call('recover', request_id)
+
     def grasp(self, reference=None, timeout=180.):
         request_id = str(uuid.uuid4())
         self.call('start', request_id, reference=reference)

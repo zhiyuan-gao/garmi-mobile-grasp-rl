@@ -41,8 +41,10 @@ def run_case(case, out, probe=False):
         controller.spawn('giskard', controller.native(ROOT / 'integration/giskard_server.py',
                          '--robot', 'garmi', '--scene', 'garmi_apartment'))
         task = controller.spawn('task', controller.native(ROOT / 'integration/cram_demo.py',
-                   '--transport', '--reference', case['reference'], '--output-dir', folder / 'task',
-                   '--base', *case['rl_start'], '--grasp-camera-offset', *case['camera_offset']))
+                   '--transport', '--output-dir', folder / 'task',
+                   *(['--reference', case['reference']] if case.get('reference') else []),
+                   *(['--base', *case['rl_start']] if case.get('rl_start') else []),
+                   '--grasp-camera-offset', *case['camera_offset']))
         deadline = time.monotonic() + 720
         while task.poll() is None:
             time.sleep(.5)
@@ -53,6 +55,9 @@ def run_case(case, out, probe=False):
         events = json.loads((folder / 'task/rl-transport-report.json').read_text())
         summary['grasp_succeeded'] = any(e['event'] == 'rl_grasp_result' for e in events)
         summary['placement'] = next((e for e in events if e['event'] == 'transport_result'), None)
+        summary['grounding'] = [e for e in events if e['event'] in
+            ('station_probe','pickup_station_selected','pickup_reference_selected',
+             'pickup_recovery_started','pickup_recovery_blocked','pickup_resolution_finished')]
         summary['navigation_arrival'] = next((e for e in events if e['event'] == 'navigation_arrival'), None)
         passed = (task.returncode == 0 and any(e['event'] == 'completed' for e in events)
                   and summary['placement'] and summary['placement']['passed'])
@@ -88,6 +93,8 @@ def main():
         results.append(result)
         print('EPISODE_RESULT', json.dumps(result), flush=True)
     (args.out / ('batch-' + str(os.getpid()) + '.json')).write_text(json.dumps(results, indent=2) + '\n')
+    if any(result['status'] != 'completed' for result in results):
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':

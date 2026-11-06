@@ -1,28 +1,45 @@
 """Counter-to-table demo with NeemHub observation; the ordinary demo stays unchanged."""
 import argparse
 import math
+import logging
 import os
 from pathlib import Path
 import shutil
 
 from cram_demo import GraspDemo, cancel_motion
 from mobile_grasp import execute_single, real_robot, matrix
+from garmi_cram_rl.pick_up_action import mount_task_motion
+from garmi_cram_rl.decision_view import DecisionBridge
 from motion_watchdog import motion_deadline
 
 
 class WebDemo(GraspDemo):
     viewer = None
+    bridge_type = DecisionBridge
+
+    def record(self, event, **values):
+        super().record(event, **values)
+        if self.viewer is not None:
+            try:
+                self.viewer.bridge.observe_decision(dict(event=event, **values))
+            except Exception:
+                logging.getLogger(__name__).exception('Decision visualization update failed')
 
     def setup_object(self):
         super().setup_object()
         from cramera.live.visualization import LiveVisualization
         from cramera.scene_presentation import ScenePresentation
         port = int(os.environ.get('GARMI_LIVE_PORT', '8766'))
-        self.viewer = LiveVisualization(self.world, port=port)
+        self.viewer = LiveVisualization(self.world, port=port, bridge=self.bridge_type(
+            decision_archive=self.output / 'decision-plan.json'))
         self.viewer.bridge.presentation = ScenePresentation(
             camera={'position': [1.2, 4.95, 2.5], 'target': [.4, 6.6, 1.1]})
         self.viewer.start()
         self.record('viewer_ready', port=port)
+
+    def perform_task_plan(self, root):
+        root.plan.node_callbacks.append(self.viewer.plan_callback(root.plan))
+        super().perform_task_plan(root)
 
     def run_motion(self, label, action, timeout=75):
         # Same motion execution and watchdog as MobileGrasp, with the existing
@@ -32,8 +49,9 @@ class WebDemo(GraspDemo):
             seconds = timeout * float(os.environ.get('GARMI_MOTION_TIMEOUT_SCALE', '1'))
             with motion_deadline(seconds, label), real_robot(collision_avoidance=True):
                 node = execute_single(action, context=self.context)
-                plan = node.plan
-                plan.node_callbacks.append(self.viewer.plan_callback(plan))
+                if not mount_task_motion(self.task_plan, node):
+                    plan = node.plan
+                    plan.node_callbacks.append(self.viewer.plan_callback(plan))
                 node.perform()
         except TimeoutError:
             cancel_motion(self.context)
@@ -68,8 +86,8 @@ def main():
     # The native navigation goal also has its own wall-clock watchdog.
     from cram_vrb_lab.robots.garmi import motions
     motions.MOVE_TIMEOUT *= float(os.environ.get('GARMI_MOTION_TIMEOUT_SCALE', '1'))
-    options.reference = 'bowl-r020'
-    options.base = [.25, 6.35, math.pi / 2]
+    options.reference = None
+    options.base = None
     options.place_base = [.90, 5.85, -.85]
     options.target = [1.6, 5.32, .80]
     # Keep the close-up inside the apartment, in front of the counter window.

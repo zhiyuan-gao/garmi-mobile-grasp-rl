@@ -40,7 +40,7 @@
     },
     "integration/cram_demo.py": {
       "source": "deployment/isaac61/overrides/integration/cram_demo.py",
-      "sha256": "3171f611a3922d81c5e38493bdc8419561640bef9b52b596b31a37baad7ea057",
+      "sha256": "717d8157d6b246575b4e2d470df8050635bd5f8bea9e896b2cfb5225968a0426",
       "mode": 420
     },
     "integration/fastdds.xml": {
@@ -60,12 +60,12 @@
     },
     "integration/garmi_cram_rl/client.py": {
       "source": "integration/garmi_cram_rl/client.py",
-      "sha256": "051eb75c2b3acb5565067c1ad7cc2e7a3018bc1cb929569bf626c49ccbabbcf5",
+      "sha256": "aaf01329804419feb7ff7bb900a3e57cb969c2f4a41adb6bb63da98b11e5ff0b",
       "mode": 420
     },
     "integration/garmi_cram_rl/contract.py": {
       "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/contract.py",
-      "sha256": "447d8bccf0e2e28d274bc273336ac90d15c783884cb613ec9bfb854f902d55b9",
+      "sha256": "4254a7955c7b559ed39edabfcc4d1edd3fce1e3f7531b9806d1d04d928274675",
       "mode": 420
     },
     "integration/garmi_cram_rl/gripper_geometry.py": {
@@ -75,7 +75,7 @@
     },
     "integration/garmi_cram_rl/lab_backend.py": {
       "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/lab_backend.py",
-      "sha256": "98514b9a1ec4dca8171e7fe2eff02b0048c50e06c813c7ba91a4a08cf0c0b446",
+      "sha256": "74723d17c4b62e10fea2ac1590e93fbf05cb7f05c0ca35d030ca90134dbb049e",
       "mode": 420
     },
     "integration/garmi_cram_rl/policy.py": {
@@ -90,12 +90,12 @@
     },
     "integration/garmi_cram_rl/ros_bridge.py": {
       "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/ros_bridge.py",
-      "sha256": "1c698430f79a30bf9177e8d974c73e5e5f7fc22d849915c43a35fb3c34139953",
+      "sha256": "8c7652f5a09cad6c9ccade126b7dee217b82d15c0fdcd6a3521459c74ad18a79",
       "mode": 420
     },
     "integration/garmi_cram_rl/session.py": {
       "source": "integration/garmi_cram_rl/session.py",
-      "sha256": "ddca50601fb18ad944a612aa24789cf92790e6f27af5ec159d7a786037e2e7de",
+      "sha256": "9ee20d1fa57b08334f3a26a885fa20c7ce49d1a9cec949d3fe2d210f3b91279a",
       "mode": 420
     },
     "integration/garmi_cram_rl/viewport.py": {
@@ -130,7 +130,7 @@
     },
     "integration/record_episodes.py": {
       "source": "integration/record_episodes.py",
-      "sha256": "886658fca13d7d87cdb3ad148d632c0d42aec678be076afc6e9c340287a05884",
+      "sha256": "9a0196f515109a8c7aa3fa58eca006607158c57b6883cd77e9c2a6c5d5638520",
       "mode": 420
     },
     "integration/reset_episode.py": {
@@ -225,7 +225,7 @@
     },
     "integration/web_demo.py": {
       "source": "deployment/isaac61/overrides/integration/web_demo.py",
-      "sha256": "26231bb2fefb2c25387dc948cefdc4bd0a4921bade273f6d2ad377d52d74112d",
+      "sha256": "c26d85c395a63dd7705981c75674319dd002e9baccaf6b3f61f6eefb0cb70939",
       "mode": 420
     },
     "integration/web_server.py": {
@@ -670,7 +670,7 @@
     },
     "scripts/install_live_workspace.py": {
       "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
-      "sha256": "223730626cad7fd6bac2139c1cf57f0565fad7060a5fac45b57d671368f09c29",
+      "sha256": "4b25c31275b1895f19398d1faec908c3233febc24f22f30f89aae277201512ec",
       "mode": 420
     },
     "scripts/install_neemhub_task.py": {
@@ -905,12 +905,12 @@
     },
     "demos/household_sequence/live_task.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/live_task.py",
-      "sha256": "554f35fbf498832870d778766f7ea19c29c07cb9e0f432c88a515bcd08d58db7",
+      "sha256": "16f9e6a390b8f0fd5c1dc9c9a0748bb4012f768100237dd5850e64fcc5c98ea9",
       "mode": 420
     },
     "demos/household_sequence/sim.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/sim.py",
-      "sha256": "8b5d590951125e03e27dcf25dfce1145dc9a2f29aa6325720b22c9465b699899",
+      "sha256": "6ad62c5b24fe1cd543337c51e66915abdccc3f211770b77fe5f9c6f0d545a8de",
       "mode": 420
     },
     "demos/household_sequence/start_service.py": {
@@ -955,18 +955,103 @@
     },
     "demos/household_sequence/neemhub.py": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/neemhub.py",
-      "sha256": "f993a199c6cc4116670d648e906d0d3be3c5015fdfcbaf0aefe669d3c31ac6f9",
+      "sha256": "edc6fc4053f53dac047abe9161a247a404ef20598b4c40974af91b8d7754af4f",
       "mode": 420
     },
     "demos/household_sequence/household-task.js": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.js",
-      "sha256": "c19c410f6e93cd1c39b37876156199e982e2355ed2cb0e07532b8a2360ec62ce",
+      "sha256": "3dcfebb9a9580bf1fe941bde7ec623ae4d1db6fa9ee9e0986819eddfff5005c7",
       "mode": 420
     },
     "demos/household_sequence/household-task.css": {
       "source": "deployment/isaac61/overrides/demos/household_sequence/household-task.css",
       "sha256": "fb834540582bdde1c33b4d152abdaf8e1ede5d391c2debb5399e3a695f55f3c7",
       "mode": 420
+    },
+    "integration/garmi_cram_rl/pick_up_action.py": {
+      "source": "integration/garmi_cram_rl/pick_up_action.py",
+      "sha256": "771596191146236f6d1859a1dfc8360c63a92fb7631505751758dba4e3a0cfb6",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/demo_runtime.py": {
+      "source": "integration/garmi_cram_rl/demo_runtime.py",
+      "sha256": "28735a6ecda7f7ee49839f28215388a3a3d745a5370d9e8320268c89cf714750",
+      "mode": 420
+    },
+    "integration/tests/test_pick_up_action.py": {
+      "source": "integration/tests/test_pick_up_action.py",
+      "sha256": "7baa9c72c610fdeec4359e294bf8361dde9ac4426e92e0c30284534aa411daa7",
+      "mode": 420
+    },
+    "integration/tests/test_demo_runtime.py": {
+      "source": "integration/tests/test_demo_runtime.py",
+      "sha256": "be0888f5e5effa1648a84c1bf0b0fcd1b8cd2f19aa08ce31a4dcb3dc7fd9a20f",
+      "mode": 420
+    },
+    "integration/README.md": {
+      "source": "integration/README.md",
+      "sha256": "2f5ef4c1a706322d1ae6b41835b3b9a2f9cf763f83571974e7b8b2eb763b1955",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/adaptive_pick_up.py": {
+      "source": "integration/garmi_cram_rl/adaptive_pick_up.py",
+      "sha256": "099cd9abeb48fa6ccee5c59d2b7fe1d80145ba18f83f4916f65d17c5d4452eeb",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/planning_probe.py": {
+      "source": "integration/garmi_cram_rl/planning_probe.py",
+      "sha256": "2bae06cb6253a4583a34f4899a1ed768a72cdccb9484467798998c6c1fe9fc13",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/skill_description.py": {
+      "source": "integration/garmi_cram_rl/skill_description.py",
+      "sha256": "ea00b0490e10c51a23906811f2a19a1de9e99806284d79caa6b9413704562055",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/skill_selection.py": {
+      "source": "integration/garmi_cram_rl/skill_selection.py",
+      "sha256": "8c14ad6ed7fb5b8cfb654453cff87406c38ff058b5b5e1ec469ef3a5c2101929",
+      "mode": 420
+    },
+    "integration/tests/test_adaptive_pick_up.py": {
+      "source": "integration/tests/test_adaptive_pick_up.py",
+      "sha256": "85d55fdd17449e60c84e9262675ab4c614bc1f332dab275a5c786a9c23fab4c9",
+      "mode": 420
+    },
+    "integration/tests/test_planning_probe.py": {
+      "source": "integration/tests/test_planning_probe.py",
+      "sha256": "c40beb9be5118c50fd3c8c93856c5ca52ec38e93210b3108fe65f7f555e3bd87",
+      "mode": 420
+    },
+    "integration/tests/test_skill_description.py": {
+      "source": "integration/tests/test_skill_description.py",
+      "sha256": "67531b14a2c07d3a064d0f5d8a5e32f09a6d24cf62bd0dfd7fb11616eec44bac",
+      "mode": 420
+    },
+    "integration/tests/test_skill_selection.py": {
+      "source": "integration/tests/test_skill_selection.py",
+      "sha256": "33da3263b06a72fc080fb46803ced9cff27fde9ca99522a930a1b95d048e80eb",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/decision_view.py": {
+      "source": "integration/garmi_cram_rl/decision_view.py",
+      "sha256": "40ef32451858fca909057fe5e62629ff3cb46b243b2cd8373227a31caddc1ac1",
+      "mode": 420
+    },
+    "integration/tests/test_decision_view.py": {
+      "source": "integration/tests/test_decision_view.py",
+      "sha256": "7af4c1c96234e7c0609479a2938ca46f1d4edbb5c9455db80a3050be363751af",
+      "mode": 420
+    },
+    "demos/household_sequence/household-workspace.js": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household-workspace.js",
+      "mode": 420,
+      "sha256": "dfeacfb74c1dd965c627bef5630f68a2fb701bdd88ddd91324268e444644503d"
+    },
+    "demos/household_sequence/household_plan.py": {
+      "source": "deployment/isaac61/overrides/demos/household_sequence/household_plan.py",
+      "mode": 420,
+      "sha256": "8325da3b67b532fe6840cacf13183c15d06c483194ef62b1380b40bff9803270"
     }
   },
   "task": "bowl_counter_table_then_mug_counter_drawer"

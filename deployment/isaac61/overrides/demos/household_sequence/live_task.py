@@ -15,7 +15,10 @@ from web_demo import WebDemo
 from mobile_grasp import BodySpecification, Connection6DoFSpecification, HomogeneousTransformationMatrix, cancel_motion
 from semantic_digital_twin.semantic_annotations.semantic_annotations import Mug
 
+from household_plan import HouseholdDecisionBridge
+
 class HouseholdLiveTask(WebDemo):
+    bridge_type = HouseholdDecisionBridge
     def setup_object(self):
         super().setup_object()
         state = self.rl.snapshot()['snapshot']
@@ -69,7 +72,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output-dir',type=Path,required=True)
     o=p.parse_args()
     if o.output_dir.exists():raise FileExistsError(o.output_dir)
-    o.reference='bowl-r020';o.base=[.25,6.35,math.pi/2];o.place_base=[.9,5.85,-.85];o.target=[1.6,5.32,.8]
+    o.reference=None;o.base=None;o.place_base=[.9,5.85,-.85];o.target=[1.6,5.32,.8]
     o.grasp_camera_offset=[-.55,.28,.85];o.stage='rl-transport';o.carry='physical';o.transport=True
     o.resume_place=False;o.retreat=None
     demo=HouseholdLiveTask(o,output=o.output_dir)

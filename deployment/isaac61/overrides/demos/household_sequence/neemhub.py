@@ -31,7 +31,26 @@ def panel_source():
         if text.count(before) != 1:
             raise RuntimeError('Unsupported NeemHub scene panel version')
         text = text.replace(before, after)
-    return text
+    marker = '    camera.position.set(c.x + 3.2, c.y + 1.6, c.z + 3.4);'
+    if text.count(marker) != 1:
+        raise RuntimeError('Unsupported NeemHub camera framing')
+    return text.replace(marker, "    if (/[?&]layout=workspace(&|$)/.test(location.search)) camera.position.set(c.x + .9, c.y + 1.3, c.z + 1.8);\n    else " + marker.strip())
+
+
+def workspace_source(route):
+    text = (paths.WEB_ROOT / route.lstrip('/')).read_text()
+    if route == '/core/scene.js':
+        marker = '  function sceneOnly(framed) {\n'
+        addition = "    if (/[?&]layout=workspace(&|$)/.test(location.search)) return false;\n"
+    else:
+        marker = '  function derivedStatus(item) {\n'
+        addition = "    if (/[?&]layout=workspace(&|$)/.test(location.search) && item.n.derived === false && ['RUNNING','SUCCEEDED','FAILED','DONE'].includes(item.n.status)) return item.n.status;\n"
+        if text.count('title: [label].concat(lines)') != 1:
+            raise RuntimeError('Unsupported NeemHub plan payload')
+        text = text.replace('title: [label].concat(lines)', 'derived: n.derived, title: [label].concat(lines)')
+    if text.count(marker) != 1:
+        raise RuntimeError('Unsupported NeemHub workspace renderer')
+    return text.replace(marker, marker + addition)
 
 
 class Handler(server.Handler):
@@ -55,6 +74,8 @@ class Handler(server.Handler):
             text = text.replace(anchor, '<link rel="stylesheet" href="household-task.css">\n'
                                 '<script src="household-task.js"></script>\n' + anchor)
             return self.send_text(text, 'text/html; charset=utf-8')
+        if route in ('/core/scene.js', '/panels/graph/panel.js'):
+            return self.send_text(workspace_source(route), 'application/javascript')
         if route == '/panels/robot_scene/panel.js':
             return self.send_text(panel_source(), 'application/javascript')
         if route in ('/household-task.js', '/household-task.css'):
@@ -66,6 +87,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('port', type=int, default=8722, nargs='?')
     args = parser.parse_args()
+    for route in ('/core/scene.js', '/panels/graph/panel.js'):
+        workspace_source(route)
     panel_source()  # Fail clearly on an incompatible packaged frontend.
     socketserver.TCPServer.allow_reuse_address = True
     with server.LaboratoryServer(('127.0.0.1', args.port), Handler) as viewer:

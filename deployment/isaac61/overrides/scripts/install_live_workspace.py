@@ -20,10 +20,15 @@ def install(workspace):
         '{ name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") }',
         '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }',
     ):
-        updated = updated.replace(previous, '{ name: "NeemHub", path: "proxy/8722/" }')
+        updated = updated.replace(previous, '{ name: "NeemHub", path: "proxy/8722/?layout=workspace" }')
+    updated = updated.replace('skipLocal: true, ', '')
     backup = web / "index.html.before-garmi-rl-live"
     if not backup.exists():
         shutil.copy2(index, backup)
+    shutil.copy2(ROOT / 'demos/household_sequence/household-workspace.js', web / 'household-workspace.js')
+    tag = '<script src="household-workspace.js" defer></script>'
+    if tag not in updated:
+        updated = updated.replace('</body>', tag + '\n</body>')
     index.write_text(updated)
     print(f"Installed the native NeemHub Task entry: {index}")
 

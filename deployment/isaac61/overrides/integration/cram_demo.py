@@ -17,10 +17,17 @@ from mobile_grasp import (
     Arms, PlaceAction,
 )
 from garmi_cram_rl.client import GraspClient
+from garmi_cram_rl.adaptive_pick_up import AdaptivePickUpRuntime
+from garmi_cram_rl.planning_probe import probe_navigation, probe_preparation
+from garmi_cram_rl.pick_up_action import RLPickUpAction, RLPickUpContext, TaskStage, task_stage
+from coraplex.plans.factories import execute_single, sequential
+from coraplex.execution_environment import real_robot
 from coraplex.robot_plans.motions.robot_body import MoveJointsMotion
 
 
 class GraspDemo(MobileGrasp):
+    task_plan = None
+
     def training_posture(self, label):
         self.run_motion(label, MoveJointsMotion(
             names=[f'right_fr3_joint{i}' for i in range(1, 8)],
@@ -30,6 +37,7 @@ class GraspDemo(MobileGrasp):
         super().connect()
         self.rl = GraspClient(self.node)
         self.rl.snapshot()
+        self.context = RLPickUpContext.from_context(self.context, AdaptivePickUpRuntime(self))
 
     def setup_object(self):
         # The persistent simulator owns the physical bowl. Only register its
@@ -60,20 +68,30 @@ class GraspDemo(MobileGrasp):
         self.sync.pull(self.world)
         self.record('settled', object=self.object_pose(), output_dir=str(self.output), backend='rl_training_assets')
 
-    def pick(self):
+    def prepare_grasp_view(self):
         cancel_motion(self.context)
         bowl = self.rl.snapshot()['snapshot']['object_map_position']
         offset = getattr(self.options, 'grasp_camera_offset', [-.55, .28, .85])
         self.record('camera', eye=[p + d for p, d in zip(bowl, offset)],
                     target=[bowl[0], bowl[1], bowl[2] + .12])
         time.sleep(.5)
-        result = self.rl.grasp(self.options.reference)
-        self.sync.pull(self.world)
-        # Semantic held relation only: simulator always keeps physical contacts.
-        self.world.move_branch(self.body, self.tool)
-        self.record('rl_grasp_result', **result)
-        self.record('cram_control_returned', object=self.object_pose(), automatic_attachment=False)
-        self.verify_hold()
+
+    def pick(self):
+        self.perform_task_plan(execute_single(
+            RLPickUpAction(self.body, reference=self.options.reference), context=self.context))
+
+    def build_task_plan(self):
+        children = [task_stage(TaskStage.RESOLVE_PICKUP)]
+        if self.options.transport:
+            children.append(task_stage(TaskStage.TRANSPORT))
+        elif self.options.retreat:
+            children.append(task_stage(TaskStage.RETREAT))
+        return sequential(children, context=self.context)
+
+    def perform_task_plan(self, root):
+        self.task_plan = root.plan
+        with real_robot(collision_avoidance=True):
+            root.perform()
 
     def verify_hold(self):
         time.sleep(2.)
@@ -85,18 +103,26 @@ class GraspDemo(MobileGrasp):
         self.record('handover_hold_check', passed=passed, measurements=measured)
         if not passed:
             raise RuntimeError('Physical grasp was not preserved after CRAM handback')
+        return measured
 
-    def navigate_to_grasp_region(self):
-        x, y, yaw = self.options.base
+    def probe_navigation(self, goal):
+        return probe_navigation(self, goal)
+
+    def probe_preparation(self, open_gripper=True):
+        return probe_preparation(self, open_gripper)
+
+    def navigate_to_grasp_region(self, goal=None):
+        goal = self.options.base if goal is None else goal
+        x, y, yaw = goal
         target = HomogeneousTransformationMatrix.from_xyz_rpy(x, y, 0., yaw=yaw).to_pose()
         target.reference_frame = self.world.root
         self.run_motion('navigate_to_grasp_region', NavigateAction(target_location=target, keep_joint_states=True))
         cancel_motion(self.context)
         time.sleep(.5)
         measured = self.rl.snapshot()['snapshot']
-        self.record('navigation_arrival', requested=self.options.base,
+        self.record('navigation_arrival', requested=goal,
                     actual=measured['base_map_position'], yaw=measured['base_map_yaw'],
-                    point_error_m=math.dist(measured['base_map_position'][:2], self.options.base[:2]),
+                    point_error_m=math.dist(measured['base_map_position'][:2], goal[:2]),
                     acceptance='RL admission checks the actual trained region, posture and rest state')
 
     def run(self):
@@ -109,16 +135,7 @@ class GraspDemo(MobileGrasp):
             self.verify_hold()
             self.place()
             return
-        self.training_posture('prepare_rl_posture')
-        self.navigate_to_grasp_region()
-        self.pick()
-        if self.options.transport:
-            self.transport()
-            return
-        if self.options.retreat:
-            self.navigate(self.options.retreat)
-            self.check_carry()
-            self.verify_hold()
+        self.perform_task_plan(self.build_task_plan())
 
     def transport(self):
         # First clear the counter with the physically held bowl and the arm fixed.
@@ -168,10 +185,11 @@ class GraspDemo(MobileGrasp):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--max-grasp-attempts', type=int, default=3)
     parser.add_argument('--reference', help='One of the 40 trained ids; otherwise first allowed mask entry')
     parser.add_argument('--grasp-camera-offset', type=float, nargs=3, default=[-.55, .28, .85],
                         help='Recording camera offset from the measured bowl in map coordinates')
-    parser.add_argument('--base', type=float, nargs=3, default=[.25, 6.35, math.pi / 2])
+    parser.add_argument('--base', type=float, nargs=3, default=None, help='Optional preferred station; otherwise ground from the current object pose')
     parser.add_argument('--retreat', type=float, nargs=3, help='Optional CRAM base goal after physical grasp')
     parser.add_argument('--transport', action='store_true', help='Carry and place at the dining table')
     parser.add_argument('--drawer', action='store_true', help='Left-hand open/place/close upper drawer')

@@ -92,6 +92,7 @@ class Bridge(Node):
         if rpc_id in self.replies:
             self.reply_pub.publish(String(data=self.replies[rpc_id]))
             return
+        details = {}
         try:
             if command == 'reset_episode':
                 if self.reset_handler is None:
@@ -101,6 +102,11 @@ class Bridge(Node):
                 raise RuntimeError(self.fault)
             elif command == 'start':
                 self.session.start(request['request_id'], request.get('reference'), time.monotonic())
+            elif command == 'describe':
+                details = self.backend.describe_skill()
+            elif command == 'recover':
+                self.session.recover(request['request_id'])
+                self.accept_after = time.monotonic() + .1
             elif command == 'cancel':
                 self.session.cancel(request['request_id'])
             elif command == 'release':
@@ -108,7 +114,7 @@ class Bridge(Node):
                 self.accept_after = time.monotonic() + .1
             else:
                 raise ValueError('Unknown skill command')
-            reply = dict(rpc_id=rpc_id, ok=True, **self.session.status())
+            reply = dict(rpc_id=rpc_id, ok=True, description=details, **self.session.status())
         except (ValueError, RuntimeError) as error:
             reply = dict(rpc_id=rpc_id, ok=False, error=str(error))
         self.replies[rpc_id] = json.dumps(reply)

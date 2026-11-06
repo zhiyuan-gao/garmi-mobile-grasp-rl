@@ -1,5 +1,6 @@
 """Exclusive controller ownership; terminal states hold until explicitly released."""
 from dataclasses import dataclass
+from garmi_cram_rl.skill_selection import recovery_rejection
 
 
 @dataclass
@@ -59,6 +60,13 @@ class Session:
         self.backend.return_to_cram()
         self.owner = 'cram'
         return self.status()
+
+    def recover(self, request_id):
+        self.require_request(request_id)
+        rejection = recovery_rejection(self.status(), self.backend.describe_skill())
+        if rejection is not None:
+            raise ValueError(rejection)
+        self.release(request_id)
 
     def status(self):
         return {'owner': self.owner, 'request_id': self.request_id, 'result': self.result}

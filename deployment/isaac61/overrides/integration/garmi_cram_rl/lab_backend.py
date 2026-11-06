@@ -168,6 +168,10 @@ class LabBackend:
             grasp_measurements=self.last_measurements,
             simulation_seconds=self.control_step * self.env.step_dt)
 
+    def describe_skill(self):
+        from garmi_cram_rl.skill_description import describe_skill
+        return describe_skill(self)
+
     def admit(self, reference):
         self.reference = validate_start(self.snapshot(), self.task, self.mask, reference)
         if bool(self.mdp.diagnostics(self.env)['collision'][0]):

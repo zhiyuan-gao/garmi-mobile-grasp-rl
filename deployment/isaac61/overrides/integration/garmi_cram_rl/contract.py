@@ -93,6 +93,18 @@ def validate_start(snapshot, task, mask, reference=None):
         arm_settled = np.max(np.abs(snapshot['joint_velocity'])) <= .02
     if np.max(np.abs(snapshot['base_velocity'])) > .01 or not arm_settled:
         raise ValueError('Wait for measured base and arm motion to settle')
+    candidates = object_candidates(snapshot, mask)
+    if reference is not None and reference not in candidates:
+        raise ValueError('Requested reference is blocked or outside the trained bank')
+    # Fixed ordering is reproducible; this is not a learned grasp-ranking rule.
+    return reference if reference is not None else candidates[0]
+
+
+def object_candidates(snapshot, mask):
+    """Allowed references for the measured object pose, independent of robot station."""
+    bowl = np.asarray(snapshot['object_map_position'], dtype=float)
+    if not np.isfinite(np.r_[bowl, snapshot['object_map_euler']]).all():
+        raise ValueError('Non-finite object pose')
     if np.max(np.abs(snapshot['object_map_euler'])) > 1.e-4:
         raise ValueError('Bowl must be upright at the yaw used by the validated mask')
     if abs(bowl[2] - mask.data['bowl_origin_z_m']) > .003:
@@ -100,7 +112,6 @@ def validate_start(snapshot, task, mask, reference=None):
     allowed = mask.allowed([bowl[:2].tolist()], 0.)[0].cpu().numpy()
     names = mask.data['reference_ids']
     candidates = [name for name, valid in zip(names, allowed) if valid]
-    if reference is not None and reference not in candidates:
-        raise ValueError('Requested reference is blocked or outside the trained bank')
-    # Fixed ordering is reproducible; this is not a learned grasp-ranking rule.
-    return reference if reference is not None else candidates[0]
+    if not candidates:
+        raise ValueError('No allowed reference at this object position')
+    return candidates

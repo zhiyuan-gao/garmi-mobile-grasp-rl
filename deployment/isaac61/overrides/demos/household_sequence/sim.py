@@ -53,6 +53,15 @@ failed=False
 try:
     bundle=Bundle(a.workspace/'results/cram-rl-integration/policy-7500',a.workspace)
     backend=HouseholdBackend(bundle,a.assets,a.mug_workspace,a.out,render=not a.desktop_stream,display=a.desktop_stream)
+    if a.desktop_stream:
+        import carb
+        settings = carb.settings.get_settings()
+        limiter = '/app/runLoops/main/rateLimitEnabled'
+        before = settings.get(limiter)
+        settings.set_bool(limiter, False)
+        (a.out/'render-settings.json').write_text(json.dumps(dict(
+            rate_limit_before=before, rate_limit_after=settings.get(limiter),
+            control_dt=backend.env.step_dt, physics_dt=backend.env.cfg.sim.dt)))
     # Reject any accidental later attempt to reset the shared scene.
     def no_reset(*args,**kwargs):raise RuntimeError('A continuous household task cannot reset the scene')
     backend.env.reset=no_reset

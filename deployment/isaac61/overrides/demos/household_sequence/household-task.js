@@ -40,7 +40,16 @@
   };
 
   if (!household) return;
-  let latest = null, busy = false;
+  let latest = null, busy = false, displayedRun = null;
+  function focusPlan() {
+    if (params.get('layout') !== 'workspace') return;
+    const plan = Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'Plan');
+    if (!plan) { setTimeout(focusPlan, 500); return; }
+    plan.click();
+    const query = Array.from(document.querySelectorAll('input[type=checkbox]')).find(x => x.parentElement.textContent.includes('EQL'));
+    if (query && query.checked) query.click();
+  }
+  document.addEventListener('DOMContentLoaded', focusPlan, {once: true});
   function mount() {
     const root = document.querySelector('.panel-robot-scene');
     const start = root && root.querySelector('#play-btn');
@@ -57,6 +66,12 @@
 
     function render(data) {
       latest = data;
+      const ready = (data.events || []).some(e => e.event === 'viewer_ready');
+      if (displayedRun === null) displayedRun = data.run_id;
+      else if (ready && data.run_id && displayedRun !== data.run_id) {
+        // A new task publishes a new live world and plan; reconnect both panels.
+        location.reload(); return;
+      }
       start.textContent = 'Start task';
       start.disabled = busy || data.active;
       stop.disabled = busy || (!data.active && !data.display_open) || data.status === 'stopping';
