@@ -1099,7 +1099,7 @@
       "mode": 420
     },
     "runs/wrist-contact-v6/mug/new-repeat/position-mask.json": {
-      "source": "demos/robokudo_mug/provenance/runs/wrist-contact-v6/mug/new-repeat/position-mask.json",
+      "source": "demos/robokudo_mug/provenance/new-repeat-position-mask.json",
       "sha256": "d03da866b0bd4fac0c6b8142626c177ded9389a9071f0e9d34f481ffd26a6f3b",
       "mode": 420
     },
@@ -1109,7 +1109,7 @@
       "mode": 420
     },
     "runs/wrist-contact-v6/mug/backup/position-mask.json": {
-      "source": "demos/robokudo_mug/provenance/runs/wrist-contact-v6/mug/backup/position-mask.json",
+      "source": "demos/robokudo_mug/provenance/backup-position-mask.json",
       "sha256": "301b9369a4aba261222b6c2d6e1ebe98be3fbbb303cf6770b7aa50a73caaabcd",
       "mode": 420
     },

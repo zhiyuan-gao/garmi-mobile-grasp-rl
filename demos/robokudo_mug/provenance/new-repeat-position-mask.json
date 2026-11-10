@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "validated",
+  "object_name": "mug",
+  "bank_path": "runs/wrist-contact-v6/mug/new-repeat/bank.json",
+  "reference_ids": [
+    "mug-innerouter-oblique-004",
+    "mug-innerouter-oblique-006",
+    "mug-innerouter-oblique-011"
+  ],
+  "bowl_map_yaw_degrees": 0.0,
+  "bowl_origin_z_m": 0.9465359430589999,
+  "cell_size_m": 0.01,
+  "numeric_position_tolerance_m": 1e-06,
+  "sources_sha256": {
+    "runs/wrist-contact-v6/mug/new-repeat/bank.json": "1690961850c522e2632ef75fcfae49ca6268bff4152c9d2d98192f613494a7b9",
+    "runs/ycb-handle-inner-outer-v2/mug/position-mask.json": "9ed3594bd67a566e011f7950eb8b07bb34da75c66b692bf6fe42116deae54e00"
+  },
+  "regions": [
+    {
+      "name": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 0
+    },
+    {
+      "name": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 1
+    },
+    {
+      "name": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 2
+    }
+  ],
+  "cells": [
+    {
+      "region": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        1,
+        2
+      ]
+    },
+    {
+      "region": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        0
+      ]
+    },
+    {
+      "region": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        1
+      ]
+    }
+  ],
+  "extra_margin_m": 0.002,
+  "method": "Reindexed 1 cm local windows wholly covered by source geometry masks at the same per-reference opening.",
+  "scope": "Geometry clearance only; all physical labels must be retested with wrist permission.",
+  "empty_cells": [],
+  "allowed_cells_per_reference": [
+    1,
+    2,
+    1
+  ],
+  "placement_adjustment": "Only accepted local windows; no sampling across the original whole-counter rectangles."
+}

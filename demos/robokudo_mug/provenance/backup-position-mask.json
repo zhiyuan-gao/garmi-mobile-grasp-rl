@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "status": "validated",
+  "object_name": "mug",
+  "bank_path": "runs/wrist-contact-v6/mug/backup/bank.json",
+  "reference_ids": [
+    "mug-v3-ref001",
+    "mug-v3-ref005",
+    "mug-v3-ref010",
+    "mug-v3-ref018",
+    "mug-v3-ref020",
+    "mug-v4a-c04003",
+    "mug-v4a-c05202",
+    "mug-v4a-c09201",
+    "mug-v4a-c07600",
+    "mug-v4a-c05203",
+    "mug-v4a-c04006",
+    "mug-v4a-c04008",
+    "mug-v4a-c03206",
+    "mug-v4a-c03208",
+    "mug-v4a-c04013",
+    "mug-v4a-c08805",
+    "mug-v4a-c03608",
+    "mug-v4a-c02803",
+    "mug-v4a-c06808",
+    "mug-v4a-c05612",
+    "mug-v4a-c02006",
+    "mug-v4a-c09208",
+    "mug-v4a-c02410",
+    "mug-v4a-c06006",
+    "mug-v4b-c01731",
+    "mug-v4b-c06566",
+    "mug-v4b-c07014",
+    "mug-v4b-c06400",
+    "mug-v4b-c06800",
+    "mug-v4b-c04401",
+    "mug-v4b-c00804",
+    "mug-v4b-c06802",
+    "mug-v4b-c00805",
+    "mug-v4b-c07200"
+  ],
+  "bowl_map_yaw_degrees": 0.0,
+  "bowl_origin_z_m": 0.9465359430589999,
+  "cell_size_m": 0.01,
+  "numeric_position_tolerance_m": 1e-06,
+  "sources_sha256": {
+    "runs/wrist-contact-v6/mug/backup/bank.json": "05319ceb13b46231add0b28a839f31f809e744d06907031efd5f2586afe299ae",
+    "runs/mug-surface-v3/025_mug/position-mask.json": "8b2fa8d8dc9a0f462ee85cea92dec19fdbf0dd4ff1ec7db999c75b4e10559426",
+    "runs/grasp-expansion-v4a/mug/position-mask.json": "302b65bd4698181b40113a88b28f74e676aad074110a731af08a8ec54a2bcb85",
+    "runs/grasp-expansion-v4b/mug/position-mask.json": "43f9e1bbab2798c0843a689ecf3cfb1c51176adce244c409cbaef51078a31a16"
+  },
+  "regions": [
+    {
+      "name": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 0
+    },
+    {
+      "name": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 1
+    },
+    {
+      "name": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 2
+    },
+    {
+      "name": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.535
+        ],
+        [
+          1.305,
+          7.545
+        ]
+      ],
+      "shape_xy": [
+        1,
+        1
+      ],
+      "cell_offset": 3
+    }
+  ],
+  "cells": [
+    {
+      "region": "local-00",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.255
+        ],
+        [
+          0.165,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        0,
+        3,
+        6,
+        10,
+        14,
+        15,
+        17,
+        19,
+        24,
+        25,
+        26,
+        33
+      ]
+    },
+    {
+      "region": "local-01",
+      "bounds_map_xy": [
+        [
+          0.155,
+          7.535
+        ],
+        [
+          0.165,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        8,
+        11,
+        18,
+        22,
+        29,
+        30,
+        32
+      ]
+    },
+    {
+      "region": "local-02",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.255
+        ],
+        [
+          1.305,
+          7.265
+        ]
+      ],
+      "allowed_reference_indices": [
+        4,
+        9,
+        13,
+        21,
+        27,
+        31
+      ]
+    },
+    {
+      "region": "local-03",
+      "bounds_map_xy": [
+        [
+          1.2950000000000002,
+          7.535
+        ],
+        [
+          1.305,
+          7.545
+        ]
+      ],
+      "allowed_reference_indices": [
+        5,
+        7,
+        12,
+        16,
+        20,
+        23,
+        28
+      ]
+    }
+  ],
+  "extra_margin_m": 0.002,
+  "method": "Reindexed 1 cm local windows wholly covered by source geometry masks at the same per-reference opening.",
+  "scope": "Geometry clearance only; all physical labels must be retested with wrist permission.",
+  "empty_cells": [],
+  "allowed_cells_per_reference": [
+    2,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "placement_adjustment": "Only accepted local windows; no sampling across the original whole-counter rectangles."
+}
