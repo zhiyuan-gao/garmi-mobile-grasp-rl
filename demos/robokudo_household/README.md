@@ -59,3 +59,6 @@ python demos/robokudo_household/validate_run.py /path/to/run
 
 This checks physical delivery, drawer closure, fresh mug perception after bowl
 transport, the policy input audit and the simulator-object isolation checks.
+
+Local runtime optimizations and measured timings are documented in
+[PERFORMANCE.md](PERFORMANCE.md).

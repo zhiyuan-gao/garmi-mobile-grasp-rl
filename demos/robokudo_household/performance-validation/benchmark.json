@@ -1,0 +1,48 @@
+{
+  "contact_history_exact_match": true,
+  "pulse_history_max": [
+    0.0,
+    0.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    17.0,
+    0.0,
+    0.0
+  ],
+  "cases": [
+    {
+      "case": "original",
+      "steps": 100,
+      "step_ms": 154.9216593109304,
+      "simulated_seconds": 5.0,
+      "wall_seconds": 15.49216593109304,
+      "rss_start_mb": 14876.0546875,
+      "rss_end_mb": 15113.0859375
+    },
+    {
+      "case": "fast_contacts",
+      "steps": 100,
+      "step_ms": 120.06788172060624,
+      "simulated_seconds": 5.0,
+      "wall_seconds": 12.006788172060624,
+      "rss_start_mb": 15114.296875,
+      "rss_end_mb": 15262.77734375
+    },
+    {
+      "case": "fast_contacts_camera_idle",
+      "steps": 100,
+      "step_ms": 98.07995306269731,
+      "simulated_seconds": 5.0,
+      "wall_seconds": 9.807995306269731,
+      "rss_start_mb": 15326.20703125,
+      "rss_end_mb": 15056.73046875
+    }
+  ]
+}

@@ -28,6 +28,9 @@ class PerceivedHouseholdBackend(HouseholdBackend):
         self.perception_control = False
         self.perception_fov_degrees = 70.
         super().__init__(*args, **kwargs)
+        from performance import optimize_contact_updates
+        self.fast_contacts=optimize_contact_updates(self.env.scene)
+        (self.out/'performance-settings.json').write_text(json.dumps(dict(contact_sensors=self.fast_contacts,physics_dt=self.env.physics_dt,history_preserved=True,head_camera_on_demand=True),indent=2))
         for _ in range(30):
             self.step_classical(time.monotonic())
         self.sensor = HeadCamera(self)
@@ -43,7 +46,15 @@ class PerceivedHouseholdBackend(HouseholdBackend):
 
     def capture_object(self, label, obj):
         folder = self.out/'perception'/label
-        frame = self.sensor.capture(folder)
+        camera=self.sensor.camera
+        camera._render_product.hydra_texture.set_updates_enabled(True)
+        if camera.is_paused():
+            camera.resume()
+        try:
+            frame = self.sensor.capture(folder)
+        finally:
+            camera.pause()
+            camera._render_product.hydra_texture.set_updates_enabled(False)
         command = ['bash', '-c',
             'source /opt/ros/jazzy/setup.bash; source /home/jovyan/cram-vrb-lab/ros2_ws/install/setup.bash; '
             'export PYTHONPATH=/workspace/cram-vrb-lab:$PYTHONPATH; export OMP_NUM_THREADS=2; exec "$@"',

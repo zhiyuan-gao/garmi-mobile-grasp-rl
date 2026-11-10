@@ -32,8 +32,10 @@ if a.desktop_stream:
     app.set_setting('/app/livestream/enabled',True)
     app.set_setting('/isaaclab/render/active_viewport',True)
     app.set_setting('/physics/fabricUpdateTransformations',True)
-    app.set_setting('/exts/omni.kit.livestream.app/primaryStream/allowDynamicResize',True)
+    app.set_setting('/exts/omni.kit.livestream.app/primaryStream/allowDynamicResize',False)
+    app.set_setting('/exts/omni.kit.livestream.app/primaryStream/targetFps',25)
     enable_extension('omni.kit.livestream.app')
+    app.set_setting('/app/runLoops/present/rateLimitFrequency',25)
 enable_extension('isaacsim.ros2.bridge')
 import rclpy
 import imageio.v2 as imageio
@@ -49,7 +51,7 @@ def stop(signum,frame):
     stopped=True
 
 signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
-backend=node=writer=None
+backend=node=writer=metrics=None
 failed=False
 try:
     bundle=Bundle(a.workspace/'results/cram-rl-integration/policy-7500',a.workspace)
@@ -63,6 +65,9 @@ try:
         (a.out/'render-settings.json').write_text(json.dumps(dict(
             rate_limit_before=before, rate_limit_after=settings.get(limiter),
             control_dt=backend.env.step_dt, physics_dt=backend.env.cfg.sim.dt)))
+    from performance import RuntimeMetrics
+    metrics=RuntimeMetrics(a.out/'performance.jsonl')
+    metrics.sample(backend,force=True)
     # Reject any accidental later attempt to reset the shared scene.
     def no_reset(*args,**kwargs):raise RuntimeError('A continuous household task cannot reset the scene')
     backend.env.reset=no_reset
@@ -98,6 +103,9 @@ try:
                     try:next(sequence)
                     except StopIteration:break
                 node.publish()
+                metrics.sample(backend)
+                if metrics.rss_mb > 24576:
+                    raise MemoryError('Simulator RSS exceeded 24 GiB; stopping before host memory exhaustion')
                 if backend.control_step%2==0:
                     trace.write(json.dumps(dict(wall_time=time.time(),snapshot=backend.snapshot(),stage=backend.stage,**node.session.status(),fault=node.fault))+'\n')
                     if writer is not None:
@@ -115,6 +123,9 @@ try:
         for _ in range(4): rclpy.spin_once(node,timeout_sec=0.)
         node.publish()
         backend.env.sim.render()
+        metrics.sample(backend)
+        if metrics.rss_mb > 24576:
+            raise MemoryError('Simulator RSS exceeded 24 GiB; stopping before host memory exhaustion')
         time.sleep(.04)
 except BaseException as error:
     failed=True
@@ -127,6 +138,9 @@ except BaseException as error:
         if not a.desktop_stream: imageio.imwrite(a.out/'failed.png',backend.env.render())
     raise
 finally:
+    if metrics:
+        if backend:metrics.sample(backend,force=True)
+        metrics.close()
     if writer:writer.close()
     if node:node.destroy_node()
     if backend:backend.close()

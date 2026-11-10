@@ -1,0 +1,137 @@
+{
+  "status": "passed",
+  "run": "20261110-140834-2908",
+  "policy_steps": {
+    "bowl-initial": 194,
+    "mug-pregrasp": 197
+  },
+  "observations": [
+    "bowl-initial",
+    "mug-initial",
+    "mug-pregrasp"
+  ],
+  "bowl_delivered": true,
+  "mug_inside": true,
+  "drawer_opening_m": 8.480072022365448e-08,
+  "bowl_shift_m": 0.0,
+  "scene_initializations": 1,
+  "memory": {
+    "min_rss_mb": 8519.29296875,
+    "max_rss_mb": 8842.32421875,
+    "run_oom_kills": 0,
+    "container_oom_kills_before_and_after": [
+      1,
+      1
+    ]
+  },
+  "mug_grasp": {
+    "height": 0.12223899364471436,
+    "slip": 0.000710209715180099,
+    "contact": 1.0,
+    "supported": 0.0,
+    "collision": 0.0,
+    "hold_seconds": 2.049999237060547
+  },
+  "drawer_open_m": 0.37137010232925416,
+  "timings": {
+    "earlier_success": {
+      "run": "20261110-124057-4c29",
+      "motions": [
+        {
+          "label": "prepare_rl_posture",
+          "seconds": 6.089446067810059
+        },
+        {
+          "label": "navigate_to_grasp_region",
+          "seconds": 12.14038348197937
+        },
+        {
+          "label": "navigate",
+          "seconds": 27.400850772857666
+        },
+        {
+          "label": "navigate",
+          "seconds": 63.7009174823761
+        },
+        {
+          "label": "place",
+          "seconds": 130.00914692878723
+        },
+        {
+          "label": "finish_park",
+          "seconds": 63.49674463272095
+        }
+      ],
+      "place_verify_park_seconds": 197.6224546432495,
+      "start_to_completion_seconds": 945.245771408081,
+      "task_events_to_completion_seconds": 748.0158834457397
+    },
+    "reported_slow_run": {
+      "run": "20261110-133357-7277",
+      "motions": [
+        {
+          "label": "prepare_rl_posture",
+          "seconds": 5.072218656539917
+        },
+        {
+          "label": "navigate_to_grasp_region",
+          "seconds": 20.862253427505493
+        },
+        {
+          "label": "navigate",
+          "seconds": 28.225924491882324
+        },
+        {
+          "label": "navigate",
+          "seconds": 63.79484558105469
+        },
+        {
+          "label": "place",
+          "seconds": 154.25917434692383
+        },
+        {
+          "label": "finish_park",
+          "seconds": 90.20966124534607
+        }
+      ],
+      "place_verify_park_seconds": 248.58399152755737
+    },
+    "optimized": {
+      "run": "20261110-140834-2908",
+      "motions": [
+        {
+          "label": "prepare_rl_posture",
+          "seconds": 4.991065740585327
+        },
+        {
+          "label": "navigate_to_grasp_region",
+          "seconds": 14.399215936660767
+        },
+        {
+          "label": "navigate",
+          "seconds": 21.904364347457886
+        },
+        {
+          "label": "navigate",
+          "seconds": 55.30767560005188
+        },
+        {
+          "label": "place",
+          "seconds": 89.09566402435303
+        },
+        {
+          "label": "finish_park",
+          "seconds": 40.76703476905823
+        }
+      ],
+      "place_verify_park_seconds": 133.97972345352173,
+      "start_to_completion_seconds": 699.227860212326,
+      "task_events_to_completion_seconds": 645.1585586071014
+    }
+  },
+  "notes": [
+    "Reported slow run was later killed during return navigation; its bowl segment completed.",
+    "Full-run wall times include differing startup/cache conditions and are not a controlled speedup benchmark.",
+    "Exact contact-buffer comparison and controlled step timings are in benchmark.json."
+  ]
+}

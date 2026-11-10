@@ -18,7 +18,7 @@ legacy=household.legacy
 
 class Controller(household.HouseholdController):
     def env(self):
-        env=super().env();env.update(ROS_DOMAIN_ID='62', ACCEPT_EULA='YES', OMNI_KIT_ACCEPT_EULA='YES', PRIVACY_CONSENT='YES')
+        env=super().env();env.update(ROS_DOMAIN_ID='63', ACCEPT_EULA='YES', OMNI_KIT_ACCEPT_EULA='YES', PRIVACY_CONSENT='YES')
         return env
     def start_viewer(self):
         old=self.services.pop('neemhub',None)
@@ -26,13 +26,15 @@ class Controller(household.HouseholdController):
         env=self.env();env.pop('CRAMERA_SCENES',None)
         self.spawn('neemhub',self.native(HERE/'neemhub.py','8722'),service=True,env=env)
     def spawn(self,name,command,**kwargs):
+        if name=='viewer-connect':
+            command=['/opt/conda/bin/python',str(HERE/'connect_viewer.py')]
         if name=='task':
             command=self.native(HERE/'live_task.py','--output-dir',self.run/'task')
         return super().spawn(name,command,**kwargs)
     def simulation_command(self):
         return ['bash',str(ROOT/'scripts/local_python.sh'),str(HERE/'sim.py'),
             '--out',str(self.run/'sim'),'--assets',str(ROOT/'household/assets'),
-            '--mug-workspace',str(ROOT/'household/mug'),'--desktop-stream','--headless',
+            '--mug-workspace',str(ROOT/'household/mug'),'--desktop-stream','--headless','--kit_args=--no-window',
             '--experience',str(ROOT/'integration/garmi-desktop.kit'),'--max-seconds','2400']
     def observations(self):
         return legacy.read_json(self.run/'sim/perception/index.json',[]) if self.run else []
