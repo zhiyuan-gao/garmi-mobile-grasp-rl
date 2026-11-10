@@ -1052,6 +1052,46 @@
       "source": "deployment/isaac61/overrides/demos/household_sequence/household_plan.py",
       "mode": 420,
       "sha256": "8325da3b67b532fe6840cacf13183c15d06c483194ef62b1380b40bff9803270"
+    },
+    "demos/robokudo_bowl/README.md": {
+      "source": "demos/robokudo_bowl/README.md",
+      "mode": 420,
+      "sha256": "16bee8b6a1cc0881c9177cd4fcefb92b56db5237130b5949acfe7703845904a8"
+    },
+    "demos/robokudo_bowl/task.py": {
+      "source": "demos/robokudo_bowl/task.py",
+      "mode": 420,
+      "sha256": "cac62b7436aac9dd9719ef97cbb420bd2cce28904832f2c37594447098b9a6cc"
+    },
+    "demos/robokudo_bowl/detect.py": {
+      "source": "demos/robokudo_bowl/detect.py",
+      "mode": 420,
+      "sha256": "6b05007a7a5a4bc02e68ad190d528cf54666b33933f2fa5adba2d632911ba72c"
+    },
+    "demos/robokudo_bowl/backend.py": {
+      "source": "demos/robokudo_bowl/backend.py",
+      "mode": 420,
+      "sha256": "8522ef42de6d34430427179a844dbe4ce135d8478a74adec8230a226e7b41ec9"
+    },
+    "demos/robokudo_bowl/camera.py": {
+      "source": "demos/robokudo_bowl/camera.py",
+      "mode": 420,
+      "sha256": "55f6f91ce05d48f27113aa20232351c67c863cced02d10bf76dc1d803a3d9296"
+    },
+    "demos/robokudo_bowl/sim.py": {
+      "source": "demos/robokudo_bowl/sim.py",
+      "mode": 420,
+      "sha256": "f56f58325f75e61cd5fb8c58ab1d61ea7901c666b1b27d0f9730196e02b2ebc8"
+    },
+    "demos/robokudo_bowl/run.py": {
+      "source": "demos/robokudo_bowl/run.py",
+      "mode": 420,
+      "sha256": "d605b6ff2ea48cda3f4f1f89eb94b00cec93cf22b47c8f356a939663cb662f50"
+    },
+    "demos/robokudo_bowl/tests/test_perception.py": {
+      "source": "demos/robokudo_bowl/tests/test_perception.py",
+      "mode": 420,
+      "sha256": "2b22b440b4d86a77f9bbe15176083862cfc1ce3ae50fbad4886e2d5867ba3543"
     }
   },
   "task": "bowl_counter_table_then_mug_counter_drawer"
