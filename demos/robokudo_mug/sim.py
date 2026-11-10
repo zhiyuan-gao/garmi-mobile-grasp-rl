@@ -25,6 +25,7 @@ p.add_argument(
 p.add_argument("--mug-map", nargs=2, type=float, default=[0.16, 7.26])
 p.add_argument("--capture-only", action="store_true")
 p.add_argument("--record", action="store_true")
+p.add_argument("--desktop-stream", action="store_true")
 p.add_argument("--max-seconds", type=float, default=600.0)
 AppLauncher.add_app_launcher_args(p)
 args = p.parse_args()
@@ -34,6 +35,14 @@ app = AppLauncher(args).app
 from isaacsim.core.utils.extensions import enable_extension
 
 enable_extension("isaacsim.ros2.bridge")
+if args.desktop_stream:
+    app.set_setting('/app/livestream/enabled', True)
+    app.set_setting('/isaaclab/render/active_viewport', True)
+    app.set_setting('/physics/fabricUpdateTransformations', True)
+    app.set_setting('/exts/omni.kit.livestream.app/primaryStream/allowDynamicResize', True)
+    enable_extension('omni.kit.livestream.app')
+    app.set_setting('/app/runLoops/main/rateLimitEnabled', False)
+
 sys.path.insert(0, str(ROOT / "demos/robokudo_bowl"))
 from backend import PerceivedBowlBackend
 from prepare import prepare_bundle
@@ -60,7 +69,13 @@ try:
             from camera import ReviewCamera
 
             recording = ReviewCamera(backend, args.out / "replay.mp4")
-        print("ROBOKUDO_RL_READY", flush=True)
+        if args.desktop_stream:
+            from garmi_cram_rl.viewport import configure_streamed_navigation
+            configure_streamed_navigation()
+            backend.env.sim.set_camera_view(
+                backend.frame.position_to_task([1.25, 5.9, 2.2]),
+                backend.frame.position_to_task([.15, 6.85, 1.05]))
+        print("ROBOKUDO_RL_READY CRAM_RL_READY", flush=True)
         stopped = False
 
         def stop(*unused):

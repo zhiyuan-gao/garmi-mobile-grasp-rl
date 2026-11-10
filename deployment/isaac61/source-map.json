@@ -1066,7 +1066,7 @@
     "demos/robokudo_bowl/detect.py": {
       "source": "demos/robokudo_bowl/detect.py",
       "mode": 420,
-      "sha256": "4627ecfcc8cceb8a70b108231a7e04c82d9bc932bbd4216eb9bfd72d8942779d"
+      "sha256": "356c3e60cf09b3664da3c30783f80297f0e45bf89864e3e8a8d2ece6bf931033"
     },
     "demos/robokudo_bowl/backend.py": {
       "source": "demos/robokudo_bowl/backend.py",
@@ -1076,12 +1076,12 @@
     "demos/robokudo_bowl/camera.py": {
       "source": "demos/robokudo_bowl/camera.py",
       "mode": 420,
-      "sha256": "d50e8cd3fe2ec3912693e6b51ae3633d52bc88659489f6fc8adf319ea83de9bf"
+      "sha256": "29fb9881b6e881fc5d804ba9a0c06181d141a71ae0741ad20799f311e1597cae"
     },
     "demos/robokudo_bowl/sim.py": {
       "source": "demos/robokudo_bowl/sim.py",
       "mode": 420,
-      "sha256": "f56f58325f75e61cd5fb8c58ab1d61ea7901c666b1b27d0f9730196e02b2ebc8"
+      "sha256": "eb372d6b93f4519f20c562b9046c1a5bc769535d905a1137e11e0f78c5cbc60b"
     },
     "demos/robokudo_bowl/run.py": {
       "source": "demos/robokudo_bowl/run.py",
@@ -1135,7 +1135,7 @@
     },
     "demos/robokudo_mug/sim.py": {
       "source": "demos/robokudo_mug/sim.py",
-      "sha256": "195097f14c3189af9c12087c5ac8fc13bfb621a2a6920fa3073ea333a7cf19a1",
+      "sha256": "a9520d560c0c8f775ec26d0f8f7ed015b501518af1088f1435c76ec536aeb8b2",
       "mode": 420
     },
     "demos/robokudo_mug/run.py": {
@@ -1146,6 +1146,61 @@
     "demos/robokudo_mug/README.md": {
       "source": "demos/robokudo_mug/README.md",
       "sha256": "d64b69a5abd361e0355539f21e12a2d18d4e3032d180e5827065855dfbf42704",
+      "mode": 420
+    },
+    "demos/robokudo_lab/explorer.css": {
+      "source": "demos/robokudo_lab/explorer.css",
+      "sha256": "e037c720790f3dfdd4d0a15f115379a39841dcede97d670a55361ae164d30b67",
+      "mode": 420
+    },
+    "demos/robokudo_lab/install_preview.py": {
+      "source": "demos/robokudo_lab/install_preview.py",
+      "sha256": "6d81401a9c7c1c72e36f91c0727ff0828b3bd0ac3f09d0e078bda0fcbbcc994d",
+      "mode": 420
+    },
+    "demos/robokudo_lab/workspace.js": {
+      "source": "demos/robokudo_lab/workspace.js",
+      "sha256": "e83cef1bb421d81c21fdb5c90f2f0bf1c8f4822ba3106d452bb13c85e0940bf9",
+      "mode": 420
+    },
+    "demos/robokudo_lab/server.py": {
+      "source": "demos/robokudo_lab/server.py",
+      "sha256": "b439e969ec37e51408943b3c0ef41d35f6bda4b3219fcc9ce3d9f0c6475e3aaa",
+      "mode": 420
+    },
+    "demos/robokudo_lab/live_task.py": {
+      "source": "demos/robokudo_lab/live_task.py",
+      "sha256": "f23dbee04586fb52b1a407882e3291a69616924b70cbaf3821d566dbb2efd841",
+      "mode": 420
+    },
+    "demos/robokudo_lab/explorer.html": {
+      "source": "demos/robokudo_lab/explorer.html",
+      "sha256": "13d54d1afadd1c8ad01a499c6aae32067c9538dac9ff9ecb9084585bd98d53a7",
+      "mode": 420
+    },
+    "demos/robokudo_lab/start_service.py": {
+      "source": "demos/robokudo_lab/start_service.py",
+      "sha256": "73644d3d48908d6b54bb3ff2051cc2103432ca1c1962bd9951fe901ba0c83683",
+      "mode": 420
+    },
+    "demos/robokudo_lab/explorer.js": {
+      "source": "demos/robokudo_lab/explorer.js",
+      "sha256": "db65851ec1220275d474fb82b2177be1b92b52286cad6c86735eeeed3d10b50d",
+      "mode": 420
+    },
+    "demos/robokudo_lab/neemhub.py": {
+      "source": "demos/robokudo_lab/neemhub.py",
+      "sha256": "0789ca80de0a51874a07189b36be1fcc3bb03e1dbfac75750b8a4b81cd46f9c8",
+      "mode": 420
+    },
+    "demos/robokudo_lab/README.md": {
+      "source": "demos/robokudo_lab/README.md",
+      "sha256": "8355bc4ff4fde898de713cb836f18ef6efc40fd436827c915e698f2e829b75dc",
+      "mode": 420
+    },
+    "demos/robokudo_lab/validation.json": {
+      "source": "demos/robokudo_lab/validation.json",
+      "sha256": "761f42c817e7369e785df25a09f61bff60f56d9696b39279168dabd76a5db349",
       "mode": 420
     }
   },

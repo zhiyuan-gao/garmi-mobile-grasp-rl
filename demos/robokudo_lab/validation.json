@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-10",
+  "preview_port": 8889,
+  "tests": [
+    {
+      "run": "20261110-122141-e110",
+      "object": "mug",
+      "success": true,
+      "reference": "mug-v3-ref025",
+      "surface_fit_rmse_m": 0.0008120974007353533,
+      "observed_points": 2359,
+      "hold_check": {
+        "event": "handover_hold_check",
+        "time": 1794313417.673802,
+        "passed": true,
+        "measurements": {
+          "height": 0.11863481998443604,
+          "slip": 0.0038357425946742296,
+          "contact": 1.0,
+          "supported": 0.0,
+          "collision": 0.0,
+          "hold_seconds": 2.9999983310699463
+        }
+      },
+      "selected_station": [
+        0.160008504986763,
+        6.25,
+        1.5707963267948966
+      ],
+      "checkpoint_sha256": "b6ae2305fcbb353d88801ca3f9817b74665f34f9d8238b6fcd5a96d41e082ce2",
+      "perception_plan_rows": [
+        "RoboKudo \u00b7 head RGB-D snapshot captured",
+        "RoboKudo \u00b7 support plane and object point cloud extracted",
+        "Model fit \u00b7 mug at (0.160, 7.261, 0.947) m \u00b7 orientation fixed",
+        "CRAM station and RL target use this perceived position"
+      ]
+    },
+    {
+      "run": "20261110-122604-7b19",
+      "object": "bowl",
+      "success": true,
+      "reference": "bowl-r020",
+      "surface_fit_rmse_m": 0.0007572419719191626,
+      "observed_points": 32270,
+      "hold_check": {
+        "event": "handover_hold_check",
+        "time": 1794313685.3151898,
+        "passed": true,
+        "measurements": {
+          "height": 0.11912709474563599,
+          "slip": 0.004706685431301594,
+          "contact": 1.0,
+          "supported": 0.0,
+          "collision": 0.0,
+          "hold_seconds": 3.0499982833862305
+        }
+      },
+      "selected_station": [
+        0.19969651103019714,
+        6.25,
+        1.5707963267948966
+      ],
+      "checkpoint_sha256": "c0749daac003eee65bc892c5ad587d77b1a5e9093614a8b170ef7ab063b6a7aa",
+      "perception_plan_rows": [
+        "RoboKudo \u00b7 head RGB-D snapshot captured",
+        "RoboKudo \u00b7 support plane and object point cloud extracted",
+        "Model fit \u00b7 bowl at (0.200, 7.400, 0.978) m \u00b7 orientation fixed",
+        "CRAM station and RL target use this perceived position"
+      ]
+    }
+  ],
+  "ui_checks": [
+    "RGB image with actual cluster projection",
+    "Point-cloud overlay, zoom, model toggle",
+    "Original NeemHub Plan including perception provenance",
+    "Start, stop, object switch and restart",
+    "Synchronized live scene and streamed Isaac Sim"
+  ],
+  "unit_tests": "demos/robokudo_bowl/tests: 2 passed",
+  "scope": "Two individual perception-guided pick-up smoke tests; not a success-rate study"
+}

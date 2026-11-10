@@ -186,6 +186,25 @@ def detect(frame_path, bounds, mesh_path, object_name="bowl"):
             "PointCloudClusterExtractor",
             "ClusterPoseBBAnnotator",
         ]
+        # Export the actual input and annotator outputs for the Lab explorer.
+        chosen = np.load(frame_path.parent / f"cluster-{fits[0]['cluster_id']}.npy")
+        origin = np.asarray(fits[0]["position_map"])
+        camera_points = (chosen - transform[:3, 3]) @ transform[:3, :3]
+        uv = camera_points @ k.T
+        uv = uv[:, :2] / uv[:, 2:]
+        def sampled(values, maximum=7000):
+            return values[::max(1, int(np.ceil(len(values) / maximum)))].round(6).tolist()
+        visual = dict(
+            schema_version=1, source="actual_robokudo_run", object_name=object_name,
+            image_size=[rgb.shape[1], rgb.shape[0]],
+            image_box=[np.min(uv, axis=0).tolist(), np.max(uv, axis=0).tolist()],
+            origin_map=origin.tolist(),
+            counter=sampled(np.asarray(cloud.points) @ transform[:3,:3].T + transform[:3,3] - origin),
+            plane=sampled(support - origin), cluster=sampled(chosen - origin),
+            fitted_model=sampled(model_points),
+            model_note="Custom fixed-orientation model fit after RoboKudo segmentation",
+        )
+        (frame_path.parent / "visualization.json").write_text(json.dumps(visual))
         return fits[0]
     finally:
         node.destroy_node()

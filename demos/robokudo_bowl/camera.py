@@ -3,6 +3,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import json
+from datetime import datetime, timezone
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -106,6 +107,7 @@ class HeadCamera:
         (destination / "camera.json").write_text(
             json.dumps(
                 dict(
+                    captured_at_utc=datetime.now(timezone.utc).isoformat(),
                     map_T_camera=transform.tolist(),
                     base_T_camera=self.mount.tolist(),
                     resolution=[960, 540],
