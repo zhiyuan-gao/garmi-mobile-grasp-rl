@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "run": "20261110-124057-4c29",
+  "policy_steps": {
+    "bowl-initial": 195,
+    "mug-pregrasp": 197
+  },
+  "observations": [
+    "bowl-initial",
+    "mug-initial",
+    "mug-pregrasp"
+  ],
+  "bowl_delivered": true,
+  "mug_inside": true,
+  "drawer_opening_m": 1.1648101806649436e-05,
+  "bowl_shift_m": 0.0,
+  "scene_initializations": 1,
+  "date": "2026-11-10",
+  "local_preview_port": 8890,
+  "unit_tests": "2 perception tests and 2 handover tests passed",
+  "validation_scope": "One complete online household run in one continuous scene",
+  "bowl_delivery_horizontal_error_m": 0.005942893423427378,
+  "drawer_opened_m": 0.371168459815979,
+  "mug_grasp": {
+    "height": 0.12222468852996826,
+    "slip": 0.0008844591211527586,
+    "contact": 1.0,
+    "supported": 0.0,
+    "collision": 0.0,
+    "hold_seconds": 2.049999237060547
+  }
+}
