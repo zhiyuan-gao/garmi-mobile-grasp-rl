@@ -1,4 +1,4 @@
-"""Run RoboKudo on a captured RGB-D frame and localize the known upright bowl."""
+"""Run RoboKudo on RGB-D and localize a known object at its fixed upright orientation."""
 
 import argparse
 import json
@@ -10,7 +10,7 @@ from scipy.spatial.transform import Rotation
 
 
 def estimate_bowl(points, model_points, bounds, plane_height):
-    """Align the known upright bowl surface to its visible RGB-D cluster."""
+    """Align the known upright object surface to its visible RGB-D cluster."""
     from scipy.spatial import cKDTree
 
     low, high = np.asarray(bounds)
@@ -21,9 +21,9 @@ def estimate_bowl(points, model_points, bounds, plane_height):
     if np.any(extent[:2] < 0.6 * model_extent[:2]) or np.any(
         extent[:2] > 1.2 * model_extent[:2]
     ):
-        raise ValueError("Visible extent does not match the known bowl")
+        raise ValueError("Visible extent does not match the known object")
     if abs(np.quantile(points[:, 2], 0.99) - (plane_height + model_extent[2])) > 0.012:
-        raise ValueError("Cluster height does not match the bowl model")
+        raise ValueError("Cluster height does not match the object model")
     z = float(plane_height - low[2])
     initial = (np.min(points[:, :2], axis=0) + np.max(points[:, :2], axis=0)) / 2 - (
         low[:2] + high[:2]
@@ -49,7 +49,7 @@ def estimate_bowl(points, model_points, bounds, plane_height):
     rms = float(np.sqrt(np.mean(distances**2)))
     inliers = float(np.mean(distances < 0.006))
     if rms > 0.006 or inliers < 0.85:
-        raise ValueError("Visible surface does not fit the known bowl")
+        raise ValueError("Visible surface does not fit the known object")
     return dict(
         position_map=[*fit.x, z],
         quaternion_wxyz=[1.0, 0.0, 0.0, 0.0],
@@ -62,7 +62,7 @@ def estimate_bowl(points, model_points, bounds, plane_height):
     )
 
 
-def detect(frame_path, bounds, mesh_path):
+def detect(frame_path, bounds, mesh_path, object_name="bowl"):
     # Reuse upstream import compatibility fix and its actual RoboKudo annotators.
     from cram_vrb_lab.perception import pipeline as upstream
     import robokudo.pipeline
@@ -130,7 +130,7 @@ def detect(frame_path, bounds, mesh_path):
     clusters.parameters.dbscan_min_cluster_count = 8
     clusters.parameters.min_on_plane_point_count = 20
     clusters.parameters.eps = 0.012
-    pipeline = robokudo.pipeline.Pipeline("GarmiBowlRGBD")
+    pipeline = robokudo.pipeline.Pipeline("GarmiKnownObjectRGBD")
     pipeline.add_children(
         [
             upstream.ClearAnnotatorOutputs(),
@@ -176,8 +176,9 @@ def detect(frame_path, bounds, mesh_path):
                 rejected.append(dict(cluster_id=hypothesis.id, reason=str(error)))
         if len(fits) != 1:
             raise ValueError(
-                f"Expected one unambiguous bowl, got {len(fits)}; rejected={rejected}"
+                f"Expected one unambiguous {object_name}, got {len(fits)}; rejected={rejected}"
             )
+        fits[0]["object_name"] = object_name
         fits[0]["rejected_clusters"] = rejected
         fits[0]["pipeline"] = [
             "ImagePreprocessorAnnotator",
@@ -206,14 +207,26 @@ if __name__ == "__main__":
             "/workspace/cram-vrb-lab/cognitive_robot_abstract_machine/coraplex/resources/objects/bowl.stl"
         ),
     )
+    parser.add_argument(
+        "--model-spec", type=Path, help="Known object mesh, bounds and hash"
+    )
     args = parser.parse_args()
     started = time.monotonic()
-    result = detect(
-        args.frame,
-        json.loads(args.asset_manifest.read_text())["bowl_bounds"],
-        args.mesh,
-    )
+    if args.model_spec:
+        import hashlib
+
+        model = json.loads(args.model_spec.read_text())
+        mesh = Path(model["mesh"])
+        if hashlib.sha256(mesh.read_bytes()).hexdigest() != model["mesh_sha256"]:
+            raise ValueError("Perception model mesh changed")
+        result = detect(args.frame, model["bounds"], mesh, model["name"])
+    else:
+        result = detect(
+            args.frame,
+            json.loads(args.asset_manifest.read_text())["bowl_bounds"],
+            args.mesh,
+        )
     result["processing_seconds"] = time.monotonic() - started
     result["capture_file"] = str(args.frame)
     (args.frame.parent / "estimate.json").write_text(json.dumps(result, indent=2))
-    print("ROBOKUDO_BOWL", json.dumps(result), flush=True)
+    print("ROBOKUDO_OBJECT", json.dumps(result), flush=True)

@@ -59,6 +59,11 @@ class HeadCamera:
             "/World/RoboKudoHeadCamera", resolution=(960, 540), frequency=20
         )
         self.camera.initialize()
+        fov = getattr(backend, "perception_fov_degrees", None)
+        if fov is not None:
+            self.camera.set_focal_length(
+                self.camera.get_horizontal_aperture() / (2 * np.tan(np.deg2rad(fov) / 2))
+            )
         self.camera.set_clipping_range(0.08, 5.0)
         self.camera.add_distance_to_image_plane_to_frame()
 

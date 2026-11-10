@@ -61,7 +61,11 @@ class ObservedMDP:
 
 
 class PerceivedBowlBackend(LabBackend):
-    def __init__(self, bundle, base_map, bowl_map, output, capture_only=False):
+    def __init__(
+        self, bundle, base_map, bowl_map, output, capture_only=False, model_spec=None
+    ):
+        self.scene_object_name = "robokudo_mug" if model_spec else "graspgen_bowl_stl"
+        self.perception_fov_degrees = 70.0 if model_spec else None
         self.output = Path(output)
         self.estimate = None
         super().__init__(
@@ -88,6 +92,7 @@ class PerceivedBowlBackend(LabBackend):
             "/home/jovyan/cram-vrb-lab/cognitive_robot_abstract_machine/.venv/bin/python",
             str(Path(__file__).with_name("detect.py")),
             str(frame),
+            *(["--model-spec", str(model_spec)] if model_spec else []),
         ]
         with (self.output / "perception/detector.log").open("w") as log:
             subprocess.run(

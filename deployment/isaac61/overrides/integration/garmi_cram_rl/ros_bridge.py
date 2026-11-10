@@ -162,7 +162,7 @@ class Bridge(Node):
         odom.twist.twist.linear.x, odom.twist.twist.linear.y, odom.twist.twist.angular.z = state['base_velocity']
         self.odom_pub.publish(odom)
         q = state['object_map_quaternion_wxyz']
-        self.object_pub.publish(String(data=json.dumps({'graspgen_bowl_stl': {
+        self.object_pub.publish(String(data=json.dumps({getattr(self.backend, 'scene_object_name', 'graspgen_bowl_stl'): {
             'position': state['object_map_position'], 'orientation': [*q[1:], q[0]]}})))
 
     def destroy_node(self):

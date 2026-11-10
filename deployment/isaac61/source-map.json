@@ -90,7 +90,7 @@
     },
     "integration/garmi_cram_rl/ros_bridge.py": {
       "source": "deployment/isaac61/overrides/integration/garmi_cram_rl/ros_bridge.py",
-      "sha256": "8c7652f5a09cad6c9ccade126b7dee217b82d15c0fdcd6a3521459c74ad18a79",
+      "sha256": "72620e72343b7e6ac57d7c1d7626aed51a645668253c3744d04014e64f2123a7",
       "mode": 420
     },
     "integration/garmi_cram_rl/session.py": {
@@ -995,7 +995,7 @@
     },
     "integration/garmi_cram_rl/adaptive_pick_up.py": {
       "source": "integration/garmi_cram_rl/adaptive_pick_up.py",
-      "sha256": "099cd9abeb48fa6ccee5c59d2b7fe1d80145ba18f83f4916f65d17c5d4452eeb",
+      "sha256": "f4a36feeb6e0d21c233662da70a08609df2c6ae2155aa76f276f1f142f258339",
       "mode": 420
     },
     "integration/garmi_cram_rl/planning_probe.py": {
@@ -1015,7 +1015,7 @@
     },
     "integration/tests/test_adaptive_pick_up.py": {
       "source": "integration/tests/test_adaptive_pick_up.py",
-      "sha256": "85d55fdd17449e60c84e9262675ab4c614bc1f332dab275a5c786a9c23fab4c9",
+      "sha256": "98480ce121f0c07c2b262302e4d97aee92565a3bf88f7423a9365037e8a918ff",
       "mode": 420
     },
     "integration/tests/test_planning_probe.py": {
@@ -1066,17 +1066,17 @@
     "demos/robokudo_bowl/detect.py": {
       "source": "demos/robokudo_bowl/detect.py",
       "mode": 420,
-      "sha256": "6b05007a7a5a4bc02e68ad190d528cf54666b33933f2fa5adba2d632911ba72c"
+      "sha256": "4627ecfcc8cceb8a70b108231a7e04c82d9bc932bbd4216eb9bfd72d8942779d"
     },
     "demos/robokudo_bowl/backend.py": {
       "source": "demos/robokudo_bowl/backend.py",
       "mode": 420,
-      "sha256": "8522ef42de6d34430427179a844dbe4ce135d8478a74adec8230a226e7b41ec9"
+      "sha256": "e8b44d363cb7db621ac7bad387c9679dea3423af512e4209386450c84a0b8838"
     },
     "demos/robokudo_bowl/camera.py": {
       "source": "demos/robokudo_bowl/camera.py",
       "mode": 420,
-      "sha256": "55f6f91ce05d48f27113aa20232351c67c863cced02d10bf76dc1d803a3d9296"
+      "sha256": "d50e8cd3fe2ec3912693e6b51ae3633d52bc88659489f6fc8adf319ea83de9bf"
     },
     "demos/robokudo_bowl/sim.py": {
       "source": "demos/robokudo_bowl/sim.py",
@@ -1092,6 +1092,61 @@
       "source": "demos/robokudo_bowl/tests/test_perception.py",
       "mode": 420,
       "sha256": "2b22b440b4d86a77f9bbe15176083862cfc1ce3ae50fbad4886e2d5867ba3543"
+    },
+    "resources/validated-ycb-v6/mug/position-mask.json": {
+      "source": "resources/validated-ycb-v6/mug/position-mask.json",
+      "sha256": "cf24bd07d1c279c839cb9335fcab8e076eb2eba3beef1829f79906f9f6ce244d",
+      "mode": 420
+    },
+    "runs/wrist-contact-v6/mug/new-repeat/position-mask.json": {
+      "source": "demos/robokudo_mug/provenance/runs/wrist-contact-v6/mug/new-repeat/position-mask.json",
+      "sha256": "d03da866b0bd4fac0c6b8142626c177ded9389a9071f0e9d34f481ffd26a6f3b",
+      "mode": 420
+    },
+    "resources/validated-ycb-v4/mug/position-mask.json": {
+      "source": "resources/validated-ycb-v4/mug/position-mask.json",
+      "sha256": "decbe1de0c0aeb7f7a79599b14c5f8d9ab110dc377ea299c44a48ae28f4b869b",
+      "mode": 420
+    },
+    "runs/wrist-contact-v6/mug/backup/position-mask.json": {
+      "source": "demos/robokudo_mug/provenance/runs/wrist-contact-v6/mug/backup/position-mask.json",
+      "sha256": "301b9369a4aba261222b6c2d6e1ebe98be3fbbb303cf6770b7aa50a73caaabcd",
+      "mode": 420
+    },
+    "resources/validated-ycb-v6/mug/bank.json": {
+      "source": "resources/validated-ycb-v6/mug/bank.json",
+      "sha256": "31433473e85d65b5425170efdbd121a51ac1aa3941058edb604d0906a7137973",
+      "mode": 420
+    },
+    "demos/robokudo_mug/mug_task.py": {
+      "source": "demos/robokudo_mug/mug_task.py",
+      "sha256": "835abd91e6a659e9df30dbcb9f9eaef9880a9cb89809d416e5e16f436ccbb637",
+      "mode": 420
+    },
+    "demos/robokudo_mug/prepare.py": {
+      "source": "demos/robokudo_mug/prepare.py",
+      "sha256": "50ad42260a9d72f4141a2356b3d0e92d7c69ea73846c5f6cd2378ddfb1a60839",
+      "mode": 420
+    },
+    "demos/robokudo_mug/task.py": {
+      "source": "demos/robokudo_mug/task.py",
+      "sha256": "2e7a7bb99e510f8f03d168049493e1e324d0e8d4ef39c74e2d354df40a80c668",
+      "mode": 420
+    },
+    "demos/robokudo_mug/sim.py": {
+      "source": "demos/robokudo_mug/sim.py",
+      "sha256": "195097f14c3189af9c12087c5ac8fc13bfb621a2a6920fa3073ea333a7cf19a1",
+      "mode": 420
+    },
+    "demos/robokudo_mug/run.py": {
+      "source": "demos/robokudo_mug/run.py",
+      "sha256": "516a231405c20f10b5f688ea83d12862c347b212700fe53a627b5c485f21030e",
+      "mode": 420
+    },
+    "demos/robokudo_mug/README.md": {
+      "source": "demos/robokudo_mug/README.md",
+      "sha256": "d64b69a5abd361e0355539f21e12a2d18d4e3032d180e5827065855dfbf42704",
+      "mode": 420
     }
   },
   "task": "bowl_counter_table_then_mug_counter_drawer"

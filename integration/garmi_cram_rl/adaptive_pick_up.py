@@ -111,8 +111,9 @@ class AdaptivePickUpRuntime(DemoPickUpRuntime):
             self.stop(description['rejection'])
         if description['snapshot']['grasp_measurements']['contact']:
             self.stop('The gripper is in contact with the object; automatic preparation is unsafe')
-        if description['skill']['object_name'] != 'bowl' or description['skill']['arm'] != 'RIGHT':
-            self.stop('The deployed skill does not match this bowl/right-arm task')
+        expected_object = getattr(self.demo, 'skill_object_name', 'bowl')
+        if description['skill']['object_name'] != expected_object or description['skill']['arm'] != 'RIGHT':
+            self.stop(f'The deployed skill does not match this {expected_object}/right-arm task')
         preferred=self.demo.options.reference
         try:
             choose_reference(description,self.attempted_references,preferred)

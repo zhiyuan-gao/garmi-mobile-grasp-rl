@@ -108,3 +108,18 @@ def test_server_revalidates_before_releasing_failed_controller(task):
     session.recover('one')
     backend.return_to_cram.assert_called_once()
     assert session.owner=='cram'
+
+
+def test_mug_task_accepts_only_mug_skill(task):
+    task.demo.skill_object_name = 'mug'
+    task.description['skill']['object_name'] = 'mug'
+    with real_robot:
+        task.root.perform()
+    assert ('grasp', 'r0') in task.calls
+
+
+def test_mug_task_rejects_bowl_skill_before_motion(task):
+    task.demo.skill_object_name = 'mug'
+    with real_robot, pytest.raises(RLPickUpFailure, match='mug/right-arm'):
+        task.root.perform()
+    assert task.calls == []
