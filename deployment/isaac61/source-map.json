@@ -670,7 +670,7 @@
     },
     "scripts/install_live_workspace.py": {
       "source": "deployment/isaac61/overrides/scripts/install_live_workspace.py",
-      "sha256": "bee8d9738f578ac559c68229d295ec05dfd14a1bda0f882e2bdeeac22075a97b",
+      "sha256": "58c34dad9b07b286fc622d3d2f6bf66ddbb2464f9f0d0c8cf86c4a2ae62ff164",
       "mode": 420
     },
     "scripts/install_neemhub_task.py": {

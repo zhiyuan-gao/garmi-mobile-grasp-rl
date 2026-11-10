@@ -17,6 +17,7 @@ def install(workspace):
     updated = updated.replace('      document.getElementById("garmi-rl-controls").hidden = i !== 0;\n', '')
     for previous in (
         '{ name: "NeemHub", path: "proxy/8711/" }',
+        '{ name: "NeemHub", path: "proxy/8722/" }',
         '{ name: "NeemHub", path: "proxy/8722/?layout=workspace" }',
         '{ name: "NeemHub", path: "proxy/8721/?live=" + encodeURIComponent(BASE + "proxy/8766") }',
         '{ name: "NeemHub", path: "proxy/8722/?live=" + encodeURIComponent(BASE + "proxy/8767") }',
