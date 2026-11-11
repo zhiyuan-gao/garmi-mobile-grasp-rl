@@ -51,6 +51,20 @@ and point clouds in `sim/perception/`, policy input audit in `sim/policy-inputs.
 physical sequence verification in `sim/sequence.json`, and the actual CRAM plan
 in `task/decision-plan.json`.
 
+## FR3 arm velocity bounds
+
+The project's CRAM and Giskard entry points apply the FR3 nominal joint velocity
+bounds `[2.62, 2.62, 2.62, 2.62, 5.26, 4.18, 5.26]` rad/s to each arm through
+`integration/garmi_cram_rl/fr3_limits.py`. Planning-world copies inherit these
+bounds. The upstream GARMI default remains 0.2 rad/s; other joints and derivative
+limits retain their existing settings.
+
+These are upper bounds, not requested motion speeds. Individual motion goals,
+collision constraints and the simulation controller can impose lower speeds.
+The trained RL action scales remain the same. Real FR3 operation additionally
+uses position-dependent velocity limits, as described in the
+[Franka specification](https://frankarobotics.github.io/docs/robot_specifications.html#limits-for-franka-research-3-fr3).
+
 Validate a finished run with:
 
 ```bash

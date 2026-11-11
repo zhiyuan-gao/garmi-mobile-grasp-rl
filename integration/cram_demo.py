@@ -17,6 +17,7 @@ from mobile_grasp import (
     Arms, PlaceAction,
 )
 from garmi_cram_rl.client import GraspClient
+from garmi_cram_rl.fr3_limits import apply_fr3_arm_velocity_limits
 from coraplex.robot_plans.motions.robot_body import MoveJointsMotion
 
 
@@ -28,6 +29,7 @@ class GraspDemo(MobileGrasp):
 
     def connect(self):
         super().connect()
+        apply_fr3_arm_velocity_limits(self.world)
         self.rl = GraspClient(self.node)
         self.rl.snapshot()
 

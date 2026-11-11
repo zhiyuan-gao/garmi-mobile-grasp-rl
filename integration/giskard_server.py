@@ -15,6 +15,7 @@ if not (paths.ROS2_WS_DIR / 'src/iai_maps/iai_garmi_apartment/mjcf/scene-bodies.
 
 from cram_vrb_lab.setups import SETUPS
 from garmi_cram_rl.robot_interface import make_interface
+from garmi_cram_rl.fr3_limits import make_fr3_giskard_world
 
 key = ('garmi', 'garmi_apartment')
 setup = SETUPS[key]
@@ -22,6 +23,7 @@ dual_arm = '--dual-arm' in sys.argv
 if dual_arm:
     sys.argv.remove('--dual-arm')
 SETUPS[key] = replace(setup, robot=replace(setup.robot,
-    giskard_interface=partial(make_interface, dual_arm=dual_arm)))
+    giskard_interface=partial(make_interface, dual_arm=dual_arm),
+    giskard_world=make_fr3_giskard_world))
 
 runpy.run_path(str(paths.REPO_DIR / 'demos/giskard_server.py'), run_name='__main__')

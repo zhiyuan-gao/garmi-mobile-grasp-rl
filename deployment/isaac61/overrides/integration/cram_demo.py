@@ -17,6 +17,7 @@ from mobile_grasp import (
     Arms, PlaceAction,
 )
 from garmi_cram_rl.client import GraspClient
+from garmi_cram_rl.fr3_limits import apply_fr3_arm_velocity_limits
 from garmi_cram_rl.adaptive_pick_up import AdaptivePickUpRuntime
 from garmi_cram_rl.planning_probe import probe_navigation, probe_preparation
 from garmi_cram_rl.pick_up_action import RLPickUpAction, RLPickUpContext, TaskStage, task_stage
@@ -35,6 +36,7 @@ class GraspDemo(MobileGrasp):
 
     def connect(self):
         super().connect()
+        apply_fr3_arm_velocity_limits(self.world)
         self.rl = GraspClient(self.node)
         self.rl.snapshot()
         self.context = RLPickUpContext.from_context(self.context, AdaptivePickUpRuntime(self))

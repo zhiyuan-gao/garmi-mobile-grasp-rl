@@ -40,7 +40,7 @@
     },
     "integration/cram_demo.py": {
       "source": "deployment/isaac61/overrides/integration/cram_demo.py",
-      "sha256": "717d8157d6b246575b4e2d470df8050635bd5f8bea9e896b2cfb5225968a0426",
+      "sha256": "4982fbe72cc8d318481bf9b69b60817f871be0b00e9e33bed675c31908e41678",
       "mode": 420
     },
     "integration/fastdds.xml": {
@@ -105,7 +105,7 @@
     },
     "integration/giskard_server.py": {
       "source": "deployment/isaac61/overrides/integration/giskard_server.py",
-      "sha256": "b9a005d4414d2aad2e0d3a40a9bfcc101e9efa5fa1a4593b4b905e1f18e4efe1",
+      "sha256": "2c9f5653ddda0fee856f58b64143c9fa12e6e72e07cd707090e520c28b9fb3e6",
       "mode": 420
     },
     "integration/left_counter_episodes.json": {
@@ -1260,7 +1260,7 @@
     },
     "demos/robokudo_household/README.md": {
       "source": "demos/robokudo_household/README.md",
-      "sha256": "f81babbceda5ea3db32761767b28a39ad6a283bf9bf2ee00f6ddd29bf9287846",
+      "sha256": "25a9e87e18eeb9fc0726de97fe11559bc071c2598fa0054d2171c8621d33efbc",
       "mode": 420
     },
     "demos/robokudo_household/validate_run.py": {
@@ -1301,6 +1301,11 @@
     "demos/robokudo_household/performance-validation/household-run.json": {
       "source": "demos/robokudo_household/performance-validation/household-run.json",
       "sha256": "f6bbfddd6102fc89ba9a1c15fda10b48308f7c121f4b5756e50be18c49b440e6",
+      "mode": 420
+    },
+    "integration/garmi_cram_rl/fr3_limits.py": {
+      "source": "integration/garmi_cram_rl/fr3_limits.py",
+      "sha256": "d9d32951ea116a0c145ceeb7ba476fe1d7292b15847cf0bb8401a1dcc4f7a674",
       "mode": 420
     }
   },
